@@ -3,7 +3,7 @@
     let potential_drop_index = null;
     let dragged_item_index = null;
 
-    const FAKE = '__FAKE__';
+    const FAKE = {};
 
     $: expanded_index = (() => {
         if (potential_drop_index === null) {
@@ -21,6 +21,7 @@
     function on_drag_start(index) {
         console.log('on_drag_start', index);
         dragged_item_index = index;
+        console.log('dragged_item_index', dragged_item_index);
         // event.dataTransfer.setData("text/plain", event.target.innerText);
         event.dataTransfer.dropEffect = 'move';
     }
@@ -35,7 +36,7 @@
                 items = [
                     ...items.slice(0, dragged_item_index),
                     ...items.slice(dragged_item_index +1, potential_drop_index),
-                    third,
+                    dragged_item,
                     ...items.slice(potential_drop_index),
                 ];
             } else {
@@ -52,26 +53,18 @@
         potential_drop_index = null;
     }
 
-    function onDragOver(event) {
+    function on_drag_over(event) {
         // the taget must have ondragover to be targetble
     }
 
-    function onDrop(event) {
+    function on_drop(event) {
         const data = event.dataTransfer.getData('text/plain');
         event.target.textContent = data;
     }
 
-    function setPotentialDragIndex(index) {
-        potential_drop_index = index;
-    }
     // dragenter required on mobile, per
     // github.com/timruffles/mobile-drag-drop#polyfill-requires-dragenter-listener
     function obligatoryHandler() {}
-
-    function onDragOverSite(index) {
-        console.log('dragged over', index);
-        potential_drop_index = index;
-    }
 
     function on_drag_enter_site(index) {
         console.log('drag entered', index);
@@ -99,6 +92,10 @@
         padding: 0 1em;
     }
 
+    .dragged {
+        opacity: 0;
+    }
+
     .space-between-item {
         border: 2px solid white;
         width: 3em;
@@ -117,8 +114,8 @@
 <br>
 <div id='target'
     on:dragenter|preventDefault={obligatoryHandler}
-    on:dragover|preventDefault={onDragOver}
-    on:drop|preventDefault={onDrop}
+    on:dragover|preventDefault={on_drag_over}
+    on:drop|preventDefault={on_drop}
     >
     Target
 </div>
@@ -136,6 +133,7 @@
     {#if item !== FAKE}
     <div
         class=item
+        class:dragged={index === dragged_item_index}
         draggable=true
         on:dragstart={() => on_drag_start(index)}
         on:dragend|preventDefault={on_drag_end}
