@@ -1,7 +1,9 @@
 <script>
-    const items = ['fi', 'fai', 'fo', 'fum'];
+    let items = ['0', '1', '2', '3', '4', '5'];
     let potential_drop_index = null;
     let dragged_item_index = null;
+
+    const FAKE = '__FAKE__';
 
     $: expanded_index = (() => {
         if (potential_drop_index === null) {
@@ -24,6 +26,28 @@
     }
 
     function on_drag_end() {
+        console.log('on_drag_end');
+        console.dir({potential_drop_index, dragged_item_index});
+        if (potential_drop_index !== null) {
+            const dragged_item = items[dragged_item_index];
+            if (dragged_item_index < potential_drop_index) {
+                // move down the list
+                items = [
+                    ...items.slice(0, dragged_item_index),
+                    ...items.slice(dragged_item_index +1, potential_drop_index),
+                    third,
+                    ...items.slice(potential_drop_index),
+                ];
+            } else {
+                // move up the list
+                items = [
+                    ...items.slice(0, potential_drop_index),
+                    dragged_item,
+                    ...items.slice(potential_drop_index, dragged_item_index),
+                    ...items.slice(dragged_item_index + 1),
+                ];
+            }
+        }
         dragged_item_index = null;
         potential_drop_index = null;
     }
@@ -56,7 +80,7 @@
 
     function on_drag_leave_site(index) {
         console.log('drag left', index);
-        potential_drop_index = null;
+        // potential_drop_index = null;
     }
 </script>
 
@@ -66,12 +90,13 @@
     }
 
     .wrapper.first {
-        margin-top: 1em;
+        /* margin-top: 2em; */
     }
 
     .item {
         width: fit-content;
         border: 2px solid white;
+        padding: 0 1em;
     }
 
     .space-between-item {
@@ -99,7 +124,7 @@
 </div>
 -->
 
-{#each [...items, Symbol.for('fake')]  as item, index (item)}
+{#each [...items, FAKE]  as item, index (item)}
 <div class=wrapper class:first={index === 0}>
     <div
         class=space-between-item
@@ -108,14 +133,14 @@
         on:dragleave|preventDefault={() => on_drag_leave_site(index)}
         >
     </div>
-    {#if item !== Symbol.for('fake')}
+    {#if item !== FAKE}
     <div
         class=item
         draggable=true
         on:dragstart={() => on_drag_start(index)}
         on:dragend|preventDefault={on_drag_end}
         >
-        item
+        {item}
     </div>
     {/if}
 </div>
