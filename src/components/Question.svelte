@@ -1,40 +1,57 @@
 <script>
-    console.log(`I've been called`);
-
-    export let question;
+    export let prompt;
     export let answers;
-    export let correctAnswer;
+    export let correct_answer;
+    export let done = () => null;
+
+    console.log({prompt, done});
 
     let selected;
+    let evaluate = false;
 
-    let question = 'Which is closest to the sun?';
-    let answers = [
-        { id: 'a', display: 'Earth'},
-        { id: 'b', display: 'The astroid belt'},
-        { id: 'c', display: 'Alpha Centari'},
-        { id: 'd', display: 'Veuns'},
-    ]
+    $: correct = selected === correct_answer;
+    $: user_submitted_correct_answer = evaluate && correct;
+    $: user_submitted_wrong_answer = evaluate && !correct;
 
-    let correctAnswer  = 'd';
-    $: correct = selected && selected === correctAnswer;
-    $: incorrect = selected && selected !== correctAnswer;
+
+    function reset() {
+        selected = undefined;
+        evaluate = false;
+    }
 </script>
+{@debug
+user_submitted_wrong_answer,
+user_submitted_correct_answer,
+evaluate,
+selected,
+correct
+}
 
-<p>{question}</p>
+<p>{prompt}</p>
 
 {#each answers as {id, display}}
 <div>
 <label>
-    <input type=radio bind:group={selected} value={id}/>
+    <input type=radio bind:group={selected}
+        disabled={evaluate}
+        value={id}
+        key={prompt + id}
+    />
     {display}
 </label>
 </div>
 {/each}
 
-<button >Submit</button>
+{#if selected && !evaluate}
+<button on:click={() => evaluate = true}>Submit</button>
+{:else if user_submitted_wrong_answer}
+<button on:click={reset}>Try again</button>
+{:else if user_submitted_correct_answer}
+<button on:click={done}>Ask me another</button>
+{/if}
 
-{#if correct}
+{#if user_submitted_correct_answer}
     <div>Correct!</div>
-{:else if incorrect}
-    <div>Please try again</div>
+{:else if user_submitted_wrong_answer}
+    <div>Incorrect</div>
 {/if}
