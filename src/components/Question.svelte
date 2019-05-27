@@ -7,22 +7,32 @@
     console.log({prompt, done});
 
     let selected;
-    let evaluate = false;
+    let submitted = false;
 
     $: correct = selected === correct_answer;
-    $: user_submitted_correct_answer = evaluate && correct;
-    $: user_submitted_wrong_answer = evaluate && !correct;
+    $: user_submitted_correct_answer = submitted && correct;
+    $: user_submitted_wrong_answer = submitted && !correct;
 
+
+    function submit_answer() {
+        submitted = true;
+    }
 
     function reset() {
         selected = undefined;
-        evaluate = false;
+        submitted = false;
     }
+
+    function prepare_for_new_data() {
+        reset();
+        done();
+    }
+
 </script>
 {@debug
 user_submitted_wrong_answer,
 user_submitted_correct_answer,
-evaluate,
+submitted,
 selected,
 correct
 }
@@ -33,7 +43,7 @@ correct
 <div>
 <label>
     <input type=radio bind:group={selected}
-        disabled={evaluate}
+        disabled={submitted}
         value={id}
         key={prompt + id}
     />
@@ -42,12 +52,12 @@ correct
 </div>
 {/each}
 
-{#if selected && !evaluate}
-<button on:click={() => evaluate = true}>Submit</button>
+{#if selected && !submitted}
+<button on:click={submit_answer}>Submit</button>
 {:else if user_submitted_wrong_answer}
 <button on:click={reset}>Try again</button>
 {:else if user_submitted_correct_answer}
-<button on:click={done}>Ask me another</button>
+<button on:click={prepare_for_new_data}>Ask me another</button>
 {/if}
 
 {#if user_submitted_correct_answer}
