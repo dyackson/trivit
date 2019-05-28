@@ -19,7 +19,7 @@
         answer_being_edited = undefined;
         answer[i] = answer[i].trim();
 
-        if (answer_is_empty(i) or !answer_is_unique(i)) {
+        if (answer_is_empty(i) || !answer_is_unique(i)) {
             delete_answer(i);
         }
     }
@@ -29,6 +29,14 @@
     }
 
     function answer_is_unique(i) {
+        const answer_to_check = answers[i];
+        if (!answer_to_check) {
+            return false;
+        }
+        return answers.some((answer, j) => {
+            return answer === answer_to_check
+                && i !== j;
+        })
     }
 
     function delete_answer(index_to_remove) {
