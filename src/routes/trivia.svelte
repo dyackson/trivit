@@ -16,8 +16,6 @@
 
 <h1>Svelte Trivia</h1>
 
-<p>How does all this stuff work?</p>
-
 {#if question}
 <Question {...question} done={show_next_question}/>
 {:else }

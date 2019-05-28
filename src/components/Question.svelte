@@ -45,7 +45,6 @@ correct
     <input type=radio bind:group={selected}
         disabled={submitted}
         value={id}
-        key={prompt + id}
     />
     {display}
 </label>
