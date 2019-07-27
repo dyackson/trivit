@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
+const MONGO_PW = process.env.MONGO_PW;
+const DB = 'sample_airbnb'
+const cnx_str = `mongodb+srv://server:${MONGO_PW}@trivit-uabxb.mongodb.net/{DB}?retryWrites=true&w=majority`;
 
-const cnx_str = 'mongodb+srv://server:Pjh9cpaFR4evUnD@trivit-uabxb.mongodb.net/test?retryWrites=true&w=majority'
 
 export function connect() {
     mongoose.connect(cnx_str, {useNewUrlParser: true});
@@ -12,4 +14,3 @@ export function connect() {
         console.log('connected to db!');
     });
 }
-
