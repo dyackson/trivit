@@ -2,7 +2,7 @@
     import axios from 'axios';
     // Make a request for a user with a given ID
     let response;
-    $: responseString = JSON.stringify(response && response.data);
+    $: responseString = response && JSON.stringify(response.data);
 
     async function getQuestion() {
         try {
