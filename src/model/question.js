@@ -1,6 +1,4 @@
-const mongoose = require('mongoose');
-
-const question_schema = new mongoose.Schema({
+const question_schema = [{
     type: {
         type: String,
         required: true,
@@ -8,7 +6,7 @@ const question_schema = new mongoose.Schema({
     },
     prompt:  {type: String, required: true, trim: true},
     choices: [String],
-    answer:  {type: mongoose.Mixed, required: true},
+    answer:  {type: 'mongoose.Mixed', required: true},
     tags: [String],
     links: [String],
     // a user id
@@ -19,9 +17,8 @@ const question_schema = new mongoose.Schema({
         createdAt: 'created_at',
         updatedAt: 'updated_at',
     },
-});
+}];
 
-const Question = mongoose.model('Question', question_schema);
 
 module.exports = {
     create_question,
@@ -31,20 +28,20 @@ module.exports = {
 };
 
 async function create_question(question) {
-    const created_question = await new Question(question).save();
-    return created_question.id;
+//     const created_question = await new Question(question).save();
+//     return created_question.id;
 }
 
 async function update_question(question) {
-    const {id} = question;
-    const {nModified} = await Question.updateOne({id}, question);
-    if (!nModified) {
-        throw Error(`failed to update question for id ${id}`);
-    }
+//     const {id} = question;
+//     const {nModified} = await Question.updateOne({id}, question);
+//     if (!nModified) {
+//         throw Error(`failed to update question for id ${id}`);
+//    }
 }
 async function get_question_by_id(id) {
     // lean means return a regular js object, no a Document
-    return await Question.findById(id).lean().exec();
+ //   return await Question.findById(id).lean().exec();
 }
 
 async function find_questions({
@@ -55,7 +52,7 @@ async function find_questions({
     creator,
     types,
 }) {
-    const query = Question.find();
+  //  const query = Question.find();
 
     if (tags.length) {
         query.where('tags').in(tags);
