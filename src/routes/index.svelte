@@ -1,16 +1,11 @@
 <script>
-    import axios from 'axios';
-    // Make a request for a user with a given ID
-    let response;
-    $: responseString = response && JSON.stringify(response.data);
+    import {testQuery} from '../db/questions';
 
-    async function getQuestion() {
-        try {
-            response = await axios.get('api/question?ID=12345')
-        } catch (error) {
-            console.log(error);
-        }
+    let response;
+    async function testIt() {
+        response = await testQuery();
     }
+
 </script>
 <style>
 h1, figure, p {
@@ -50,10 +45,10 @@ h1, figure, p {
 
 
 <div>
-    {responseString}
+    {response}
 </div>
-<button type=button on:click={getQuestion}>
-    Get question
+<button type=button on:click={testIt}>
+    Test query
 </button>
 
 <svelte:head>
