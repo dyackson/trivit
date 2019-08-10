@@ -1,5 +1,11 @@
 <script>
-    import {testQuery} from '../db/questions';
+    import {onMount} from 'svelte';
+    let testQuery;
+    onMount(async () => {
+        const db = await import('@/db/questions');
+        console.log('db', db);
+        ({testQuery} = await db.getDb());
+    });
 
     let response;
     async function testIt() {
@@ -45,7 +51,7 @@ h1, figure, p {
 
 
 <div>
-    {response}
+    {JSON.stringify(response)}
 </div>
 <button type=button on:click={testIt}>
     Test query

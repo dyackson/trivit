@@ -1,22 +1,12 @@
-import {readable} from 'svelte/store';
-
-export const foo = 'foo';
-
-let stitch;
-export async function getDb() {
-    if (!stitch) {
-        stitch = require('mongodb-stitch-browser-sdk');
-    }
-
+<script context=module language=javascript>
+    /*
     const {
         Stitch,
         RemoteMongoClient,
-        AnonymousCredential
+        AnonymousCredential,
     } = stitch;
 
-    return {testQuery};
-
-    async function testQuery() {
+    export async function testQuery() {
         try {
             const client = Stitch.initializeDefaultAppClient('trivit-sdpry');
 
@@ -40,23 +30,5 @@ export async function getDb() {
             console.error(err)
         }
     }
-}
-/*
-onMount(() => module.exports = {
-    testQuery: new Promise(resolve => {
-        const {
-            Stitch,
-            RemoteMongoClient,
-            AnonymousCredential
-        } = require('mongodb-stitch-browser-sdk');
-
-        console.log('i ran');
-        console.dir(Stitch);
-
-        return resolve(testQuery);
-
-    })
-}
-*/
-
-
+    */
+</script>
