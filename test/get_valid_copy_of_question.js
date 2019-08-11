@@ -53,6 +53,8 @@ describe(`get_valid_copy_of_question`, () => {
         const errors_if = [
             [`type not true_false and choices is missing`,
                 {type: 'foo'}],
+            [`type is true_false and choices is present`,
+                {type: 'true_false', choices: ['x']}],
             [`choices is not an array`,
                 {type: 'foo', choices: 4}],
             [`choices is an empty array`,
@@ -80,6 +82,54 @@ describe(`get_valid_copy_of_question`, () => {
         });
     });
     describe(`get_valid_answer`, () => {
+        let type = 'true_false';
+        const errors_if = [
+            [`type is ${type} and answer not boolean`,
+                {type}],
+        ];
+
+        type = 'single';
+        errors_if.concat(
+            [`type is ${type} and answer not an integer`,
+                {type, choices: ['x', 'y'], answer: 'x'}],
+            [`type is ${type} and answer not a choice index`,
+                {type, choices: ['x', 'y'], answer: 2}],
+        );
+
+        type = 'multiple';
+        errors_if.concat(
+            [`type is ${type} and answer not an array`,
+                {type, choices: ['x', 'y', 'z'], answer: 1}],
+            [`type is ${type} and answer not an intger array`,
+                {type, choices: ['x', 'y', 'z'], answer: [1, 'z']}],
+            [`type is ${type} and answer has non-choice index`,
+                {type, choices: ['x', 'y', 'z'], answer: [1, 3]}],
+            [`type is ${type} and answer has duplicate indices`,
+                {type, choices: ['x', 'y', 'z'], answer: [1, 2, 1]}],
+        );
+            /*
+            [`choices is an empty array`,
+                {type: 'foo', choices: []}],
+            [`choices contains a non-string item`,
+                {type: 'foo', choices: ['x', 2]}],
+            [`choices contains a whitespace item`,
+                {type: 'foo', choices: ['x', ' \t']}],
+            [`choices contains contains duplicates`,
+                {type: 'foo', choices: ['x', 'y', 'x ']}],
+                */
+
+        errors_if.forEach(([msg, input]) => {
+            it(msg, () => {
+                expect(() => get_valid_answer(input))
+                    .toThrow(InvalidQuestion)
+            });
+        });
+
+        it('returns a good answer for type single', () => {
+            expect(get_valid_answer({
+                type: 'single', choices: ['x', 'y'], answer: 1,
+            })).toEqual(1);
+        });
     });
     describe(`get_valid_tags`, () => {
     });

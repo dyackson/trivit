@@ -56,6 +56,10 @@ export function get_valid_prompt(prompt) {
 
 export function get_valid_choices({choices, type}) {
     if (type === 'true_false') {
+        if (choices) {
+            throw new InvalidQuestion(
+                `choices not valid for true_false, choices: ${choices}`);
+        }
         return;
     } else {
         const choices_is_empty = !Array.isArray(choices) || !choices.length;
@@ -88,7 +92,45 @@ export function get_valid_choices({choices, type}) {
 
 export function get_valid_answer({answer, choices, type}) {
     const validators_by_type = {
+        true_false,
+        single,
+        multiple,
+        order,
     };
+
+    return validators_by_type[type]({choices, answer});
+
+    function true_false({answer}) {
+        if (typeof answer !== 'boolean') {
+            throw new InvalidQuestion(
+                `non-boolean true_false answer: ${answer}`);
+        }
+        return answer;
+    }
+
+    function single({answer, choices}) {
+        if (!Number.isInteger(answer)) {
+            throw new InvalidQuestion(
+                `single type with non-integer answer: ${answer}`);
+        }
+        if (!choices[answer]) {
+            throw new InvalidQuestion(
+                `single type answer not a choice index: ${answer}`);
+        }
+        return answer;
+    }
+
+    function multiple({answer, choices}) {
+        if (!Array.isArray(answer)) {
+            throw new InvalidQuestion(
+                `multiple type answer not an array: ${answer}`);
+        }
+        return answer;
+    }
+
+    function order({answer, choices}) {
+        return answer;
+    }
 }
 
 export function get_valid_tags(tags) {
