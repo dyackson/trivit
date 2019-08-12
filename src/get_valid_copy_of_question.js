@@ -1,3 +1,4 @@
+import {isHttpsUri} from 'valid-url';
 import InvalidQuestion from '@/InvalidQuestion';
 export const VALID_TYPES = ['single', 'multiple', 'true_false', 'order'];
 /*
@@ -81,8 +82,7 @@ export function get_valid_choices({choices, type}) {
             return trimmed;
         })
 
-        const choice_set = new Set(trimmed_choices);
-        if (choices.length !== choice_set.size) {
+        if (!isUnique(trimmed_choices)) {
             throw new InvalidQuestion(`multiple choices are identical`);
         }
 
@@ -120,21 +120,95 @@ export function get_valid_answer({answer, choices, type}) {
         return answer;
     }
 
+    // answer is an arrary, maybe empty, of choice indices
     function multiple({answer, choices}) {
         if (!Array.isArray(answer)) {
             throw new InvalidQuestion(
                 `multiple type answer not an array: ${answer}`);
         }
+        answer.forEach(item => {
+            if (!Number.isInteger(item)) {
+                throw new InvalidQuestion(
+                    `multiple type answer item not an integer: ${item}`);
+            }
+            if (!choices[item]) {
+                throw new InvalidQuestion(
+                    `multiple type answer item not choice index: ${item}`);
+            }
+        });
+
+        if (!isUnique(answer)) {
+            throw new InvalidQuestion(
+                `multiple type answer contains duplicate indices: ${answer}`);
+        }
+
         return answer;
     }
 
-    function order({answer, choices}) {
-        return answer;
+    // The choices themselves will be ordered correctly, but mixed up when
+    // presented, so no answer is necessary.
+    function order({answer}) {
+        if (answer != null) {
+            throw new InvalidQuestion(
+                `type order has no answer, answer: ${answer}`);
+        }
     }
 }
 
 export function get_valid_tags(tags) {
+    if (!Array.isArray(tags)) {
+        throw new InvalidQuestion(
+            `tags must be an array: ${tags}`);
+    }
+
+    const trimmed_tags = tags.map((tag, i) => {
+        if (typeof tag !== 'string') {
+            throw new InvalidQuestion(
+                `tag ${i} is not a string: ${tag}`);
+        }
+        const trimmed = tag.trim();
+        if (!trimmed.length) {
+            throw new InvalidQuestion(
+                `tag ${i} an empty string: ${tag}`);
+        }
+        return trimmed;
+    })
+
+    if (!isUnique(trimmed_tags)) {
+        throw new InvalidQuestion(
+            `tags has duplicate items: ${tags}`);
+    }
+
+    return trimmed_tags;
 }
 
 export function get_valid_links(links) {
+    if (!Array.isArray(links)) {
+        throw new InvalidQuestion(
+            `links must be an array: ${links}`);
+    }
+
+    const valid_links = links.map((link) => {
+        if (typeof link !== 'string') {
+            throw new InvalidQuestion(
+                `link must be a string: ${link}`);
+        }
+        const valid_link = isHttpsUri(link.trim());
+        if (!valid_link) {
+            throw new InvalidQuestion(
+                `invalid link: ${link}`);
+        }
+        return link;
+    });
+
+    if (!isUnique(valid_links)) {
+        throw new InvalidQuestion(
+            `links has duplicate items: ${links}`);
+    }
+    return valid_links;
+}
+
+function isUnique(array) {
+    const set = new Set(array);
+    return set.size == array.length;
 }

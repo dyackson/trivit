@@ -88,8 +88,14 @@ describe(`get_valid_copy_of_question`, () => {
                 {type}],
         ];
 
+        type = 'order';
+        errors_if.push(
+            [`type is ${type} and answer is defined`,
+                {type, answer: 1}],
+        );
+
         type = 'single';
-        errors_if.concat(
+        errors_if.push(
             [`type is ${type} and answer not an integer`,
                 {type, choices: ['x', 'y'], answer: 'x'}],
             [`type is ${type} and answer not a choice index`,
@@ -97,7 +103,7 @@ describe(`get_valid_copy_of_question`, () => {
         );
 
         type = 'multiple';
-        errors_if.concat(
+        errors_if.push(
             [`type is ${type} and answer not an array`,
                 {type, choices: ['x', 'y', 'z'], answer: 1}],
             [`type is ${type} and answer not an intger array`,
@@ -107,16 +113,6 @@ describe(`get_valid_copy_of_question`, () => {
             [`type is ${type} and answer has duplicate indices`,
                 {type, choices: ['x', 'y', 'z'], answer: [1, 2, 1]}],
         );
-            /*
-            [`choices is an empty array`,
-                {type: 'foo', choices: []}],
-            [`choices contains a non-string item`,
-                {type: 'foo', choices: ['x', 2]}],
-            [`choices contains a whitespace item`,
-                {type: 'foo', choices: ['x', ' \t']}],
-            [`choices contains contains duplicates`,
-                {type: 'foo', choices: ['x', 'y', 'x ']}],
-                */
 
         errors_if.forEach(([msg, input]) => {
             it(msg, () => {
@@ -125,19 +121,97 @@ describe(`get_valid_copy_of_question`, () => {
             });
         });
 
-        it('returns a good answer for type single', () => {
+        it('returns a valid answer for type single', () => {
             expect(get_valid_answer({
                 type: 'single', choices: ['x', 'y'], answer: 1,
             })).toEqual(1);
         });
+
+        it('returns a undefined for type order', () => {
+            expect(get_valid_answer({
+                type: 'order', choices: ['x', 'y'], answer: null,
+            })).toEqual(undefined);
+            expect(get_valid_answer({
+                type: 'order', choices: ['x', 'y'], answer: undefined,
+            })).toEqual(undefined);
+        });
+
+        it('returns a valid answer for type true_false', () => {
+            expect(get_valid_answer({
+                type: 'true_false', answer: false,
+            })).toEqual(false);
+            expect(get_valid_answer({
+                type: 'true_false', answer: true,
+            })).toEqual(true);
+        });
+
+        it('returns a valid answer for type multiple', () => {
+            expect(get_valid_answer({
+                type: 'multiple', choices: ['x', 'y', 'z'], answer: [],
+            })).toEqual([]);
+            expect(get_valid_answer({
+                type: 'multiple', choices: ['x', 'y', 'z'], answer: [0, 2],
+            })).toEqual([0, 2]);
+        });
     });
     describe(`get_valid_tags`, () => {
+        const errors_if = [
+            [`tags is not an array`, 2],
+            [`tags has non-string item`, ['foo', 2]],
+            [`tags has whitespace item`, ['foo', '\t']],
+            [`tags has duplicate items`, ['foo', 'bar', 'foo']],
+        ];
+
+        errors_if.forEach(([msg, tags]) => {
+            it(msg, () => {
+                expect(() => get_valid_tags(tags))
+                    .toThrow(InvalidQuestion)
+            });
+        });
+
+        it('returns an empty array if passed an empty array', () => {
+            expect(get_valid_tags([])).toEqual([]);
+        });
+
+        it('returns an a valid array with each item trimmed', () => {
+            expect(get_valid_tags(['foo ', '\tbar'])).toEqual(['foo', 'bar']);
+        });
     });
     describe(`get_valid_links`, () => {
+        const errors_if = [
+            [`links is not an array`, 2],
+            [`links has non-string item`, [2]],
+            [`links has non-https-urlish item`,
+                ['https://www.wikipedia.org/', 'http://www.wikipedia.org/'],
+            ],
+            [`links has duplicate items`,
+                ['https://www.wikipedia.org/', 'https://www.wikipedia.org/'],
+            ]
+        ];
+
+        errors_if.forEach(([msg, links]) => {
+            it(msg, () => {
+                expect(() => get_valid_links(links))
+                    .toThrow(InvalidQuestion)
+            });
+        });
+
+        it('returns an empty array if passed an empty array', () => {
+            expect(get_valid_links([])).toEqual([]);
+        });
+
+        it('returns an array of trimmed valid links if passed one', () => {
+            const links = [
+                'https://www.wikipedia.org/  ',
+                'https://www.google.com',
+            ];
+            expect(get_valid_links(links)).toEqual(links);
+        });
     });
 
 });
 
+/*
 const question_schema = [{
     type: {
         type: String,
@@ -157,4 +231,4 @@ const question_schema = [{
         updatedAt: 'updated_at',
     },
 }];
-
+*/
