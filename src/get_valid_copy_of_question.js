@@ -28,12 +28,6 @@ export default function get_valid_copy_of_question(question) {
     return valid_question;
 }
 
-
-
-
-
-
-
 export function get_valid_type(type) {
     if (!VALID_TYPES.includes(type)) {
         throw new InvalidQuestion(`unknown type: ${type}`);
@@ -68,26 +62,56 @@ export function get_valid_choices({choices, type}) {
             throw new InvalidQuestion(
                 `choices must be a non-empty array: ${choices}`);
         }
+        let choice_strings = choices;
 
-        const trimmed_choices = choices.map((choice, i) => {
-            if (typeof choice !== 'string') {
-                throw new InvalidQuestion(
-                    `choice ${i} is not a string: ${choice}`);
-            }
-            const trimmed = choice.trim();
-            if (!trimmed.length) {
-                throw new InvalidQuestion(
-                    `choice ${i} an empty string: ${choice}`);
-            }
-            return trimmed;
-        })
+        if (type === 'order') {
+            choices.forEach(error_if_not_object_with_numeric_sort_value);
+            choice_strings = choices.map(c => c.string);
+        }
 
-        if (!isUnique(trimmed_choices)) {
-            throw new InvalidQuestion(`multiple choices are identical`);
+        let trimmed_choices = get_trimmed_choices(choice_strings);
+
+        if (type === 'order') {
+            trimmed_choices = trimmed_choices.map((string, i) => {
+                return {string, sort_value: choices[i].sort_value};
+            });
         }
 
         return trimmed_choices;
     }
+}
+
+function error_if_not_object_with_numeric_sort_value(choice, i) {
+    if (!(choice instanceof Object)) {
+        throw new InvalidQuestion(
+            `type is order but choice ${i} is not an object: ${choice}`);
+    }
+
+    if (typeof choice.sort_value !== 'number') {
+        throw new InvalidQuestion(
+            `type is order but choice ${i} sort_value not a number: ${choice}`);
+    }
+}
+
+function get_trimmed_choices(choices) {
+    const trimmed_choices = choices.map((choice, i) => {
+        if (typeof choice !== 'string') {
+            throw new InvalidQuestion(
+                `choice ${i} is not a string: ${choice}`);
+        }
+        const trimmed = choice.trim();
+        if (!trimmed.length) {
+            throw new InvalidQuestion(
+                `choice ${i} an empty string: ${choice}`);
+        }
+        return trimmed;
+    })
+
+    if (!isUnique(trimmed_choices)) {
+        throw new InvalidQuestion(`multiple choices are identical`);
+    }
+
+    return trimmed_choices;
 }
 
 export function get_valid_answer({answer, choices, type}) {

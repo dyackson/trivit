@@ -20,7 +20,7 @@ describe(`get_valid_copy_of_question`, () => {
             [`type is unknown`, 'foo'],
         ];
         errors_if.forEach(([msg, type]) => {
-            it(msg, () => {
+            it(`InvalidQuestion if ${msg}`, () => {
                 expect(() => get_valid_type(type))
                     .toThrow(InvalidQuestion)
             });
@@ -38,7 +38,7 @@ describe(`get_valid_copy_of_question`, () => {
             [`prompt is whitespace`, ' \t'],
         ];
         errors_if.forEach(([msg, prompt]) => {
-            it(msg, () => {
+            it(`InvalidQuestion if ${msg}`, () => {
                 expect(() => get_valid_prompt(prompt))
                     .toThrow(InvalidQuestion)
             });
@@ -65,9 +65,19 @@ describe(`get_valid_copy_of_question`, () => {
                 {type: 'foo', choices: ['x', ' \t']}],
             [`choices contains contains duplicates`,
                 {type: 'foo', choices: ['x', 'y', 'x ']}],
+            [`type is order and choices are not objects`,
+                {type: 'order', choices: ['x', 'y', 'x ']}],
+            [`type is order a choice.sort_value is not a number `,
+                {type: 'order',
+                    choices: [{string: 'x', sort_value: 'first'},
+                        {string: 'y', sort_value: 3}]}],
+            [`type is order a choice.string is not a string `,
+                {type: 'order',
+                    choices: [{string: {}, sort_value: 'first'},
+                        {string: 'y', sort_value: 3}]}],
         ];
         errors_if.forEach(([msg, input]) => {
-            it(msg, () => {
+            it(`InvalidQuestion if ${msg}`, () => {
                 expect(() => get_valid_choices(input))
                     .toThrow(InvalidQuestion)
             });
@@ -75,6 +85,13 @@ describe(`get_valid_copy_of_question`, () => {
 
         it('returns undefined if type is true_false', () => {
             expect(get_valid_choices({type: 'true_false'})).toEqual(undefined);
+        });
+        it('returns choices with strings trimmed if type is order', () => {
+            expect(get_valid_choices({
+                type: 'order', choices: [{string: '\tx', sort_value: 1},
+                    {string: ' y ', sort_value: 0}]
+            })).toEqual([{string: 'x', sort_value: 1},
+                {string: 'y', sort_value: 0}]);
         });
         it('returns the trimmed choices otherwise', () => {
             expect(get_valid_choices({type: 'foo', choices: ['\t x', 'y']}))
@@ -115,7 +132,7 @@ describe(`get_valid_copy_of_question`, () => {
         );
 
         errors_if.forEach(([msg, input]) => {
-            it(msg, () => {
+            it(`InvalidQuestion if ${msg}`, () => {
                 expect(() => get_valid_answer(input))
                     .toThrow(InvalidQuestion)
             });
@@ -163,7 +180,7 @@ describe(`get_valid_copy_of_question`, () => {
         ];
 
         errors_if.forEach(([msg, tags]) => {
-            it(msg, () => {
+            it(`InvalidQuestion if ${msg}`, () => {
                 expect(() => get_valid_tags(tags))
                     .toThrow(InvalidQuestion)
             });
@@ -190,7 +207,7 @@ describe(`get_valid_copy_of_question`, () => {
         ];
 
         errors_if.forEach(([msg, links]) => {
-            it(msg, () => {
+            it(`InvalidQuestion if ${msg}`, () => {
                 expect(() => get_valid_links(links))
                     .toThrow(InvalidQuestion)
             });
