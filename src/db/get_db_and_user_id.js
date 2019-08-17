@@ -1,5 +1,6 @@
+let db, client;
+
 export default async function get_db_and_user_id() {
-    let db, client;
 
     if (!db) {
         const stitch = require('mongodb-stitch-browser-sdk');

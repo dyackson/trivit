@@ -1,13 +1,19 @@
 <script>
     import {onMount} from 'svelte';
-    let test_query;
+    import {questions} from '@/fake_data';
+    let save_question, get_questions;
     onMount(async () => {
-        ({test_query} = await import('@/db/questions'));
+        ({save_question, get_questions} = await import('@/db/questions'));
     });
 
     let response;
     async function testIt() {
-        response = await test_query();
+        const save_proms = questions.map(save_question);
+        await Promise.all(save_proms);
+
+        const saved_questions = await get_questions();
+        console.dir(saved_questions);
+        response = saved_questions;
     }
 
 </script>

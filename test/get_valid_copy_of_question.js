@@ -282,25 +282,3 @@ describe(`get_valid_copy_of_question`, () => {
     });
 
 });
-
-/*
-const question_schema = [{
-    type: {
-        type: String,
-        required: true,
-    },
-    prompt:  {type: String, required: true, trim: true},
-    choices: [String],
-    answer:  {type: 'mongoose.Mixed', required: true},
-    tags: [String],
-    links: [String],
-    // a user id
-    creator: String,
-}, {
-    // mongoose will manage the created_at and updated_at fields
-    timestamps: {
-        createdAt: 'created_at',
-        updatedAt: 'updated_at',
-    },
-}];
-*/

@@ -14,9 +14,13 @@ export default function get_valid_copy_of_question(question) {
         answer,
         tags = [],
         links = [],
+        _id,
+        owner_id,
     } = question;
 
     const valid_question = Object.assign({}, {
+        _id,
+        owner_id,
         type: get_valid_type(type),
         prompt: get_valid_prompt(prompt),
         choices: get_valid_choices({choices, type}),
