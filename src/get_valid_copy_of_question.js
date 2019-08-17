@@ -25,7 +25,11 @@ export default function get_valid_copy_of_question(question) {
         links: get_valid_links(links),
     });
 
-    return valid_question;
+    return without_undefined_fields(valid_question);
+}
+
+function without_undefined_fields(obj) {
+    return JSON.parse(JSON.stringify(obj));
 }
 
 export function get_valid_type(type) {

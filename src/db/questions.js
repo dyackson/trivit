@@ -1,49 +1,41 @@
-import {readable} from 'svelte/store';
-import {assign} from 'lodash';
+import get_valid_copy_of_question from '@/get_valid_copy_of_question';
 
-export const foo = 'foo';
+import get_db_and_user_id from '@/db/get_db_and_user_id';
 
-let stitch;
-export async function get_db() {
-    let db, client;
+export async function save_question(question) {
+    /*
+    const {db, user_id} = get_db_and_user_id();
 
-    if (!stitch) {
-        stitch = require('mongodb-stitch-browser-sdk');
+    const valid_question = get_valid_copy_of_question(question);
 
-        const {
-            Stitch,
-            RemoteMongoClient,
-            AnonymousCredential
-        } = stitch;
+    question.owner_id = client.auth.user.id;
+    await db.collection('questions')
+        .updateOne({owner_id: client.auth.user.id},
+            {$set:{number:42}},
+            {upsert:true});
 
-        client = Stitch.initializeDefaultAppClient('trivit-sdpry');
+*/
+}
 
-        db = client.getServiceClient(RemoteMongoClient.factory, 'mongodb-atlas')
-            .db('trivia');
+export async function get_questions() {
+}
 
-        await client.auth.loginWithCredential(new AnonymousCredential());
-    }
+export async function test_query() {
+    const {db, user_id} = await get_db_and_user_id();
+    try {
+        await db.collection('questions')
+            .updateOne({owner_id: user_id},
+                {$set:{number:42}},
+                {upsert:true});
 
+        const docs = await db.collection('questions')
+            .find({owner_id: user_id},
+                {limit: 100}).asArray();
 
-    return {testQuery};
-
-    async function createQuestion
-    async function testQuery() {
-        try {
-            await db.collection('questions')
-                .updateOne({owner_id: client.auth.user.id},
-                    {$set:{number:42}},
-                    {upsert:true});
-
-            const docs = await db.collection('questions')
-                .find({owner_id: client.auth.user.id},
-                    {limit: 100}).asArray();
-
-            console.log("Found docs", docs)
-            console.log("[MongoDB Stitch] Connected to Stitch")
-            return docs;
-        } catch (err) {
-            console.error(err)
-        }
+        console.log("Found docs", docs)
+        console.log("[MongoDB Stitch] Connected to Stitch")
+        return docs;
+    } catch (err) {
+        console.error(err)
     }
 }

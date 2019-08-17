@@ -1,15 +1,13 @@
 <script>
     import {onMount} from 'svelte';
-    let testQuery;
+    let test_query;
     onMount(async () => {
-        const db = await import('@/db/questions');
-        console.log('db', db);
-        ({testQuery} = await db.getDb());
+        ({test_query} = await import('@/db/questions'));
     });
 
     let response;
     async function testIt() {
-        response = await testQuery();
+        response = await test_query();
     }
 
 </script>
