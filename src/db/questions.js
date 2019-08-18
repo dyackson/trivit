@@ -7,14 +7,20 @@ export async function save_question(question) {
 
     const valid_question = get_valid_copy_of_question(question);
 
-    question.owner_id = user_id;
-    await db.collection('questions')
-        .updateOne({_id: question._id},
-            valid_question,
-            {
-                upsert:true
-            });
+    valid_question.owner_id = user_id;
 
+    const collection = db.collection('questions');
+    if (question._id) {
+        await collection.updateOne({_id: question._id}, valid_question);
+    } else {
+        await collection.insertOne(valid_question);
+    }
+}
+export function addAuthenticationListener(listener) {
+    app.auth.addAuthListener(listener);
+}
+export function removeAuthenticationListener(listener) {
+    app.auth.removeAuthListener(listener);
 }
 
 export async function get_questions() {
@@ -56,23 +62,23 @@ async function find_questions_deprecated({
 }
 */
 
-export async function test_query() {
-    const {db, user_id} = await get_db_and_user_id();
-    try {
-        await db.collection('questions')
-            .updateOne({owner_id: user_id},
-                {$set:{number:42}},
-                {upsert:true});
+    export async function test_query() {
+        const {db, user_id} = await get_db_and_user_id();
+        try {
+            await db.collection('questions')
+                .updateOne({owner_id: user_id},
+                    {$set:{number:42}},
+                    {upsert:true});
 
-        const docs = await db.collection('questions')
-            .find({owner_id: user_id},
-                {limit: 100}).asArray();
+            const docs = await db.collection('questions')
+                .find({owner_id: user_id},
+                    {limit: 100}).asArray();
 
-        console.log("Found docs", docs)
-        console.log("Found docs stringified", JSON.stringify(docs))
-        console.log("[MongoDB Stitch] Connected to Stitch")
-        return docs;
-    } catch (err) {
-        console.error(err)
+            console.log("Found docs", docs)
+            console.log("Found docs stringified", JSON.stringify(docs))
+            console.log("[MongoDB Stitch] Connected to Stitch")
+            return docs;
+        } catch (err) {
+            console.error(err)
+        }
     }
-}

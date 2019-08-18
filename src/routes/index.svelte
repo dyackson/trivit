@@ -1,9 +1,9 @@
 <script>
     import {onMount} from 'svelte';
     import {questions} from '@/fake_data';
-    let save_question, get_questions;
+    let save_question, get_questions, test_query;
     onMount(async () => {
-        ({save_question, get_questions} = await import('@/db/questions'));
+        ({save_question, get_questions, test_query} = await import('@/db/questions'));
     });
 
     let response;
