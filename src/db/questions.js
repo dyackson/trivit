@@ -1,6 +1,6 @@
 import get_valid_copy_of_question from '@/get_valid_copy_of_question';
 
-import get_db_and_user_id from '@/db/get_db_and_user_id';
+import get from '@/db/get_db_and_user_id';
 
 export async function save_question(question) {
     const {db, user_id} = await get_db_and_user_id();
@@ -9,6 +9,8 @@ export async function save_question(question) {
 
     valid_question.owner_id = user_id;
 
+    // TODO - its possible to use stitch.BSON.ObjectId() to make the _id on the
+    // client and just use updateOne
     const collection = db.collection('questions');
     if (question._id) {
         await collection.updateOne({_id: question._id}, valid_question);

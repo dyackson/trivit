@@ -2,8 +2,12 @@
     import {onMount} from 'svelte';
     import {questions} from '@/fake_data';
     let save_question, get_questions, test_query;
+    import {login_anonymous, logout, login_google}
+        from '@/db/get_db_and_user_id';
+    import * as store from '@/store';
+
     onMount(async () => {
-        ({save_question, get_questions, test_query} = await import('@/db/questions'));
+        store.import_stitch();
     });
 
     let response;
@@ -55,10 +59,13 @@ h1, figure, p {
 
 
 <div>
-    {JSON.stringify(response)}
+    {JSON.stringify($store.user)}
 </div>
-<button type=button on:click={testIt}>
-    Test query
+<button type=button on:click={login_anonymous}>
+    Login Anon
+</button>
+<button type=button on:click={logout}>
+    Login Anon
 </button>
 
 <svelte:head>
