@@ -1,28 +1,37 @@
 import * as store  from '@/store';
-console.dir(store);
-
-const stitch_store = store.stitch;
-console.dir(stitch_store);
 
 let stitch, db, client;
 
-stitch_store.subscribe((val) => {
+store.stitch.subscribe((val) => {
     stitch = val;
 
     if (stitch) {
+        console.dir(stitch);
+        ensure_client();
+        ensure_db();
         check_for_redirect_results();
     }
 });
 
-export function get_db() {
-    if (!db) {
-        client = stitch.Stitch.initializeDefaultAppClient('trivit-sdpry');
+store.user.subscribe((val) => {
+    console.log('user', val);
+});
 
+function ensure_client() {
+    if (!client) {
+        client = stitch.Stitch.initializeDefaultAppClient('trivit-sdpry');
+    }
+}
+
+function ensure_db() {
+    if (!db) {
         db = client
             .getServiceClient(stitch.RemoteMongoClient.factory, 'mongodb-atlas')
             .db('trivia');
     }
+}
 
+export function get_db() {
     return db;
 }
 
@@ -34,7 +43,7 @@ export async function logout() {
 export async function login_anonymous() {
     const user = await client.auth
         .loginWithCredential(new stitch.AnonymousCredential());
-    console.log(user);
+    store.user.set(user);
 }
 
 export function login_google() {
@@ -45,10 +54,9 @@ export function login_google() {
 }
 
 async function check_for_redirect_results() {
-    if (client.auth.hasRedirectResult()) {
+    if (client && client.auth.hasRedirectResult()) {
         const user = await client.auth.handleRedirectResult()
         store.user.set(user);
-        console.log(user);
     }
 }
 

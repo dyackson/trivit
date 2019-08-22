@@ -6,6 +6,8 @@
         from '@/db/get_db_and_user_id';
     import * as store from '@/store';
 
+    let user = store.user;
+
     onMount(async () => {
         store.import_stitch();
     });
@@ -59,13 +61,13 @@ h1, figure, p {
 
 
 <div>
-    {JSON.stringify($store.user)}
+    {Object.entries($user || {})}
 </div>
 <button type=button on:click={login_anonymous}>
     Login Anon
 </button>
 <button type=button on:click={logout}>
-    Login Anon
+    Logout
 </button>
 
 <svelte:head>
