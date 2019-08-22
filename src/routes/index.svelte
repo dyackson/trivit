@@ -2,8 +2,8 @@
     import {onMount} from 'svelte';
     import {questions} from '@/fake_data';
     let save_question, get_questions, test_query;
-    import {login_anonymous, logout, login_google}
-        from '@/db/get_db_and_user_id';
+    import {login_anonymous, logout, login_google} from '@/login_logout';
+
     import * as store from '@/store';
 
     let user = store.user;
@@ -65,6 +65,9 @@ h1, figure, p {
 </div>
 <button type=button on:click={login_anonymous}>
     Login Anon
+</button>
+<button type=button on:click={login_google}>
+    Login Google
 </button>
 <button type=button on:click={logout}>
     Logout
