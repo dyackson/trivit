@@ -8,15 +8,22 @@ export const user = writable();
 
 export const db = writable();
 
+let _stitch, _client, _db;
 export function import_stitch() {
-    const _stitch = require('mongodb-stitch-browser-sdk');
-    stitch.set(_stitch);
+    if (!_stitch) {
+        _stitch = require('mongodb-stitch-browser-sdk');
+        stitch.set(_stitch);
+    }
 
-    const _client = _stitch.Stitch.initializeDefaultAppClient('trivit-sdpry');
-    client.set(_client);
+    if (!_client) {
+        _client = _stitch.Stitch.initializeDefaultAppClient('trivit-sdpry');
+        client.set(_client);
+    }
 
-    const _db = _client
-        .getServiceClient(_stitch.RemoteMongoClient.factory, 'mongodb-atlas')
-        .db('trivia');
-    db.set(_db);
+    if (!_db) {
+        _db = _client
+            .getServiceClient(_stitch.RemoteMongoClient.factory, 'mongodb-atlas')
+            .db('trivia');
+        db.set(_db);
+    }
 }
