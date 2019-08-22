@@ -1,7 +1,7 @@
 <script>
     import {onMount} from 'svelte';
     import {questions} from '@/fake_data';
-    let save_question, get_questions, test_query;
+    import {save_question, get_questions} from '@/db/questions';
     import {login_anonymous, logout, login_google} from '@/login_logout';
 
     import * as store from '@/store';
@@ -13,7 +13,7 @@
     });
 
     let response;
-    async function testIt() {
+    async function test_post_and_get() {
         const save_proms = questions.map(save_question);
         await Promise.all(save_proms);
 
@@ -73,15 +73,14 @@ h1, figure, p {
     Logout
 </button>
 
+<br>
+
+<button type=button on:click={test_post_and_get}>
+    test post and get
+</button>
+{JSON.stringify(response)}
+
 <svelte:head>
 <title>I'll be damned</title>
 </svelte:head>
 
-<h1>Great success, huh!</h1>
-
-<figure>
-    <img alt='Borat' src='great-success.png'>
-    <figcaption>HIGH FIVE!</figcaption>
-</figure>
-
-<p><strong>Try editing this file (src/routes/index.svelte) to test live reloading.</strong></p>

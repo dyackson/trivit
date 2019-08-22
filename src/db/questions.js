@@ -15,7 +15,7 @@ export async function save_question(question) {
 
     const collection = db.collection('questions');
     if (!question._id) {
-        question._id = stitch.BSON.ObjectId();
+        question._id = new stitch.BSON.ObjectId();
     }
 
     await collection.updateOne({_id: question._id}, valid_question,
