@@ -33,7 +33,11 @@ module.exports = {
 							hotReload: false // pending https://github.com/sveltejs/svelte/issues/2377
 						}
 					}
-				}
+				},
+                {
+                    test: /\.css$/,
+                    use: [ 'style-loader', 'css-loader' ]
+                }
 			]
 		},
 		mode,
@@ -66,7 +70,11 @@ module.exports = {
 							dev
 						}
 					}
-				}
+				},
+                {
+                    test: /\.css$/,
+                    use: [ 'style-loader', 'css-loader' ]
+                }
 			]
 		},
 		mode: process.env.NODE_ENV,
