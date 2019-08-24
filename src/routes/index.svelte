@@ -63,7 +63,7 @@ h1, figure, p {
 <div>
     {Object.entries($user || {})}
 </div>
-<button type=button on:click={login_anonymous}>
+<button class=button type=button on:click={login_anonymous}>
     Login Anon
 </button>
 <button type=button on:click={login_google}>
