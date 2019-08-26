@@ -26,7 +26,7 @@ describe(`get_valid_copy_of_question`, () => {
             });
         });
 
-        it('returns the type if in valid types', () => {
+        it('returns the type if a valid type', () => {
             const type = VALID_TYPES[0];
             expect(get_valid_type(type)).toEqual(type);
         });
@@ -51,30 +51,42 @@ describe(`get_valid_copy_of_question`, () => {
     });
     describe(`get_valid_choices`, () => {
         const errors_if = [
-            [`type not true_false and choices is missing`,
-                {type: 'foo'}],
             [`type is true_false and choices is present`,
                 {type: 'true_false', choices: ['x']}],
+
+            [`type not true_false and choices is missing`,
+                {type: 'foo'}],
+
+            [`choices are not objects`,
+                {type: 'order', choices: ['x', 'y', 'x ']}],
+            [`type choices.i.text is not a string for order type`,
+                {type: 'order',
+                    choices: [{text: {}, value: 7},
+                        {text: 'y', value: 3}]}],
+            [`type choices.i.text is not a string for single type`,
+                {type: 'single',
+                    choices: [{text: {}, value: true},
+                        {text: 'y', value: false}]}],
+            [`type choices.i.text is not a string for multiple type`,
+                {type: 'multiple',
+                    choices: [{text: {}, value: true},
+                        {text: 'y', value: true}]}],
+
+            [`type is order and a choice.i.value is not sortable`,
+                {type: 'order',
+                    choices: [{text: 'x', value: 'first'},
+                        {text: 'y', value: 3}]}],
             [`choices is not an array`,
                 {type: 'foo', choices: 4}],
             [`choices is an empty array`,
                 {type: 'foo', choices: []}],
-            [`choices contains a non-string item`,
-                {type: 'foo', choices: ['x', 2]}],
-            [`choices contains a whitespace item`,
-                {type: 'foo', choices: ['x', ' \t']}],
-            [`choices contains contains duplicates`,
-                {type: 'foo', choices: ['x', 'y', 'x ']}],
-            [`type is order and choices are not objects`,
+            [`choices are not objects`,
                 {type: 'order', choices: ['x', 'y', 'x ']}],
-            [`type is order a choice.sort_value is not a number `,
-                {type: 'order',
-                    choices: [{string: 'x', sort_value: 'first'},
-                        {string: 'y', sort_value: 3}]}],
-            [`type is order a choice.string is not a string `,
-                {type: 'order',
-                    choices: [{string: {}, sort_value: 'first'},
-                        {string: 'y', sort_value: 3}]}],
+            [`choices.i.text contains a whitespace item`,
+                {type: 'single', choices: [{text: 'foo', value:' \t'}]}],
+            [`choices contains contains duplicate text`,
+                {type: 'single', choices: [{text: 'x', value: false},
+                    {text:'x', value: false}]}],
         ];
         errors_if.forEach(([msg, input]) => {
             it(`InvalidQuestion if ${msg}`, () => {
@@ -86,16 +98,22 @@ describe(`get_valid_copy_of_question`, () => {
         it('returns undefined if type is true_false', () => {
             expect(get_valid_choices({type: 'true_false'})).toEqual(undefined);
         });
-        it('returns choices with strings trimmed if type is order', () => {
+        it('returns choices with texts trimmed', () => {
             expect(get_valid_choices({
-                type: 'order', choices: [{string: '\tx', sort_value: 1},
-                    {string: ' y ', sort_value: 0}]
-            })).toEqual([{string: 'x', sort_value: 1},
-                {string: 'y', sort_value: 0}]);
+                type: 'order', choices: [{text: '\tx', value: 1},
+                    {text: ' y ', value: 0}]
+            })).toEqual([{text: 'x', value: 1},
+                {text: 'y', value: 0}]);
         });
         it('returns the trimmed choices otherwise', () => {
-            expect(get_valid_choices({type: 'foo', choices: ['\t x', 'y']}))
-                .toEqual(['x', 'y']);
+            expect(get_valid_choices({type: 'single', choices: [
+                {text: '\t x', value: true},
+                {text: 'y', value: false}
+            ]}))
+                .toEqual([
+                    {text: 'x', value: true},
+                    {text: 'y', value: false}
+                ]);
         });
     });
     describe(`get_valid_answer`, () => {
@@ -113,22 +131,14 @@ describe(`get_valid_copy_of_question`, () => {
 
         type = 'single';
         errors_if.push(
-            [`type is ${type} and answer not an integer`,
-                {type, choices: ['x', 'y'], answer: 'x'}],
-            [`type is ${type} and answer not a choice index`,
-                {type, choices: ['x', 'y'], answer: 2}],
+            [`type is ${type} and answer is defined`,
+                {type, answer: 1}],
         );
 
         type = 'multiple';
         errors_if.push(
-            [`type is ${type} and answer not an array`,
-                {type, choices: ['x', 'y', 'z'], answer: 1}],
-            [`type is ${type} and answer not an intger array`,
-                {type, choices: ['x', 'y', 'z'], answer: [1, 'z']}],
-            [`type is ${type} and answer has non-choice index`,
-                {type, choices: ['x', 'y', 'z'], answer: [1, 3]}],
-            [`type is ${type} and answer has duplicate indices`,
-                {type, choices: ['x', 'y', 'z'], answer: [1, 2, 1]}],
+            [`type is ${type} and answer is defined`,
+                {type, answer: 1}],
         );
 
         errors_if.forEach(([msg, input]) => {
@@ -138,21 +148,6 @@ describe(`get_valid_copy_of_question`, () => {
             });
         });
 
-        it('returns a valid answer for type single', () => {
-            expect(get_valid_answer({
-                type: 'single', choices: ['x', 'y'], answer: 1,
-            })).toEqual(1);
-        });
-
-        it('returns a undefined for type order', () => {
-            expect(get_valid_answer({
-                type: 'order', choices: ['x', 'y'], answer: null,
-            })).toEqual(undefined);
-            expect(get_valid_answer({
-                type: 'order', choices: ['x', 'y'], answer: undefined,
-            })).toEqual(undefined);
-        });
-
         it('returns a valid answer for type true_false', () => {
             expect(get_valid_answer({
                 type: 'true_false', answer: false,
@@ -160,15 +155,6 @@ describe(`get_valid_copy_of_question`, () => {
             expect(get_valid_answer({
                 type: 'true_false', answer: true,
             })).toEqual(true);
-        });
-
-        it('returns a valid answer for type multiple', () => {
-            expect(get_valid_answer({
-                type: 'multiple', choices: ['x', 'y', 'z'], answer: [],
-            })).toEqual([]);
-            expect(get_valid_answer({
-                type: 'multiple', choices: ['x', 'y', 'z'], answer: [0, 2],
-            })).toEqual([0, 2]);
         });
     });
     describe(`get_valid_tags`, () => {
@@ -246,8 +232,12 @@ describe(`get_valid_copy_of_question`, () => {
         {
             type: 'single',
             prompt: 'Who was the drummer',
-            choices: ['John', 'Paul', 'George', 'Ringo'],
-            answer: 3,
+            choices: [
+                {text: 'John', value: false},
+                {text: 'Paul', value: null},
+                {text: 'George'},
+                {text: 'Ringo', value: true},
+            ],
             tags: ['beatles'],
             links: ['https://en.wikipedia.org/wiki/The_Beatles'],
         },
@@ -255,8 +245,12 @@ describe(`get_valid_copy_of_question`, () => {
         {
             type: 'multiple',
             prompt: 'Who could play drums',
-            choices: ['John', 'Paul', 'George', 'Ringo'],
-            answer: [1, 3],
+            choices: [
+                {text: 'John', value: false},
+                {text: 'Paul', value: true},
+                {text: 'George'},
+                {text: 'Ringo', value: true},
+            ],
             tags: ['beatles'],
             links: ['https://en.wikipedia.org/wiki/The_Beatles'],
         },
@@ -265,10 +259,10 @@ describe(`get_valid_copy_of_question`, () => {
             type: 'order',
             prompt: 'Order by year of Release',
             choices: [
-                {string: 'Sgt Pepper', sort_value: 1967},
-                {string: 'Please, Please Me', sort_value: 1963},
-                {string: 'Let It Be', sort_value: 1970},
-                {string: 'Help', sort_value: 1965},
+                {text: 'Sgt Pepper', value: 1967},
+                {text: 'Please, Please Me', value: 1963},
+                {text: 'Let It Be', value: 1970},
+                {text: 'Help', value: 1965},
             ],
             tags: ['beatles'],
             links: ['https://en.wikipedia.org/wiki/The_Beatles'],

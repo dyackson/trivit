@@ -1,6 +1,5 @@
 <script>
     import {save_question, get_questions} from '@/db/questions';
-    import Answer from '@/components/Answer';
 
     let type = 'single'
     let prompt = '';
@@ -63,7 +62,9 @@
 	<title>Create Question</title>
 </svelte:head>
 
-<Answer/>
+<h1>Svelte Trivia</h1>
+{@debug correct_answer, answer_being_edited,
+answers}
 
 <div>
     <textarea value={prompt}></textarea>
@@ -71,19 +72,19 @@
 {#each answers as answer, i}
 <div>
     {#if i === answer_being_edited}
-    <input bind:value={answer}>
-    <button on:click={() => stop_editing_answer(i)}>Save</button>
-    <button on:click={() => delete_answer(i)}>Discard</button>
+        <input bind:value={answer}>
+        <button on:click={() => stop_editing_answer(i)}>Save</button>
+        <button on:click={() => delete_answer(i)}>Discard</button>
     {:else}
-    <label>
-        <input type=radio bind:group={correct_answer}
-               value={i}
-               />
-        {answer}
-    </label>
-    <button on:click={() => edit_answer(i)}>Edit</button>
-    <button on:click={() => delete_answer(i)}>Delete</button>
-    {#if i === correct_answer} CORRECT {/if}
+        <label>
+            <input type=radio bind:group={correct_answer}
+                value={i}
+            />
+            {answer}
+        </label>
+        <button on:click={() => edit_answer(i)}>Edit</button>
+        <button on:click={() => delete_answer(i)}>Delete</button>
+        {#if i === correct_answer} CORRECT {/if}
     {/if}
 </div>
 {/each}

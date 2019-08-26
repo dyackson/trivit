@@ -1,6 +1,7 @@
 import {isHttpsUri} from 'valid-url';
 import InvalidQuestion from '@/InvalidQuestion';
 export const VALID_TYPES = ['single', 'multiple', 'true_false', 'order'];
+
 /*
  * Return the question, if valid, with any string fields trimmed, otherwise
  * throw an error. 'creator' is neigher checked nor returned with the valid
@@ -24,7 +25,7 @@ export default function get_valid_copy_of_question(question) {
         type: get_valid_type(type),
         prompt: get_valid_prompt(prompt),
         choices: get_valid_choices({choices, type}),
-        answer: get_valid_answer({answer, choices, type}),
+        answer: get_valid_answer({answer, type}),
         tags: get_valid_tags(tags),
         links: get_valid_links(links),
     });
@@ -65,126 +66,110 @@ export function get_valid_choices({choices, type}) {
         }
         return;
     } else {
-        const choices_is_empty = !Array.isArray(choices) || !choices.length;
-        if (choices_is_empty) {
-            throw new InvalidQuestion(
-                `choices must be a non-empty array: ${choices}`);
-        }
-        let choice_strings = choices;
+        error_if_empty_or_non_array(choices);
+        error_if_one_is_not_an_object(choices);
 
-        if (type === 'order') {
-            choices.forEach(error_if_not_object_with_numeric_sort_value);
-            choice_strings = choices.map(c => c.string);
+        if (type === 'single' || type === 'multiple') {
+            error_if_wrong_number_of_correct_answers(choices, type);
+        } else if (type === 'order') {
+            error_if_a_choice_value_is_not_sortable(choices);
         }
 
-        let trimmed_choices = get_trimmed_choices(choice_strings);
-
-        if (type === 'order') {
-            trimmed_choices = trimmed_choices.map((string, i) => {
-                return {string, sort_value: choices[i].sort_value};
-            });
-        }
+        let trimmed_choices = get_trimmed_choices(choices);
 
         return trimmed_choices;
     }
 }
 
-function error_if_not_object_with_numeric_sort_value(choice, i) {
-    if (!(choice instanceof Object)) {
+function error_if_empty_or_non_array(choices) {
+    const choices_is_empty = !Array.isArray(choices) || !choices.length;
+    if (choices_is_empty) {
         throw new InvalidQuestion(
-            `type is order but choice ${i} is not an object: ${choice}`);
-    }
-
-    if (typeof choice.sort_value !== 'number') {
-        throw new InvalidQuestion(
-            `type is order but choice ${i} sort_value not a number: ${choice}`);
+            `choices must be a non-empty array: ${choices}`);
     }
 }
 
+function error_if_wrong_number_of_correct_answers(choices, type) {
+    const correct_count = choices.filter(({value}) => {
+        if (typeof value !== 'boolean' && value != undefined) {
+            throw new InvalidQuestion(
+                `non-boolean, non-empty choice value for: ${value}`);
+        }
+        return value;
+    }).length;
+
+    if (type === 'single' && correct_count !== 1) {
+        throw new InvalidQuestion(
+            `single type must have exactly one correct answer`);
+    } else if (type === 'multiple' && correct_count === 0) {
+        throw new InvalidQuestion(
+            `multiple type must have at least correct answer`);
+    }
+}
+
+function error_if_one_is_not_an_object(choices) {
+    choices.forEach((choice, i) => {
+        if (!(choice instanceof Object)) {
+            throw new InvalidQuestion(
+                `type is order but choice ${i} is not an object: ${choice}`);
+        }
+    });
+}
+
+function error_if_a_choice_value_is_not_sortable(choices) {
+    choices.forEach((choice, i) => {
+        if (typeof choice.value !== 'number') {
+            throw new InvalidQuestion(
+                `type is order but choice ${i} value not a number: ${choice}`);
+        }
+    });
+}
+
 function get_trimmed_choices(choices) {
-    const trimmed_choices = choices.map((choice, i) => {
+    const choice_texts = choices.map(c => c.text);
+
+    const trimmed_choice_texts = choice_texts.map((choice, i) => {
         if (typeof choice !== 'string') {
             throw new InvalidQuestion(
-                `choice ${i} is not a string: ${choice}`);
+                `choice.${i}.text is not a string: ${choice}`);
         }
         const trimmed = choice.trim();
         if (!trimmed.length) {
             throw new InvalidQuestion(
-                `choice ${i} an empty string: ${choice}`);
+                `choice ${i} has empty text: ${choice}`);
         }
         return trimmed;
     })
 
-    if (!isUnique(trimmed_choices)) {
+    if (!isUnique(trimmed_choice_texts)) {
         throw new InvalidQuestion(`multiple choices are identical`);
     }
+
+    const trimmed_choices = trimmed_choice_texts.map((text, i) => {
+        return {text, value: choices[i].value};
+    });
 
     return trimmed_choices;
 }
 
-export function get_valid_answer({answer, choices, type}) {
-    const validators_by_type = {
-        true_false,
-        single,
-        multiple,
-        order,
-    };
-
-    return validators_by_type[type]({choices, answer});
-
-    function true_false({answer}) {
-        if (typeof answer !== 'boolean') {
-            throw new InvalidQuestion(
-                `non-boolean true_false answer: ${answer}`);
-        }
-        return answer;
-    }
-
-    function single({answer, choices}) {
-        if (!Number.isInteger(answer)) {
-            throw new InvalidQuestion(
-                `single type with non-integer answer: ${answer}`);
-        }
-        if (!choices[answer]) {
-            throw new InvalidQuestion(
-                `single type answer not a choice index: ${answer}`);
-        }
-        return answer;
-    }
-
-    // answer is an arrary, maybe empty, of choice indices
-    function multiple({answer, choices}) {
-        if (!Array.isArray(answer)) {
-            throw new InvalidQuestion(
-                `multiple type answer not an array: ${answer}`);
-        }
-        answer.forEach(item => {
-            if (!Number.isInteger(item)) {
+export function get_valid_answer({answer, type}) {
+    switch (type) {
+        case 'true_false': {
+            if (typeof answer !== 'boolean') {
                 throw new InvalidQuestion(
-                    `multiple type answer item not an integer: ${item}`);
+                    `non-boolean true_false answer: ${answer}`);
             }
-            if (!choices[item]) {
+            break;
+        }
+        default: {
+            if (answer !== undefined) {
                 throw new InvalidQuestion(
-                    `multiple type answer item not choice index: ${item}`);
+                    `${type} should not have an answer: ${answer}`);
             }
-        });
-
-        if (!isUnique(answer)) {
-            throw new InvalidQuestion(
-                `multiple type answer contains duplicate indices: ${answer}`);
-        }
-
-        return answer;
-    }
-
-    // The choices themselves will be ordered correctly, but mixed up when
-    // presented, so no answer is necessary.
-    function order({answer}) {
-        if (answer != null) {
-            throw new InvalidQuestion(
-                `type order has no answer, answer: ${answer}`);
         }
     }
+
+    return answer;
 }
 
 export function get_valid_tags(tags) {

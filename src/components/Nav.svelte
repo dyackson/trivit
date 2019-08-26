@@ -1,3 +1,7 @@
+<!--
+    TODO:
+        Make the burger larger
+-->
 <script>
     import {onMount} from 'svelte';
     import * as store from '@/store';
@@ -26,8 +30,13 @@
             href: 'login_logout',
         },
         {
+            display: 'Create Question Old',
+            segment: 'question/create_old',
+            href: 'question/create_old',
+        },
+        {
             display: 'Create Question',
-            segment: 'question/create',
+            segment: 'question/create_old',
             href: 'question/create',
         },
     ];
@@ -58,7 +67,7 @@
 
     <div
         id="nav_items"
-        class="navbar-menu"
+        class="navbar-menu is-size-4"
         class:is-active={burger_open}>
         <div class="navbar-start">
             {#each routes as {segment, href, display}}
