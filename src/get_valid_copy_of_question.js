@@ -1,6 +1,6 @@
 import {isHttpsUri} from 'valid-url';
 import InvalidQuestion from '@/InvalidQuestion';
-export const VALID_TYPES = ['single', 'multiple', 'true_false', 'order'];
+export const VALID_TYPES = ['mc_single', 'mc_multiple', 'true_false', 'order'];
 
 /*
  * Return the question, if valid, with any string fields trimmed, otherwise
@@ -69,7 +69,7 @@ export function get_valid_choices({choices, type}) {
         error_if_empty_or_non_array(choices);
         error_if_one_is_not_an_object(choices);
 
-        if (type === 'single' || type === 'multiple') {
+        if (type === 'mc_single' || type === 'mc_multiple') {
             error_if_wrong_number_of_correct_answers(choices, type);
         } else if (type === 'order') {
             error_if_a_choice_value_is_not_sortable(choices);
@@ -98,12 +98,12 @@ function error_if_wrong_number_of_correct_answers(choices, type) {
         return value;
     }).length;
 
-    if (type === 'single' && correct_count !== 1) {
+    if (type === 'mc_single' && correct_count !== 1) {
         throw new InvalidQuestion(
-            `single type must have exactly one correct answer`);
-    } else if (type === 'multiple' && correct_count === 0) {
+            `mc_single type must have exactly one correct answer`);
+    } else if (type === 'mc_multiple' && correct_count === 0) {
         throw new InvalidQuestion(
-            `multiple type must have at least correct answer`);
+            `mc_multiple type must have at least correct answer`);
     }
 }
 
@@ -142,7 +142,7 @@ function get_trimmed_choices(choices) {
     })
 
     if (!isUnique(trimmed_choice_texts)) {
-        throw new InvalidQuestion(`multiple choices are identical`);
+        throw new InvalidQuestion(`mc_multiple choices are identical`);
     }
 
     const trimmed_choices = trimmed_choice_texts.map((text, i) => {

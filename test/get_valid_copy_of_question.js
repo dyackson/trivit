@@ -63,12 +63,12 @@ describe(`get_valid_copy_of_question`, () => {
                 {type: 'order',
                     choices: [{text: {}, value: 7},
                         {text: 'y', value: 3}]}],
-            [`type choices.i.text is not a string for single type`,
-                {type: 'single',
+            [`type choices.i.text is not a string for mc_single type`,
+                {type: 'mc_single',
                     choices: [{text: {}, value: true},
                         {text: 'y', value: false}]}],
-            [`type choices.i.text is not a string for multiple type`,
-                {type: 'multiple',
+            [`type choices.i.text is not a string for mc_multiple type`,
+                {type: 'mc_multiple',
                     choices: [{text: {}, value: true},
                         {text: 'y', value: true}]}],
 
@@ -83,9 +83,9 @@ describe(`get_valid_copy_of_question`, () => {
             [`choices are not objects`,
                 {type: 'order', choices: ['x', 'y', 'x ']}],
             [`choices.i.text contains a whitespace item`,
-                {type: 'single', choices: [{text: 'foo', value:' \t'}]}],
+                {type: 'mc_single', choices: [{text: 'foo', value:' \t'}]}],
             [`choices contains contains duplicate text`,
-                {type: 'single', choices: [{text: 'x', value: false},
+                {type: 'mc_single', choices: [{text: 'x', value: false},
                     {text:'x', value: false}]}],
         ];
         errors_if.forEach(([msg, input]) => {
@@ -106,7 +106,7 @@ describe(`get_valid_copy_of_question`, () => {
                 {text: 'y', value: 0}]);
         });
         it('returns the trimmed choices otherwise', () => {
-            expect(get_valid_choices({type: 'single', choices: [
+            expect(get_valid_choices({type: 'mc_single', choices: [
                 {text: '\t x', value: true},
                 {text: 'y', value: false}
             ]}))
@@ -129,13 +129,13 @@ describe(`get_valid_copy_of_question`, () => {
                 {type, answer: 1}],
         );
 
-        type = 'single';
+        type = 'mc_single';
         errors_if.push(
             [`type is ${type} and answer is defined`,
                 {type, answer: 1}],
         );
 
-        type = 'multiple';
+        type = 'mc_multiple';
         errors_if.push(
             [`type is ${type} and answer is defined`,
                 {type, answer: 1}],
@@ -228,9 +228,9 @@ describe(`get_valid_copy_of_question`, () => {
             tags: ['beatles'],
             links: ['https://en.wikipedia.org/wiki/John_Lennon'],
         },
-        // single
+        // mc_single
         {
-            type: 'single',
+            type: 'mc_single',
             prompt: 'Who was the drummer',
             choices: [
                 {text: 'John', value: false},
@@ -241,9 +241,9 @@ describe(`get_valid_copy_of_question`, () => {
             tags: ['beatles'],
             links: ['https://en.wikipedia.org/wiki/The_Beatles'],
         },
-        // multiple
+        // mc_multiple
         {
-            type: 'multiple',
+            type: 'mc_multiple',
             prompt: 'Who could play drums',
             choices: [
                 {text: 'John', value: false},
