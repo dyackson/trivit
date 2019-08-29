@@ -1,6 +1,6 @@
 import {isHttpsUri} from 'valid-url';
 import InvalidQuestion from '@/InvalidQuestion';
-export const VALID_TYPES = ['mc_single', 'mc_multiple', 'true_false', 'order'];
+export const VALID_TYPES = ['free_form', 'mc_single', 'mc_multiple', 'true_false', 'order'];
 
 /*
  * Return the question, if valid, with any string fields trimmed, otherwise
@@ -59,10 +59,10 @@ export function get_valid_prompt(prompt) {
 }
 
 export function get_valid_choices({choices, type}) {
-    if (type === 'true_false') {
+    if (type === 'true_false' || type === 'free_form') {
         if (choices) {
             throw new InvalidQuestion(
-                `choices not valid for true_false, choices: ${choices}`);
+                `type ${type} should not have choices, choices: ${choices}`);
         }
         return;
     } else {
@@ -159,7 +159,19 @@ export function get_valid_answer({answer, type}) {
                 throw new InvalidQuestion(
                     `non-boolean true_false answer: ${answer}`);
             }
-            break;
+            return answer;
+        }
+        case 'free_form': {
+            if (typeof answer !== 'string') {
+                throw new InvalidQuestion(
+                    `non-string free_form answer: ${answer}`);
+            }
+            const trimmed_answer = answer.trim();
+            if (!trimmed_answer.length) {
+                throw new InvalidQuestion(
+                    `blank string free_form answer: "${answer}"`);
+            }
+            return trimmed_answer;
         }
         default: {
             if (answer !== undefined) {
