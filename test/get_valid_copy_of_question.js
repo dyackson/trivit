@@ -6,8 +6,8 @@ import get_valid_copy_of_question, {
     get_valid_answer,
     get_valid_tags,
     get_valid_links,
-    VALID_TYPES,
 } from '@/get_valid_copy_of_question';
+import {VALID_TYPES} from '@/meta';
 import InvalidQuestion from '@/InvalidQuestion';
 
 import expect from 'expect';

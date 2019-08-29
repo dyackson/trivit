@@ -1,73 +1,49 @@
 <script>
     import {save_question, get_questions} from '@/db/questions';
+    import Dropdown from '@/components/Dropdown';
+    import Bool from '@/components/Bool';
     import Answer from '@/components/Answer';
+    import {TYPE_CONFIGS, VALID_TYPES, TYPES_BY_DISPLAY} from '@/meta';
 
-    let type = 'single'
+    let selected_display_type;
     let prompt = '';
+    let true_false_answer = true;
     let answers = [];
     let correct_answer = undefined;
     let answer_being_edited = undefined;
 
-    function add_answer() {
-        if (answer_being_edited === undefined) {
-            answer_being_edited = answers.length;
-            answers = [...answers, ''];
-        }
-    }
+    $:type = TYPES_BY_DISPLAY[selected_display_type];
 
-    function edit_answer(i) {
-        answer_being_edited = i;
-    }
 
-    function stop_editing_answer(i) {
-        answer_being_edited = undefined;
-        answer[i] = answer[i].trim();
 
-        if (answer_is_empty(i) || !answer_is_unique(i)) {
-            delete_answer(i);
-        }
-    }
 
-    function answer_is_empty(i) {
-        return !answers[i];
-    }
 
-    function answer_is_unique(i) {
-        const answer_to_check = answers[i];
-        if (!answer_to_check) {
-            return false;
-        }
-        return answers.some((answer, j) => {
-            return answer === answer_to_check
-                && i !== j;
-        })
-    }
-
-    function delete_answer(index_to_remove) {
-        answers = answers
-            .filter((_, i) => i !== index_to_remove);
-
-        adjust_correct_answer(index_to_remove);
-
-        function adjust_correct_answer() {
-            if (index_to_remove === correct_answer) {
-                correct_answer = undefined;
-            } else if (index_to_remove < correct_answer){
-                correct_answer -=1;
-            }
-        }
-    }
 
 </script>
 <svelte:head>
 	<title>Create Question</title>
 </svelte:head>
 
-<Answer/>
+<Dropdown
+    label='Type'
+    bind:value={selected_display_type}
+    options={Object.keys(TYPES_BY_DISPLAY)}
+/>
+<textarea
+    class=textarea
+    placeholder='How many marbles would it take to ...'
+    bind:value={prompt}
+    ></textarea>
 
-<div>
-    <textarea value={prompt}></textarea>
-</div>
+{#if type === 'true_false'}
+    <Bool bind:value={true_false_answer} label=Answer />
+{/if}
+{#each answers as answer}
+    <Answer/>
+{/each}
+
+{@debug selected_display_type, type, true_false_answer}
+<!--
 {#each answers as answer, i}
 <div>
     {#if i === answer_being_edited}
@@ -88,3 +64,4 @@
 </div>
 {/each}
 <button on:click={add_answer}>Add Answer</button>
+-->

@@ -1,6 +1,6 @@
 import {isHttpsUri} from 'valid-url';
 import InvalidQuestion from '@/InvalidQuestion';
-export const VALID_TYPES = ['free_form', 'mc_single', 'mc_multiple', 'true_false', 'order'];
+import {VALID_TYPES} from '@/meta';
 
 /*
  * Return the question, if valid, with any string fields trimmed, otherwise
