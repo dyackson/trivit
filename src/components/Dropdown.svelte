@@ -1,7 +1,7 @@
 <script>
     export let label;
     export let options = [];
-    export let value;
+    export let value = '';
 </script>
 
 <div class="field">
