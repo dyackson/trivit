@@ -1,4 +1,5 @@
 dependencies:
+  '@mdi/font': 4.2.95
   bulma: 0.7.5
   compression: 1.7.4
   mongodb-stitch-browser-sdk: 4.5.0
@@ -18,6 +19,7 @@ devDependencies:
   sapper: 0.27.1_svelte@3.4.2
   style-loader: 1.0.0_webpack@4.32.2
   svelte: 3.4.2
+  svelte-feather-icons: 2.0.0
   svelte-loader: 2.13.4_svelte@3.4.2
   webpack: 4.32.2_webpack@4.32.2
   webpack-node-externals: 1.7.2
@@ -83,6 +85,10 @@ packages:
       node: '>= 6'
     resolution:
       integrity: sha512-g17UxVr2YfBtaMUxn9u/4+siG1ptg9IGYAYwvpwn61nBg779RXnjE/m7CxYcIzEt0AbHZZAHSEZNhkE2WxURVg==
+  /@mdi/font/4.2.95:
+    dev: false
+    resolution:
+      integrity: sha512-pCJ9hR8yQH1tMk6KTZYfJsZkI/XQ1rR9Fe/q50ATDDVUoDk7Wl7n9WqT6dYWn0mnCLgrTQl/WNjyrnTo5rKu+A==
   /@nodelib/fs.scandir/2.1.1:
     dependencies:
       '@nodelib/fs.stat': 2.0.1
@@ -4237,6 +4243,10 @@ packages:
     dev: true
     resolution:
       integrity: sha1-fRh9tcbNu9ZNdaMvkbiZi94yc8M=
+  /svelte-feather-icons/2.0.0:
+    dev: true
+    resolution:
+      integrity: sha512-IuVWz2JKnnZMdN70Pf5wB1d55aSSVbtsw0X1qwKuXWHH3rTXUxlgMsJL15FjOQeArYYm5WbqXa/q0IARNBPr8g==
   /svelte-loader/2.13.4_svelte@3.4.2:
     dependencies:
       loader-utils: 1.2.3
@@ -4743,6 +4753,7 @@ packages:
     resolution:
       integrity: sha512-2eehun/8ALW8TLoIl7MVaRUrg+yCnenu8B4kBlRxj3GJGDKU1Og7sMXPNm1BYyM1DOJmTZ4YeN/Nwxv+8XJsUA==
 specifiers:
+  '@mdi/font': ^4.2.95
   bulma: ^0.7.5
   compression: ^1.7.1
   css-loader: ^3.2.0
@@ -4760,6 +4771,7 @@ specifiers:
   sirv: ^0.4.0
   style-loader: ^1.0.0
   svelte: ^3.0.0
+  svelte-feather-icons: ^2.0.0
   svelte-loader: ^2.9.0
   valid-url: ^1.0.9
   webpack: ^4.7.0

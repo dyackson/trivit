@@ -2,6 +2,8 @@
     import {questions} from '@/fake_data';
     import {save_question, get_questions} from '@/db/questions';
     import * as store from '@/store';
+    import { AirplayIcon } from 'svelte-feather-icons'
+
 
     let user = store.user;
 
@@ -16,6 +18,7 @@
     }
 </script>
 
+<AirplayIcon/>
 <button type=button on:click={test_post_and_get}>
     test post and get
 </button>
