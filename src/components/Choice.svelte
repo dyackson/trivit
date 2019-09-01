@@ -1,32 +1,21 @@
 <script>
-    import {CircleIcon, CheckCircleIcon} from 'svelte-feather-icons'
-
     export let input = '';
     export let placeholder = ''
     export let text = ''
-    export let value = false;
+    export let value = true;
+    $: left_icon = value ? 'thumb_up_alt' : 'thumb_down_alt';
 
-    $: leftIcon = value ? CheckCircleIcon : CircleIcon;
 </script>
 
-<style>
-    #icon-holder {
-        width: 1.5em;
-        left: .5em;
-    }
-</style>
-
-<div class="field">
-    <div class="control has-icons-left has-icons-right">
-        <input class=input type=text {placeholder} bind:value={text}>
-        <span id='icon-holder'
-            class="icon is-small is-left"
-            on:click={() => value = !value}
-            >
-            <svelte:component this={leftIcon} />
-        </span>
-        <button
-            on:click={() => value = !value}
-            >button</button>
+<div class="field has-addons">
+    <div class=control on:click={() => value = !value}>
+        <div class="button">
+            <span class="icon is-small">
+                <i class='material-icons'>{left_icon}</i>
+            </span>
+        </div>
+    </div>
+    <div class="control">
+        <input class='input' type=text {placeholder} bind:value={text}>
     </div>
 </div>
