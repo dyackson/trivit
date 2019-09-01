@@ -1,3 +1,7 @@
+<script context=module>
+    let choice_key = 0;
+</script>
+
 <script>
     import {save_question, get_questions} from '@/db/questions';
     import Dropdown from '@/components/Dropdown';
@@ -20,7 +24,12 @@
 
     function add_empty_choice() {
         const empty_choice = TYPE_CONFIGS[type].get_empty_choice();
+        empty_choice.key = choice_key++;
         choices = [...choices, empty_choice];
+    }
+
+    function delete_choice(key) {
+        choices = choices.filter((c) => c.key !== key);
     }
 
 
@@ -47,8 +56,12 @@
     <Text bind:value={answer} label=Answer />
 
 {:else if type === 'mc_single'}
-    {#each choices as choice}
-        <Choice bind:text={choice.text} bind:value={choice.value}/>
+    {#each choices as choice (choice.key)}
+        <Choice
+            bind:text={choice.text}
+            bind:value={choice.value}
+            delete_choice={() => delete_choice(choice.key)}
+            />
     {/each}
     <button class=button on:click={add_empty_choice}>Add Another Choice</button>
 
@@ -59,27 +72,3 @@
     <Text bind:value={answer} label=Answer />
 
 {/if}
-
-{@debug selected_display_type, type, answer, choices}
-<!--
-{#each  as answer, i}
-<div>
-    {#if i === answer_being_edited}
-    <input bind:value={answer}>
-    <button on:click={() => stop_editing_answer(i)}>Save</button>
-    <button on:click={() => delete_answer(i)}>Discard</button>
-    {:else}
-    <label>
-        <input type=radio bind:group={correct_answer}
-               value={i}
-               />
-        {answer}
-    </label>
-    <button on:click={() => edit_answer(i)}>Edit</button>
-    <button on:click={() => delete_answer(i)}>Delete</button>
-    {#if i === correct_answer} CORRECT {/if}
-    {/if}
-</div>
-{/each}
-<button on:click={add_answer}>Add Answer</button>
--->

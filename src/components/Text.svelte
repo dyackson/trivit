@@ -1,5 +1,4 @@
 <script>
-    import { AirplayIcon } from 'svelte-feather-icons'
     export let value = '';
     export let placeholder = ''
     export let label = ''
