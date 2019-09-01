@@ -17,10 +17,26 @@
     let choices = [];
     let correct_answer = undefined;
     let answer_being_edited = undefined;
+    let previous_type = '';
 
     $: type = TYPES_BY_DISPLAY[selected_display_type];
     // reset answer when type changes
-    $: answer = type && '';
+    $: {
+        type;
+        // react to type changes
+        if (type) {
+            update_answer_on_type_change();
+            update_choics_on_type_change();
+        }
+    }
+
+    function update_answer_on_type_change() {
+        answer = '';
+    }
+
+    function update_choics_on_type_change() {
+        choices = TYPE_CONFIGS[type].on_changed_to_type(choices);
+    }
 
     function add_empty_choice() {
         const empty_choice = TYPE_CONFIGS[type].get_empty_choice();
@@ -30,6 +46,10 @@
 
     function delete_choice(key) {
         choices = choices.filter((c) => c.key !== key);
+    }
+
+    function toggle_choice(key) {
+        choices = TYPE_CONFIGS[type].on_choice_toggled(choices, key);
     }
 
 
@@ -55,18 +75,17 @@
 {:else if type === 'free_form'}
     <Text bind:value={answer} label=Answer />
 
-{:else if type === 'mc_single'}
+{:else if type === 'mc_single' || type === 'mc_multiple'}
     {#each choices as choice (choice.key)}
         <Choice
             bind:text={choice.text}
-            bind:value={choice.value}
+            value={choice.value}
             delete_choice={() => delete_choice(choice.key)}
+            toggle_choice={() => toggle_choice(choice.key)}
             />
     {/each}
     <button class=button on:click={add_empty_choice}>Add Another Choice</button>
 
-{:else if type === 'mc_multiple'}
-    <Text bind:value={answer} label=Answer />
 
 {:else if type === 'ordered'}
     <Text bind:value={answer} label=Answer />
