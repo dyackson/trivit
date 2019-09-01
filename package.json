@@ -35,7 +35,6 @@
     "sapper": "^0.27.0",
     "style-loader": "^1.0.0",
     "svelte": "^3.0.0",
-    "svelte-feather-icons": "^2.0.0",
     "svelte-loader": "^2.9.0",
     "webpack": "^4.7.0",
     "webpack-node-externals": "^1.7.2"

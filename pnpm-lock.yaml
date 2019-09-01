@@ -19,7 +19,6 @@ devDependencies:
   sapper: 0.27.1_svelte@3.4.2
   style-loader: 1.0.0_webpack@4.32.2
   svelte: 3.4.2
-  svelte-feather-icons: 2.0.0
   svelte-loader: 2.13.4_svelte@3.4.2
   webpack: 4.32.2_webpack@4.32.2
   webpack-node-externals: 1.7.2
@@ -4243,10 +4242,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-fRh9tcbNu9ZNdaMvkbiZi94yc8M=
-  /svelte-feather-icons/2.0.0:
-    dev: true
-    resolution:
-      integrity: sha512-IuVWz2JKnnZMdN70Pf5wB1d55aSSVbtsw0X1qwKuXWHH3rTXUxlgMsJL15FjOQeArYYm5WbqXa/q0IARNBPr8g==
   /svelte-loader/2.13.4_svelte@3.4.2:
     dependencies:
       loader-utils: 1.2.3
@@ -4771,7 +4766,6 @@ specifiers:
   sirv: ^0.4.0
   style-loader: ^1.0.0
   svelte: ^3.0.0
-  svelte-feather-icons: ^2.0.0
   svelte-loader: ^2.9.0
   valid-url: ^1.0.9
   webpack: ^4.7.0
