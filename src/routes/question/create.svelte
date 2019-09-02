@@ -12,7 +12,7 @@
     import Textarea from '@/components/Textarea';
     import {TYPE_CONFIGS, VALID_TYPES, TYPES_BY_DISPLAY} from '@/meta';
 
-    let selected_display_type;
+    let selected_display_type = TYPES_BY_DISPLAY[0];
     let prompt = '';
     let answer = true;
     let choices = [];
@@ -20,37 +20,54 @@
     let answer_being_edited = undefined;
     let type = '';
     let selected_type_config = {};
-    let show_data_loss_on_type_change_warning = true;
+    let show_data_loss_on_type_change_warning = false;
+    let from_type = '';
+    let to_type = '';
 
     $: {
-        selected_display_type;
         // react to selected_display_type change
+        if (selected_display_type) {
+            on_type_changed();
+        }
+    }
 
-        const from_type = type;
-        const to_type = TYPES_BY_DISPLAY[selected_display_type];
-        if (to_type) {
-            update_answer_on_type_change();
-            update_choics_on_type_change();
-            selected_type_config = TYPE_CONFIGS[to_type];
+    function on_type_changed() {
+        from_type = type;
+        to_type = TYPES_BY_DISPLAY[selected_display_type];
+
+        if (!from_type) {
+            continue_type_change();
+        } else if (from_type !== to_type) {
+            show_data_loss_on_type_change_warning
+                = TYPE_CONFIGS[to_type].loses_data_when_changing(from_type,
+                    choices);
+            if (!show_data_loss_on_type_change_warning) {
+                continue_type_change();
+            } else {
+                // the warning modal shows
+            }
         } else {
-            selected_type_config = {};
+            // the same type was reselected
+            from_type = '';
+            to_type = '';
         }
+    }
+
+    function continue_type_change() {
+        show_data_loss_on_type_change_warning = false;
         type = to_type;
-    }
-
-    async function warn_if_type_change_causes_data_loss(to_type) {
-
-    }
-
-    function update_answer_on_type_change() {
+        selected_type_config = TYPE_CONFIGS[type] || {};
+        choices = selected_type_config.on_changed_to_type(choices, from_type);
         answer = '';
+        to_type = '';
+        from_type = '';
     }
 
-    function update_choics_on_type_change() {
-        const on_changed_to_type = selected_type_config.on_changed_to_type;
-        if (on_changed_to_type) {
-            choices = selected_type_config.on_changed_to_type(choices);
-        }
+    function abort_type_change() {
+        show_data_loss_on_type_change_warning = false;
+        selected_display_type = selected_type_config.display;
+        from_type = '';
+        to_type = '';
     }
 
     function add_empty_choice() {
@@ -73,12 +90,36 @@
 	<title>Create Question</title>
 </svelte:head>
 
+
+{#if show_data_loss_on_type_change_warning}
 <div class="modal" class:is-active={show_data_loss_on_type_change_warning}>
     <div class="modal-background"></div>
-    <div class="modal-content">
-        MY modal a;dklfja;dlsfkja;dlfkj
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Discard Answers?</p>
+        </header>
+        <section class="modal-card-body is-size-4">
+            You have answers for this question already. If you change the type
+            from "{TYPE_CONFIGS[from_type].display}" to
+            "{TYPE_CONFIGS[to_type].display}" you'll lose the answers.
+        </section>
+        <footer class="modal-card-foot">
+            <button
+                class="button is-success is-medium"
+                on:click={continue_type_change}
+                >
+                Change Type
+            </button>
+            <button
+                class="button is-success is-medium"
+                on:click={abort_type_change}
+                >
+                Do Nothing
+            </button>
+        </footer>
     </div>
 </div>
+{/if}
 
 <Dropdown
     label='Type'
@@ -109,3 +150,4 @@
     <button class=button on:click={add_empty_choice}>Add Another Choice</button>
 {/if}
 
+{@debug selected_display_type, type, to_type, from_type, choices}

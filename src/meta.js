@@ -4,8 +4,16 @@ import OrderedChoice from '@/components/OrderedChoice';
 export const TYPE_CONFIGS = {
     free_form: {
         display: 'Simple',
-        on_changed_to_type() {
-            return [];
+        loses_data_when_changing(from_type, choice) {
+            return !are_empty(choice);
+        },
+        on_changed_to_type(choices, from_type) {
+            switch (from_type) {
+                case 'mc_single':
+                case 'mc_multiple':
+                default:
+                    return [];
+            }
         },
     },
     mc_single: {
@@ -13,6 +21,12 @@ export const TYPE_CONFIGS = {
         choice_component: Choice,
         get_empty_choice() {
             return {text: '', value: false}
+        },
+        loses_data_when_changing(from_type, choices) {
+            if (are_empty(choices)) {
+                return false;
+            }
+            return from_type !== 'mc_multiple';
         },
         on_choice_toggled(choices, key) {
             const toggled = choices.find((choice) => choice.key === key);
@@ -46,8 +60,14 @@ export const TYPE_CONFIGS = {
                 });
             }
         },
-        on_changed_to_type(choices) {
-            return choices.map(ensure_false);
+        on_changed_to_type(choices, from_type) {
+            switch (from_type) {
+                case 'mc_multiple':
+                case 'ordered':
+                    return choices.map(ensure_false);
+                default:
+                    return [];
+            }
 
             function ensure_false(choice) {
                 if (choice.value) {
@@ -64,6 +84,12 @@ export const TYPE_CONFIGS = {
         get_empty_choice() {
             return {text: '', value: false}
         },
+        loses_data_when_changing(from_type, choices) {
+            if (are_empty(choices)) {
+                return false;
+            }
+            return from_type !== 'mc_single';
+        },
         on_choice_toggled(choices, key) {
             return choices.map((choice) => {
                 if (choice.key === key) {
@@ -73,12 +99,26 @@ export const TYPE_CONFIGS = {
                 }
             });
         },
-        on_changed_to_type(choices) {
-            return choices;
+        on_changed_to_type(choices, from_type) {
+            switch (from_type) {
+                case 'mc_single':
+                    return choices;
+                case 'ordered':
+                    return choices.map(with_false_value);
+                default:
+                    return [];
+            }
+
+            function with_false_value(choice) {
+                return {...choice, value: false};
+            }
         },
     },
     true_false: {
         display: 'True/False',
+        loses_data_when_changing(from_type, choices) {
+            return !are_empty(choices);
+        },
         on_changed_to_type() {
             return [];
         }
@@ -89,11 +129,38 @@ export const TYPE_CONFIGS = {
         get_empty_choice() {
             return {text: '', value: ''}
         },
-        on_changed_to_type(choices) {
-            return choices;
+        loses_data_when_changing() {
+            return false;
+        },
+        on_changed_to_type(choices, from_type) {
+            switch (from_type) {
+                case 'mc_single':
+                case 'mc_multiple':
+                    return choices.map(without_value);
+                default:
+                    return [];
+            }
+
+            function without_value(choice) {
+                return {...choice, value: ''};
+            }
         }
     },
 };
+
+function are_empty(choices) {
+    if (!choices || choices.length === 0) {
+        return true;
+    }
+    return !choices.some(has_text)
+}
+
+function has_text(choice) {
+    if (!choice || !choice.text) {
+        return false;
+    }
+    return choice.text.trim() !== '';
+}
 
 export const VALID_TYPES = Object.keys(TYPE_CONFIGS);
 
