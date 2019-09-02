@@ -1,5 +1,5 @@
 <script>
-    export let placeholder = ''
+    export let placeholder = '1066'
     export let text = ''
     // value = is this a correct choice
     export let value = '';
@@ -14,7 +14,7 @@
         <input class='input' type=text {placeholder} bind:value={text}>
     </div>
     <div class="control">
-        <input class='input' type=text {placeholder} bind:value={text}>
+        <input class='input' type=number {placeholder} bind:value>
     </div>
     <div class=control on:click={delete_choice}>
         <div class="button">

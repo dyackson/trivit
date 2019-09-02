@@ -20,22 +20,26 @@
     let answer_being_edited = undefined;
     let type = '';
     let selected_type_config = {};
+    let show_data_loss_on_type_change_warning = true;
 
     $: {
         selected_display_type;
         // react to selected_display_type change
-        type = TYPES_BY_DISPLAY[selected_display_type];
-    }
 
-    // reset answer when type changes
-    $: {
-        type;
-        // react to type changes
-        if (type) {
+        const from_type = type;
+        const to_type = TYPES_BY_DISPLAY[selected_display_type];
+        if (to_type) {
             update_answer_on_type_change();
             update_choics_on_type_change();
-            selected_type_config = TYPE_CONFIGS[type];
+            selected_type_config = TYPE_CONFIGS[to_type];
+        } else {
+            selected_type_config = {};
         }
+        type = to_type;
+    }
+
+    async function warn_if_type_change_causes_data_loss(to_type) {
+
     }
 
     function update_answer_on_type_change() {
@@ -43,11 +47,14 @@
     }
 
     function update_choics_on_type_change() {
-        choices = TYPE_CONFIGS[type].on_changed_to_type(choices);
+        const on_changed_to_type = selected_type_config.on_changed_to_type;
+        if (on_changed_to_type) {
+            choices = selected_type_config.on_changed_to_type(choices);
+        }
     }
 
     function add_empty_choice() {
-        const empty_choice = TYPE_CONFIGS[type].get_empty_choice();
+        const empty_choice = selected_type_config.get_empty_choice();
         empty_choice.key = choice_key++;
         choices = [...choices, empty_choice];
     }
@@ -57,7 +64,7 @@
     }
 
     function toggle_choice(key) {
-        choices = TYPE_CONFIGS[type].on_choice_toggled(choices, key);
+        choices = selected_type_config.on_choice_toggled(choices, key);
     }
 
 
@@ -65,6 +72,13 @@
 <svelte:head>
 	<title>Create Question</title>
 </svelte:head>
+
+<div class="modal" class:is-active={show_data_loss_on_type_change_warning}>
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        MY modal a;dklfja;dlsfkja;dlfkj
+    </div>
+</div>
 
 <Dropdown
     label='Type'
@@ -93,16 +107,5 @@
             />
     {/each}
     <button class=button on:click={add_empty_choice}>Add Another Choice</button>
-<!--
-{:else if type === 'ordered'}
-    {#each choices as choice (choice.key)}
-        <OrderedChoice
-            bind:text={choice.text}
-            value={choice.value}
-            delete_choice={() => delete_choice(choice.key)}
-            toggle_choice={() => toggle_choice(choice.key)}
-            />
-    {/each}
--->
 {/if}
 
