@@ -1,3 +1,6 @@
+import Choice from '@/components/Choice';
+import OrderedChoice from '@/components/OrderedChoice';
+
 export const TYPE_CONFIGS = {
     free_form: {
         display: 'Simple',
@@ -7,6 +10,7 @@ export const TYPE_CONFIGS = {
     },
     mc_single: {
         display: 'Multiple Choice -- Single Answer',
+        choice_component: Choice,
         get_empty_choice() {
             return {text: '', value: false}
         },
@@ -56,6 +60,7 @@ export const TYPE_CONFIGS = {
     },
     mc_multiple: {
         display: 'Multiple Choice -- Multiple Answers',
+        choice_component: Choice,
         get_empty_choice() {
             return {text: '', value: false}
         },
@@ -80,6 +85,7 @@ export const TYPE_CONFIGS = {
     },
     order: {
         display: 'Order',
+        choice_component: OrderedChoice,
         get_empty_choice() {
             return {text: '', value: ''}
         },

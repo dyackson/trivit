@@ -7,6 +7,7 @@
     import Dropdown from '@/components/Dropdown';
     import Bool from '@/components/Bool';
     import Choice from '@/components/Choice';
+    import OrderedChoice from '@/components/OrderedChoice';
     import Text from '@/components/Text';
     import Textarea from '@/components/Textarea';
     import {TYPE_CONFIGS, VALID_TYPES, TYPES_BY_DISPLAY} from '@/meta';
@@ -17,9 +18,15 @@
     let choices = [];
     let correct_answer = undefined;
     let answer_being_edited = undefined;
-    let previous_type = '';
+    let type = '';
+    let selected_type_config = {};
 
-    $: type = TYPES_BY_DISPLAY[selected_display_type];
+    $: {
+        selected_display_type;
+        // react to selected_display_type change
+        type = TYPES_BY_DISPLAY[selected_display_type];
+    }
+
     // reset answer when type changes
     $: {
         type;
@@ -27,6 +34,7 @@
         if (type) {
             update_answer_on_type_change();
             update_choics_on_type_change();
+            selected_type_config = TYPE_CONFIGS[type];
         }
     }
 
@@ -75,9 +83,9 @@
 {:else if type === 'free_form'}
     <Text bind:value={answer} label=Answer />
 
-{:else if type === 'mc_single' || type === 'mc_multiple'}
+{:else if selected_type_config.choice_component }
     {#each choices as choice (choice.key)}
-        <Choice
+    <svelte:component this={selected_type_config.choice_component}
             bind:text={choice.text}
             value={choice.value}
             delete_choice={() => delete_choice(choice.key)}
@@ -85,9 +93,16 @@
             />
     {/each}
     <button class=button on:click={add_empty_choice}>Add Another Choice</button>
-
-
+<!--
 {:else if type === 'ordered'}
-    <Text bind:value={answer} label=Answer />
-
+    {#each choices as choice (choice.key)}
+        <OrderedChoice
+            bind:text={choice.text}
+            value={choice.value}
+            delete_choice={() => delete_choice(choice.key)}
+            toggle_choice={() => toggle_choice(choice.key)}
+            />
+    {/each}
+-->
 {/if}
+
