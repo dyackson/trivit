@@ -2,7 +2,7 @@
 import get_valid_copy_of_question, {
     get_valid_type,
     get_valid_prompt,
-    get_valid_choices,
+    get_valid_answer,
     get_valid_tags,
     get_valid_links,
 } from '@/get_valid_copy_of_question';
@@ -103,90 +103,90 @@ describe(`get_valid_copy_of_question`, () => {
 
     });
 
-    describe(`get_valid_choices`, () => {
+    describe(`get_valid_answer`, () => {
         const results_by_type = {
             true_false: {
                 errors_if: [
                     {
-                        why: `choices is not boolean`,
-                        given_choices: ['x'],
+                        why: `answer is not boolean`,
+                        given_answer: ['x'],
                     },
                 ],
                 good_if: [
                     {
-                        why: `choices is a boolean`,
-                        given_choices: false,
+                        why: `answers is a boolean`,
+                        given_answer: false,
                     },
                 ],
             },
             free_form: {
                 errors_if: [
                     {
-                        why: `choice is not a string`,
-                        given_choices: [],
+                        why: `answer is not a string`,
+                        given_answer: [],
                     },
                     {
-                        why: `choice is a blank string`,
-                        given_choices: '  ',
+                        why: `answer is a blank string`,
+                        given_answer: '  ',
                     },
                 ],
                 good_if: [
                     {
-                        why: `choice is a lengthy string (trims result)`,
-                        given_choices: ' foo ',
-                        returns_choices: 'foo',
+                        why: `answer is a lengthy string (trims result)`,
+                        given_answer: ' foo ',
+                        returns_answer: 'foo',
                     },
                 ],
             },
             mc_single: {
                 errors_if: [
                     {
-                        why: `choices is empty`,
-                        given_choices: '',
+                        why: `answer is empty`,
+                        given_answer: '',
                     },
                     {
-                        why: `choices is empty array`,
-                        given_choices: [],
+                        why: `answer is empty array`,
+                        given_answer: [],
                     },
                     {
-                        why: `choices not an array`,
-                        given_choices: 88,
+                        why: `answer not an array`,
+                        given_answer: 88,
                     },
                     {
-                        why: `choices not an objects`,
-                        given_choices: ['foo', 'bar'],
+                        why: `answer not an objects`,
+                        given_answer: ['foo', 'bar'],
                     },
                     {
-                        why: `choices contain duplicate text`,
-                        given_choices: [
+                        why: `answer contain duplicate text`,
+                        given_answer: [
                             {text: 'a', value: true},
                             {text: ' a ', value: false},
                         ],
                     },
                     {
                         why: `multiple correct answers`,
-                        given_choices: [
+                        given_answer: [
                             {text: 'a', value: true},
                             {text: 'b', value: true},
                         ],
                     },
                     {
                         why: `no correct answer`,
-                        given_choices: [
+                        given_answer: [
                             {text: 'a', value: false},
                             {text: 'b', value: false},
                         ],
                     },
                     {
                         why: `a choice.text is not a string`,
-                        given_choices: [
+                        given_answer: [
                             {text: {}, value: true},
                             {text: ' b ', value: false},
                         ],
                     },
                     {
                         why: `a choice.text is a blank string`,
-                        given_choices: [
+                        given_answer: [
                             {text: '  ', value: true},
                             {text: ' b ', value: false},
                         ],
@@ -195,11 +195,11 @@ describe(`get_valid_copy_of_question`, () => {
                 good_if: [
                     {
                         why: `only one correct and unique trimmed texts lengthy`,
-                        given_choices: [
+                        given_answer: [
                             {text: ' a ', value: false},
                             {text: ' b', value: true},
                         ],
-                        returns_choices: [
+                        returns_answer: [
                             {text: 'a', value: false},
                             {text: 'b', value: true},
                         ],
@@ -209,38 +209,38 @@ describe(`get_valid_copy_of_question`, () => {
             mc_multiple: {
                 errors_if: [
                     {
-                        why: `choices is empty`,
-                        given_choices: '',
+                        why: `answer is empty`,
+                        given_answer: '',
                     },
                     {
-                        why: `choices is empty array`,
-                        given_choices: [],
+                        why: `answer is empty array`,
+                        given_answer: [],
                     },
                     {
-                        why: `choices not an array`,
-                        given_choices: 88,
+                        why: `answer not an array`,
+                        given_answer: 88,
                     },
                     {
-                        why: `choices not an objects`,
-                        given_choices: ['foo', 'bar'],
+                        why: `answer not an objects`,
+                        given_answer: ['foo', 'bar'],
                     },
                     {
-                        why: `choices contain duplicate text`,
-                        given_choices: [
+                        why: `answer contain duplicate text`,
+                        given_answer: [
                             {text: 'a', value: true},
                             {text: ' a ', value: false},
                         ],
                     },
                     {
                         why: `a choice.text is not a string`,
-                        given_choices: [
+                        given_answer: [
                             {text: {}, value: true},
                             {text: ' b ', value: false},
                         ],
                     },
                     {
                         why: `a choice.text is a blank string`,
-                        given_choices: [
+                        given_answer: [
                             {text: '  ', value: true},
                             {text: ' b ', value: false},
                         ],
@@ -249,33 +249,33 @@ describe(`get_valid_copy_of_question`, () => {
                 good_if: [
                     {
                         why: `only one correct and unique trimmed texts lengthy`,
-                        given_choices: [
+                        given_answer: [
                             {text: ' a ', value: false},
                             {text: ' b', value: true},
                         ],
-                        returns_choices: [
+                        returns_answer: [
                             {text: 'a', value: false},
                             {text: 'b', value: true},
                         ],
                     },
                     {
                         why: `multiple correct and unique trimmed texts lengthy`,
-                        given_choices: [
+                        given_answer: [
                             {text: ' a ', value: true},
                             {text: ' b', value: true},
                         ],
-                        returns_choices: [
+                        returns_answer: [
                             {text: 'a', value: true},
                             {text: 'b', value: true},
                         ],
                     },
                     {
                         why: `zero correct and unique trimmed texts lengthy`,
-                        given_choices: [
+                        given_answer: [
                             {text: ' a ', value: true},
                             {text: ' b', value: true},
                         ],
-                        returns_choices: [
+                        returns_answer: [
                             {text: 'a', value: true},
                             {text: 'b', value: true},
                         ],
@@ -285,45 +285,45 @@ describe(`get_valid_copy_of_question`, () => {
             ordered: {
                 errors_if: [
                     {
-                        why: `choices is empty`,
-                        given_choices: '',
+                        why: `answer is empty`,
+                        given_answer: '',
                     },
                     {
-                        why: `choices is empty array`,
-                        given_choices: [],
+                        why: `answer is empty array`,
+                        given_answer: [],
                     },
                     {
-                        why: `choices not an array`,
-                        given_choices: 88,
+                        why: `answer not an array`,
+                        given_answer: 88,
                     },
                     {
-                        why: `choices not an objects`,
-                        given_choices: ['foo', 'bar'],
+                        why: `answer not an objects`,
+                        given_answer: ['foo', 'bar'],
                     },
                     {
-                        why: `choices contain duplicate text`,
-                        given_choices: [
+                        why: `answer contain duplicate text`,
+                        given_answer: [
                             {text: 'a', value: 1},
                             {text: ' a ', value: 2},
                         ],
                     },
                     {
                         why: `a choice.value is not a number`,
-                        given_choices: [
+                        given_answer: [
                             {text: 'a', value: 'zoo'},
                             {text: ' b ', value: 2},
                         ],
                     },
                     {
                         why: `a choice.text is not a string`,
-                        given_choices: [
+                        given_answer: [
                             {text: {}, value: 8},
                             {text: ' b ', value: 2},
                         ],
                     },
                     {
                         why: `a choice.text is a blank string`,
-                        given_choices: [
+                        given_answer: [
                             {text: '  ', value: 8},
                             {text: ' b ', value: 2},
                         ],
@@ -332,22 +332,22 @@ describe(`get_valid_copy_of_question`, () => {
                 good_if: [
                     {
                         why: `unique trimmed texts and number values`,
-                        given_choices: [
+                        given_answer: [
                             {text: 'a', value: 8},
                             {text: ' b ', value: 2},
                         ],
-                        returns_choices: [
+                        returns_answer: [
                             {text: 'a', value: 8},
                             {text: 'b', value: 2},
                         ],
                     },
                     {
                         why: `unique trimmed texts with duplicate number values`,
-                        given_choices: [
+                        given_answer: [
                             {text: 'a', value: 8},
                             {text: ' b ', value: 8},
                         ],
-                        returns_choices: [
+                        returns_answer: [
                             {text: 'a', value: 8},
                             {text: 'b', value: 8},
                         ],
@@ -359,19 +359,19 @@ describe(`get_valid_copy_of_question`, () => {
         Object.entries(results_by_type)
             .forEach(([type, {errors_if, good_if}]) => {
                 describe(type, () => {
-                    errors_if.forEach(({why, given_choices}) =>
+                    errors_if.forEach(({why, given_answer}) =>
                         it(`errors if ${why}`, () =>
-                            expect(() => get_valid_choices({
+                            expect(() => get_valid_answer({
                                 type,
-                                choices: given_choices,
+                                answer: given_answer,
                             })).toThrow(InvalidQuestion)));
 
-                    good_if.forEach(({why, given_choices, returns_choices}) =>
+                    good_if.forEach(({why, given_answer, returns_answer}) =>
                         it(`good: ${why}`, () =>
-                            expect(get_valid_choices({
+                            expect(get_valid_answer({
                                 type,
-                                choices: given_choices,
-                            })).toEqual(returns_choices || given_choices)));
+                                answer: given_answer,
+                            })).toEqual(returns_answer || given_answer)));
                 });
             });
     });
@@ -381,14 +381,14 @@ describe(`get_valid_copy_of_question`, () => {
         {
             type: 'true_false',
             prompt: 'Is Paul dead',
-            choices: false,
+            answer: false,
             tags: ['beatles'],
             links: ['https://en.wikipedia.org/wiki/Paul_is_dead'],
         },
         {
             type: 'true_false',
             prompt: 'Is John dead',
-            choices: true,
+            answer: true,
             tags: ['beatles'],
             links: ['https://en.wikipedia.org/wiki/John_Lennon'],
         },
@@ -396,7 +396,7 @@ describe(`get_valid_copy_of_question`, () => {
         {
             type: 'free_form',
             prompt: 'Who was the drummer',
-            choices: 'Ringo Starr',
+            answer: 'Ringo Starr',
             tags: ['beatles'],
             links: ['https://en.wikipedia.org/wiki/The_Beatles'],
         },
@@ -404,7 +404,7 @@ describe(`get_valid_copy_of_question`, () => {
         {
             type: 'mc_single',
             prompt: 'Who was the drummer',
-            choices: [
+            answer: [
                 {text: 'John', value: false},
                 {text: 'Paul', value: null},
                 {text: 'George'},
@@ -417,7 +417,7 @@ describe(`get_valid_copy_of_question`, () => {
         {
             type: 'mc_multiple',
             prompt: 'Who could play drums',
-            choices: [
+            answer: [
                 {text: 'John', value: false},
                 {text: 'Paul', value: true},
                 {text: 'George'},
@@ -430,7 +430,7 @@ describe(`get_valid_copy_of_question`, () => {
         {
             type: 'ordered',
             prompt: 'Order by year of Release',
-            choices: [
+            answer: [
                 {text: 'Sgt Pepper', value: 1967},
                 {text: 'Please, Please Me', value: 1963},
                 {text: 'Let It Be', value: 1970},

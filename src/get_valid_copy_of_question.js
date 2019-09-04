@@ -11,7 +11,7 @@ export default function get_valid_copy_of_question(question) {
     const {
         type,
         prompt,
-        choices,
+        answer,
         tags = [],
         links = [],
         _id,
@@ -23,7 +23,7 @@ export default function get_valid_copy_of_question(question) {
         owner_id,
         type: get_valid_type(type),
         prompt: get_valid_prompt(prompt),
-        choices: get_valid_choices({choices, type}),
+        answer: get_valid_answer({answer, type}),
         tags: get_valid_tags(tags),
         links: get_valid_links(links),
     });
@@ -56,64 +56,64 @@ export function get_valid_prompt(prompt) {
     return trimmed;
 }
 
-export function get_valid_choices({choices, type}) {
+export function get_valid_answer({answer, type}) {
     if (type === 'true_false') {
-        return get_valid_true_false_choices(choices);
+        return get_valid_true_false_answer(answer);
     } else if (type === 'free_form') {
-        return get_valid_free_form_choices(choices);
+        return get_valid_free_form_answer(answer);
     } else {
-        error_if_empty_or_non_array(choices);
-        error_if_one_is_not_an_object(choices);
+        error_if_empty_or_non_array(answer);
+        error_if_one_is_not_an_object(answer);
 
         if (type === 'mc_single' || type === 'mc_multiple') {
-            error_if_wrong_number_of_correct_answers(choices, type);
+            error_if_wrong_number_of_correct_answers(answer, type);
         } else if (type === 'ordered') {
-            error_if_a_choice_value_is_not_sortable(choices);
+            error_if_an_answer_value_is_not_sortable(answer);
         }
 
-        let trimmed_choices = get_trimmed_choices(choices);
+        let trimmed_answer = get_trimmed_answer(answer);
 
-        return trimmed_choices;
+        return trimmed_answer;
     }
 }
 
-function get_valid_true_false_choices(choices) {
-    if (typeof choices !== 'boolean') {
+function get_valid_true_false_answer(answer) {
+    if (typeof answer !== 'boolean') {
         throw new InvalidQuestion(
-            `true_false must have boolean choices: ${choices}`);
+            `true_false must have boolean answer: ${answer}`);
     } else {
-        return choices;
+        return answer;
     }
 }
 
-function get_valid_free_form_choices(choices) {
-    if (typeof choices !== 'string') {
+function get_valid_free_form_answer(answer) {
+    if (typeof answer !== 'string') {
         throw new InvalidQuestion(
-            `free_form must have string choices: ${choices}`);
+            `free_form must have string answer: ${answer}`);
     }
-    const trimmed_choices = choices.trim();
+    const trimmed_answer = answer.trim();
 
-    if (!trimmed_choices.length) {
+    if (!trimmed_answer.length) {
         throw new InvalidQuestion(
-            `free_form must non-empty choices: ${choices}`);
+            `free_form must non-empty answer: ${answer}`);
     }
 
-    return trimmed_choices;
+    return trimmed_answer;
 }
 
-function error_if_empty_or_non_array(choices) {
-    const choices_is_empty = !Array.isArray(choices) || !choices.length;
-    if (choices_is_empty) {
+function error_if_empty_or_non_array(answer) {
+    const answer_is_empty = !Array.isArray(answer) || !answer.length;
+    if (answer_is_empty) {
         throw new InvalidQuestion(
-            `choices must be a non-empty array: ${choices}`);
+            `answer must be a non-empty array: ${answer}`);
     }
 }
 
-function error_if_wrong_number_of_correct_answers(choices, type) {
-    const correct_count = choices.filter(({value}) => {
+function error_if_wrong_number_of_correct_answers(answer, type) {
+    const correct_count = answer.filter(({value}) => {
         if (typeof value !== 'boolean' && value != undefined) {
             throw new InvalidQuestion(
-                `non-boolean, non-empty choice value for: ${value}`);
+                `non-boolean, non-empty answer value for: ${value}`);
         }
         return value;
     }).length;
@@ -127,49 +127,49 @@ function error_if_wrong_number_of_correct_answers(choices, type) {
     }
 }
 
-function error_if_one_is_not_an_object(choices) {
-    choices.forEach((choice, i) => {
-        if (!(choice instanceof Object)) {
+function error_if_one_is_not_an_object(answer) {
+    answer.forEach((ans, i) => {
+        if (!(ans instanceof Object)) {
             throw new InvalidQuestion(
-                `type is order but choice ${i} is not an object: ${choice}`);
+                `type is order but answer ${i} is not an object: ${ans}`);
         }
     });
 }
 
-function error_if_a_choice_value_is_not_sortable(choices) {
-    choices.forEach((choice, i) => {
-        if (typeof choice.value !== 'number') {
+function error_if_an_answer_value_is_not_sortable(answer) {
+    answer.forEach((ans, i) => {
+        if (typeof ans.value !== 'number') {
             throw new InvalidQuestion(
-                `type is order but choice ${i} value not a number: ${choice}`);
+                `type is order but answer ${i} value not a number: ${ans}`);
         }
     });
 }
 
-function get_trimmed_choices(choices) {
-    const choice_texts = choices.map(c => c.text);
+function get_trimmed_answer(answer) {
+    const answer_texts = answer.map(a => a.text);
 
-    const trimmed_choice_texts = choice_texts.map((choice, i) => {
-        if (typeof choice !== 'string') {
+    const trimmed_answer_texts = answer_texts.map((text, i) => {
+        if (typeof text !== 'string') {
             throw new InvalidQuestion(
-                `choice.${i}.text is not a string: ${choice}`);
+                `answer.${i}.text is not a string: ${text}`);
         }
-        const trimmed = choice.trim();
+        const trimmed = text.trim();
         if (!trimmed.length) {
             throw new InvalidQuestion(
-                `choice ${i} has empty text: ${choice}`);
+                `answer ${i} has empty text: ${text}`);
         }
         return trimmed;
     })
 
-    if (!is_unique(trimmed_choice_texts)) {
-        throw new InvalidQuestion(`mc_multiple choices are identical`);
+    if (!is_unique(trimmed_answer_texts)) {
+        throw new InvalidQuestion(`mc_multiple answer are identical`);
     }
 
-    const trimmed_choices = trimmed_choice_texts.map((text, i) => {
-        return {text, value: choices[i].value};
+    const trimmed_answer = trimmed_answer_texts.map((text, i) => {
+        return {text, value: answer[i].value};
     });
 
-    return trimmed_choices;
+    return trimmed_answer;
 }
 
 export function get_valid_tags(tags) {
