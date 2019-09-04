@@ -3,7 +3,6 @@ import get_valid_copy_of_question, {
     get_valid_type,
     get_valid_prompt,
     get_valid_choices,
-    get_valid_answer,
     get_valid_tags,
     get_valid_links,
 } from '@/get_valid_copy_of_question';
@@ -103,129 +102,278 @@ describe(`get_valid_copy_of_question`, () => {
         });
 
     });
+
     describe(`get_valid_choices`, () => {
-        const errors_if = [
-            [`type is true_false and choices is present`,
-                {type: 'true_false', choices: ['x']}],
-            [`type is free_form and choices is present`,
-                {type: 'free_form', choices: ['x']}],
+        const results_by_type = {
+            true_false: {
+                errors_if: [
+                    {
+                        why: `choices is not boolean`,
+                        given_choices: ['x'],
+                    },
+                ],
+                good_if: [
+                    {
+                        why: `choices is a boolean`,
+                        given_choices: false,
+                    },
+                ],
+            },
+            free_form: {
+                errors_if: [
+                    {
+                        why: `choice is not a string`,
+                        given_choices: [],
+                    },
+                    {
+                        why: `choice is a blank string`,
+                        given_choices: '  ',
+                    },
+                ],
+                good_if: [
+                    {
+                        why: `choice is a lengthy string (trims result)`,
+                        given_choices: ' foo ',
+                        returns_choices: 'foo',
+                    },
+                ],
+            },
+            mc_single: {
+                errors_if: [
+                    {
+                        why: `choices is empty`,
+                        given_choices: '',
+                    },
+                    {
+                        why: `choices is empty array`,
+                        given_choices: [],
+                    },
+                    {
+                        why: `choices not an array`,
+                        given_choices: 88,
+                    },
+                    {
+                        why: `choices not an objects`,
+                        given_choices: ['foo', 'bar'],
+                    },
+                    {
+                        why: `choices contain duplicate text`,
+                        given_choices: [
+                            {text: 'a', value: true},
+                            {text: ' a ', value: false},
+                        ],
+                    },
+                    {
+                        why: `multiple correct answers`,
+                        given_choices: [
+                            {text: 'a', value: true},
+                            {text: 'b', value: true},
+                        ],
+                    },
+                    {
+                        why: `no correct answer`,
+                        given_choices: [
+                            {text: 'a', value: false},
+                            {text: 'b', value: false},
+                        ],
+                    },
+                    {
+                        why: `a choice.text is not a string`,
+                        given_choices: [
+                            {text: {}, value: true},
+                            {text: ' b ', value: false},
+                        ],
+                    },
+                    {
+                        why: `a choice.text is a blank string`,
+                        given_choices: [
+                            {text: '  ', value: true},
+                            {text: ' b ', value: false},
+                        ],
+                    }
+                ],
+                good_if: [
+                    {
+                        why: `only one correct and unique trimmed texts lengthy`,
+                        given_choices: [
+                            {text: ' a ', value: false},
+                            {text: ' b', value: true},
+                        ],
+                        returns_choices: [
+                            {text: 'a', value: false},
+                            {text: 'b', value: true},
+                        ],
+                    },
+                ],
+            },
+            mc_multiple: {
+                errors_if: [
+                    {
+                        why: `choices is empty`,
+                        given_choices: '',
+                    },
+                    {
+                        why: `choices is empty array`,
+                        given_choices: [],
+                    },
+                    {
+                        why: `choices not an array`,
+                        given_choices: 88,
+                    },
+                    {
+                        why: `choices not an objects`,
+                        given_choices: ['foo', 'bar'],
+                    },
+                    {
+                        why: `choices contain duplicate text`,
+                        given_choices: [
+                            {text: 'a', value: true},
+                            {text: ' a ', value: false},
+                        ],
+                    },
+                    {
+                        why: `a choice.text is not a string`,
+                        given_choices: [
+                            {text: {}, value: true},
+                            {text: ' b ', value: false},
+                        ],
+                    },
+                    {
+                        why: `a choice.text is a blank string`,
+                        given_choices: [
+                            {text: '  ', value: true},
+                            {text: ' b ', value: false},
+                        ],
+                    }
+                ],
+                good_if: [
+                    {
+                        why: `only one correct and unique trimmed texts lengthy`,
+                        given_choices: [
+                            {text: ' a ', value: false},
+                            {text: ' b', value: true},
+                        ],
+                        returns_choices: [
+                            {text: 'a', value: false},
+                            {text: 'b', value: true},
+                        ],
+                    },
+                    {
+                        why: `multiple correct and unique trimmed texts lengthy`,
+                        given_choices: [
+                            {text: ' a ', value: true},
+                            {text: ' b', value: true},
+                        ],
+                        returns_choices: [
+                            {text: 'a', value: true},
+                            {text: 'b', value: true},
+                        ],
+                    },
+                    {
+                        why: `zero correct and unique trimmed texts lengthy`,
+                        given_choices: [
+                            {text: ' a ', value: true},
+                            {text: ' b', value: true},
+                        ],
+                        returns_choices: [
+                            {text: 'a', value: true},
+                            {text: 'b', value: true},
+                        ],
+                    },
+                ],
+            },
+            ordered: {
+                errors_if: [
+                    {
+                        why: `choices is empty`,
+                        given_choices: '',
+                    },
+                    {
+                        why: `choices is empty array`,
+                        given_choices: [],
+                    },
+                    {
+                        why: `choices not an array`,
+                        given_choices: 88,
+                    },
+                    {
+                        why: `choices not an objects`,
+                        given_choices: ['foo', 'bar'],
+                    },
+                    {
+                        why: `choices contain duplicate text`,
+                        given_choices: [
+                            {text: 'a', value: 1},
+                            {text: ' a ', value: 2},
+                        ],
+                    },
+                    {
+                        why: `a choice.value is not a number`,
+                        given_choices: [
+                            {text: 'a', value: 'zoo'},
+                            {text: ' b ', value: 2},
+                        ],
+                    },
+                    {
+                        why: `a choice.text is not a string`,
+                        given_choices: [
+                            {text: {}, value: 8},
+                            {text: ' b ', value: 2},
+                        ],
+                    },
+                    {
+                        why: `a choice.text is a blank string`,
+                        given_choices: [
+                            {text: '  ', value: 8},
+                            {text: ' b ', value: 2},
+                        ],
+                    }
+                ],
+                good_if: [
+                    {
+                        why: `unique trimmed texts and number values`,
+                        given_choices: [
+                            {text: 'a', value: 8},
+                            {text: ' b ', value: 2},
+                        ],
+                        returns_choices: [
+                            {text: 'a', value: 8},
+                            {text: 'b', value: 2},
+                        ],
+                    },
+                    {
+                        why: `unique trimmed texts with duplicate number values`,
+                        given_choices: [
+                            {text: 'a', value: 8},
+                            {text: ' b ', value: 8},
+                        ],
+                        returns_choices: [
+                            {text: 'a', value: 8},
+                            {text: 'b', value: 8},
+                        ],
+                    },
+                ],
+            },
+        }
 
-            [`type not true_false and choices is missing`,
-                {type: 'foo'}],
+        Object.entries(results_by_type)
+            .forEach(([type, {errors_if, good_if}]) => {
+                describe(type, () => {
+                    errors_if.forEach(({why, given_choices}) =>
+                        it(`errors if ${why}`, () =>
+                            expect(() => get_valid_choices({
+                                type,
+                                choices: given_choices,
+                            })).toThrow(InvalidQuestion)));
 
-            [`choices are not objects`,
-                {type: 'order', choices: ['x', 'y', 'x ']}],
-            [`type choices.i.text is not a string for order type`,
-                {type: 'order',
-                    choices: [{text: {}, value: 7},
-                        {text: 'y', value: 3}]}],
-            [`type choices.i.text is not a string for mc_single type`,
-                {type: 'mc_single',
-                    choices: [{text: {}, value: true},
-                        {text: 'y', value: false}]}],
-            [`type choices.i.text is not a string for mc_multiple type`,
-                {type: 'mc_multiple',
-                    choices: [{text: {}, value: true},
-                        {text: 'y', value: true}]}],
-
-            [`type is order and a choice.i.value is not sortable`,
-                {type: 'order',
-                    choices: [{text: 'x', value: 'first'},
-                        {text: 'y', value: 3}]}],
-            [`choices is not an array`,
-                {type: 'foo', choices: 4}],
-            [`choices is an empty array`,
-                {type: 'foo', choices: []}],
-            [`choices are not objects`,
-                {type: 'order', choices: ['x', 'y', 'x ']}],
-            [`choices.i.text contains a whitespace item`,
-                {type: 'mc_single', choices: [{text: 'foo', value:' \t'}]}],
-            [`choices contains contains duplicate text`,
-                {type: 'mc_single', choices: [{text: 'x', value: false},
-                    {text:'x', value: false}]}],
-        ];
-        errors_if.forEach(([msg, input]) => {
-            it(`InvalidQuestion if ${msg}`, () => {
-                expect(() => get_valid_choices(input))
-                    .toThrow(InvalidQuestion)
+                    good_if.forEach(({why, given_choices, returns_choices}) =>
+                        it(`good: ${why}`, () =>
+                            expect(get_valid_choices({
+                                type,
+                                choices: given_choices,
+                            })).toEqual(returns_choices || given_choices)));
+                });
             });
-        });
-
-        it('returns undefined if type is true_false or free_form', () => {
-            expect(get_valid_choices({type: 'true_false'})).toEqual(undefined);
-            expect(get_valid_choices({type: 'free_form'})).toEqual(undefined);
-        });
-        it('returns choices with texts trimmed', () => {
-            expect(get_valid_choices({
-                type: 'order', choices: [{text: '\tx', value: 1},
-                    {text: ' y ', value: 0}]
-            })).toEqual([{text: 'x', value: 1},
-                {text: 'y', value: 0}]);
-        });
-        it('returns the trimmed choices otherwise', () => {
-            expect(get_valid_choices({type: 'mc_single', choices: [
-                {text: '\t x', value: true},
-                {text: 'y', value: false}
-            ]}))
-                .toEqual([
-                    {text: 'x', value: true},
-                    {text: 'y', value: false}
-                ]);
-        });
-    });
-    describe(`get_valid_answer`, () => {
-        let type = 'true_false';
-        const errors_if = [
-            [`type is ${type} and answer not boolean`,
-                {type}],
-        ];
-
-        type = 'free_form';
-        errors_if.push(
-            [`type is ${type} and answer is non-string`,
-                {type, answer: 1}],
-            [`type is ${type} and answer is blank`,
-                {type, answer: ' '}],
-        );
-
-        type = 'order';
-        errors_if.push(
-            [`type is ${type} and answer is defined`,
-                {type, answer: 1}],
-        );
-
-        type = 'mc_single';
-        errors_if.push(
-            [`type is ${type} and answer is defined`,
-                {type, answer: 1}],
-        );
-
-        type = 'mc_multiple';
-        errors_if.push(
-            [`type is ${type} and answer is defined`,
-                {type, answer: 1}],
-        );
-
-        errors_if.forEach(([msg, input]) => {
-            it(`InvalidQuestion if ${msg}`, () => {
-                expect(() => get_valid_answer(input))
-                    .toThrow(InvalidQuestion)
-            });
-        });
-
-        it('returns a valid answer for type true_false', () => {
-            expect(get_valid_answer({
-                type: 'true_false', answer: false,
-            })).toEqual(false);
-            expect(get_valid_answer({
-                type: 'true_false', answer: true,
-            })).toEqual(true);
-        });
-        it('returns a trimmed answer for type free_form', () => {
-            expect(get_valid_answer({
-                type: 'free_form', answer: ' moo ',
-            })).toEqual('moo');
-        });
     });
 
     const valid_questions = [
@@ -233,14 +381,14 @@ describe(`get_valid_copy_of_question`, () => {
         {
             type: 'true_false',
             prompt: 'Is Paul dead',
-            answer: false,
+            choices: false,
             tags: ['beatles'],
             links: ['https://en.wikipedia.org/wiki/Paul_is_dead'],
         },
         {
             type: 'true_false',
             prompt: 'Is John dead',
-            answer: true,
+            choices: true,
             tags: ['beatles'],
             links: ['https://en.wikipedia.org/wiki/John_Lennon'],
         },
@@ -248,7 +396,7 @@ describe(`get_valid_copy_of_question`, () => {
         {
             type: 'free_form',
             prompt: 'Who was the drummer',
-            answer: 'Ringo Starr',
+            choices: 'Ringo Starr',
             tags: ['beatles'],
             links: ['https://en.wikipedia.org/wiki/The_Beatles'],
         },
@@ -280,7 +428,7 @@ describe(`get_valid_copy_of_question`, () => {
         },
         // ordered
         {
-            type: 'order',
+            type: 'ordered',
             prompt: 'Order by year of Release',
             choices: [
                 {text: 'Sgt Pepper', value: 1967},
@@ -298,5 +446,4 @@ describe(`get_valid_copy_of_question`, () => {
             expect(get_valid_copy_of_question(q)).toEqual(q);
         })
     });
-
 });

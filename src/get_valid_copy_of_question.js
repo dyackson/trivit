@@ -12,7 +12,6 @@ export default function get_valid_copy_of_question(question) {
         type,
         prompt,
         choices,
-        answer,
         tags = [],
         links = [],
         _id,
@@ -25,7 +24,6 @@ export default function get_valid_copy_of_question(question) {
         type: get_valid_type(type),
         prompt: get_valid_prompt(prompt),
         choices: get_valid_choices({choices, type}),
-        answer: get_valid_answer({answer, type}),
         tags: get_valid_tags(tags),
         links: get_valid_links(links),
     });
@@ -59,19 +57,17 @@ export function get_valid_prompt(prompt) {
 }
 
 export function get_valid_choices({choices, type}) {
-    if (type === 'true_false' || type === 'free_form') {
-        if (choices) {
-            throw new InvalidQuestion(
-                `type ${type} should not have choices, choices: ${choices}`);
-        }
-        return;
+    if (type === 'true_false') {
+        return get_valid_true_false_choices(choices);
+    } else if (type === 'free_form') {
+        return get_valid_free_form_choices(choices);
     } else {
         error_if_empty_or_non_array(choices);
         error_if_one_is_not_an_object(choices);
 
         if (type === 'mc_single' || type === 'mc_multiple') {
             error_if_wrong_number_of_correct_answers(choices, type);
-        } else if (type === 'order') {
+        } else if (type === 'ordered') {
             error_if_a_choice_value_is_not_sortable(choices);
         }
 
@@ -79,6 +75,30 @@ export function get_valid_choices({choices, type}) {
 
         return trimmed_choices;
     }
+}
+
+function get_valid_true_false_choices(choices) {
+    if (typeof choices !== 'boolean') {
+        throw new InvalidQuestion(
+            `true_false must have boolean choices: ${choices}`);
+    } else {
+        return choices;
+    }
+}
+
+function get_valid_free_form_choices(choices) {
+    if (typeof choices !== 'string') {
+        throw new InvalidQuestion(
+            `free_form must have string choices: ${choices}`);
+    }
+    const trimmed_choices = choices.trim();
+
+    if (!trimmed_choices.length) {
+        throw new InvalidQuestion(
+            `free_form must non-empty choices: ${choices}`);
+    }
+
+    return trimmed_choices;
 }
 
 function error_if_empty_or_non_array(choices) {
@@ -141,7 +161,7 @@ function get_trimmed_choices(choices) {
         return trimmed;
     })
 
-    if (!isUnique(trimmed_choice_texts)) {
+    if (!is_unique(trimmed_choice_texts)) {
         throw new InvalidQuestion(`mc_multiple choices are identical`);
     }
 
@@ -150,38 +170,6 @@ function get_trimmed_choices(choices) {
     });
 
     return trimmed_choices;
-}
-
-export function get_valid_answer({answer, type}) {
-    switch (type) {
-        case 'true_false': {
-            if (typeof answer !== 'boolean') {
-                throw new InvalidQuestion(
-                    `non-boolean true_false answer: ${answer}`);
-            }
-            return answer;
-        }
-        case 'free_form': {
-            if (typeof answer !== 'string') {
-                throw new InvalidQuestion(
-                    `non-string free_form answer: ${answer}`);
-            }
-            const trimmed_answer = answer.trim();
-            if (!trimmed_answer.length) {
-                throw new InvalidQuestion(
-                    `blank string free_form answer: "${answer}"`);
-            }
-            return trimmed_answer;
-        }
-        default: {
-            if (answer !== undefined) {
-                throw new InvalidQuestion(
-                    `${type} should not have an answer: ${answer}`);
-            }
-        }
-    }
-
-    return answer;
 }
 
 export function get_valid_tags(tags) {
@@ -203,7 +191,7 @@ export function get_valid_tags(tags) {
         return trimmed;
     })
 
-    if (!isUnique(trimmed_tags)) {
+    if (!is_unique(trimmed_tags)) {
         throw new InvalidQuestion(
             `tags has duplicate items: ${tags}`);
     }
@@ -230,14 +218,14 @@ export function get_valid_links(links) {
         return link;
     });
 
-    if (!isUnique(valid_links)) {
+    if (!is_unique(valid_links)) {
         throw new InvalidQuestion(
             `links has duplicate items: ${links}`);
     }
     return valid_links;
 }
 
-function isUnique(array) {
+function is_unique(array) {
     const set = new Set(array);
     return set.size == array.length;
 }

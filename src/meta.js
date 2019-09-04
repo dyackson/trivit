@@ -123,8 +123,8 @@ export const TYPE_CONFIGS = {
             return [];
         }
     },
-    order: {
-        display: 'Order',
+    ordered: {
+        display: 'Ordered',
         choice_component: OrderedChoice,
         get_empty_choice() {
             return {text: '', value: ''}

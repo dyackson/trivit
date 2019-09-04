@@ -2,6 +2,7 @@ dependencies:
   '@mdi/font': 4.2.95
   bulma: 0.7.5
   compression: 1.7.4
+  lodash: 4.17.15
   mongodb-stitch-browser-sdk: 4.5.0
   mongoose: 5.6.3_mongoose@5.6.3
   polka: 0.5.2
@@ -2507,7 +2508,6 @@ packages:
     resolution:
       integrity: sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
   /lodash/4.17.15:
-    dev: true
     resolution:
       integrity: sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
   /log-symbols/2.2.0:
@@ -4755,6 +4755,7 @@ specifiers:
   eslint: ^6.1.0
   eslint-plugin-svelte3: ^2.7.3
   expect: ^24.8.0
+  lodash: ^4.17.15
   minimatch: ^3.0.4
   mocha: ^6.2.0
   mochapack: ^1.1.3
