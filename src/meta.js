@@ -1,32 +1,20 @@
 import Choice from '@/components/Choice';
 import OrderedChoice from '@/components/OrderedChoice';
+import AnswerConversionError from '@/AnswerConversionError';
+import {sortBy} from 'lodash';
 
 export const TYPE_CONFIGS = {
     free_form: {
         display: 'Simple',
-        loses_data_when_changing(from_type, choice) {
-            return !are_empty(choice);
-        },
-        on_changed_to_type(choices, from_type) {
-            switch (from_type) {
-                case 'mc_single':
-                case 'mc_multiple':
-                default:
-                    return [];
-            }
-        },
+    },
+    true_false: {
+        display: 'True/False',
     },
     mc_single: {
         display: 'Multiple Choice -- Single Answer',
         choice_component: Choice,
         get_empty_choice() {
             return {text: '', value: false}
-        },
-        loses_data_when_changing(from_type, choices) {
-            if (are_empty(choices)) {
-                return false;
-            }
-            return from_type !== 'mc_multiple';
         },
         on_choice_toggled(choices, key) {
             const toggled = choices.find((choice) => choice.key === key);
@@ -60,35 +48,12 @@ export const TYPE_CONFIGS = {
                 });
             }
         },
-        on_changed_to_type(choices, from_type) {
-            switch (from_type) {
-                case 'mc_multiple':
-                case 'ordered':
-                    return choices.map(ensure_false);
-                default:
-                    return [];
-            }
-
-            function ensure_false(choice) {
-                if (choice.value) {
-                    return {...choice, value: false};
-                } else {
-                    return choice;
-                }
-            }
-        },
     },
     mc_multiple: {
         display: 'Multiple Choice -- Multiple Answers',
         choice_component: Choice,
         get_empty_choice() {
             return {text: '', value: false}
-        },
-        loses_data_when_changing(from_type, choices) {
-            if (are_empty(choices)) {
-                return false;
-            }
-            return from_type !== 'mc_single';
         },
         on_choice_toggled(choices, key) {
             return choices.map((choice) => {
@@ -99,29 +64,6 @@ export const TYPE_CONFIGS = {
                 }
             });
         },
-        on_changed_to_type(choices, from_type) {
-            switch (from_type) {
-                case 'mc_single':
-                    return choices;
-                case 'ordered':
-                    return choices.map(with_false_value);
-                default:
-                    return [];
-            }
-
-            function with_false_value(choice) {
-                return {...choice, value: false};
-            }
-        },
-    },
-    true_false: {
-        display: 'True/False',
-        loses_data_when_changing(from_type, choices) {
-            return !are_empty(choices);
-        },
-        on_changed_to_type() {
-            return [];
-        }
     },
     ordered: {
         display: 'Ordered',
@@ -129,38 +71,8 @@ export const TYPE_CONFIGS = {
         get_empty_choice() {
             return {text: '', value: ''}
         },
-        loses_data_when_changing() {
-            return false;
-        },
-        on_changed_to_type(choices, from_type) {
-            switch (from_type) {
-                case 'mc_single':
-                case 'mc_multiple':
-                    return choices.map(without_value);
-                default:
-                    return [];
-            }
-
-            function without_value(choice) {
-                return {...choice, value: ''};
-            }
-        }
     },
 };
-
-function are_empty(choices) {
-    if (!choices || choices.length === 0) {
-        return true;
-    }
-    return !choices.some(has_text)
-}
-
-function has_text(choice) {
-    if (!choice || !choice.text) {
-        return false;
-    }
-    return choice.text.trim() !== '';
-}
 
 export const VALID_TYPES = Object.keys(TYPE_CONFIGS);
 
@@ -168,6 +80,178 @@ const TYPES_BY_DISPLAY = {};
 Object.entries(TYPE_CONFIGS)
     .forEach(([type, {display}]) => TYPES_BY_DISPLAY[display] = type);
 
-console.log(TYPES_BY_DISPLAY);
-
 export {TYPES_BY_DISPLAY};
+
+export function get_answer_on_type_change({
+    to_type,
+    from_type,
+    answer,
+}) {
+    if (to_type === from_type) {
+        return answer;
+    }
+
+    switch (to_type) {
+        case 'free_form':
+            switch (from_type) {
+                case 'true_false':
+                    return '';
+                case 'mc_single':
+                case 'mc_multiple':
+                    return free_from_from_mc_answer(answer);
+                case 'ordered':
+                    return free_from_from_ordered_answer(answer);
+                default:
+                    return throw_bad_case_error({from_type, to_type});
+
+            }
+        case 'true_false':
+            switch (from_type) {
+                case 'free_form':
+                    if (answer.trim()) {
+                        throw new AnswerConversionError(false);
+                    } else {
+                        return false;
+                    }
+                case 'mc_single':
+                case 'mc_multiple':
+                case 'ordered':
+                    if (!are_empty(answer)) {
+                        throw new AnswerConversionError(false);
+                    } else {
+                        return false;
+                    }
+                default:
+                    return throw_bad_case_error({from_type, to_type});
+            }
+        case 'ordered':
+            switch (from_type) {
+                case 'true_false':
+                    return [];
+                case 'free_form':
+                    return arrayed_from_free_form(answer);
+                case 'mc_single':
+                case 'mc_multiple':
+                    return ordered_from_mc_answer(answer);
+                default:
+                    return throw_bad_case_error({from_type, to_type});
+            }
+        case 'mc_single':
+            switch (from_type) {
+                case 'true_false':
+                    return [];
+                case 'free_form':
+                    return arrayed_from_free_form(answer);
+                case 'mc_multiple':
+                    return mc_single_from_mc_multiple_answer(answer);
+                case 'ordered':
+                    return mc_from_ordered(answer);
+                default:
+                    return throw_bad_case_error({from_type, to_type});
+
+            }
+        case 'mc_multiple':
+            switch (from_type) {
+                case 'true_false':
+                    return [];
+                case 'ordered':
+                    return mc_from_ordered(answer);
+                case 'mc_single':
+                    return answer;
+                case 'free_form':
+                    return arrayed_from_free_form(answer);
+                default:
+                    return throw_bad_case_error({from_type, to_type});
+            }
+    }
+}
+
+function throw_bad_case_error({from_type, to_type}) {
+    throw Error(`bad case: from_type="${from_type}", to_type="${to_type}"`);
+}
+
+function mc_from_ordered(answer) {
+    const answer_with_false_values = answer.filter(has_text)
+        .map(a => {
+            return {...a, value: false}
+        });
+    if (answer_with_false_values.length) {
+        throw new AnswerConversionError(answer_with_false_values);
+    } else {
+        return [];
+    }
+}
+
+function mc_single_from_mc_multiple_answer(answer) {
+    return answer.map(a => {
+        if (a.value) {
+            return {...a, value: false};
+        } else {
+            return a;
+        }
+    });
+}
+
+function arrayed_from_free_form(answer) {
+    if (answer.trim()) {
+        throw new AnswerConversionError([]);
+    } else {
+        return [];
+    }
+}
+
+function free_from_from_mc_answer(answer) {
+    if (!are_empty(answer)) {
+        const true_answer_as_string = answer
+            .filter(a => a.value)
+            .map(a => a.text)
+            .join(', ');
+
+        throw new AnswerConversionError(true_answer_as_string);
+    } else {
+        return '';
+    }
+}
+
+function free_from_from_ordered_answer(answer) {
+    if (!are_empty(answer)) {
+        const answer_with_text = answer
+            .filter(a => a.text);
+
+        const sorted_answer_string = sortBy(answer_with_text, 'value')
+            .map(a => a.text)
+            .join(', ');
+
+        throw new AnswerConversionError(sorted_answer_string);
+    } else {
+        return '';
+    }
+}
+
+function ordered_from_mc_answer(answer) {
+    if (!are_empty(answer)) {
+        const lengthy_answers_without_values = answer
+            .filter(a => a.text)
+            .map(a => {
+                return {text: a.text};
+            });
+
+        throw new AnswerConversionError(lengthy_answers_without_values);
+    } else {
+        return [];
+    }
+}
+
+function are_empty(answer) {
+    if (!answer || answer.length === 0) {
+        return true;
+    }
+    return !answer.some(has_text)
+}
+
+function has_text(ans) {
+    if (!ans || !ans.text) {
+        return false;
+    }
+    return ans.text.trim() !== '';
+}
