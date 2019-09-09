@@ -34,7 +34,6 @@ describe('get_answer_on_type_change', () => {
             });
         });
     })
-    let x;
     const conversions = [
         // from true_false
         {
@@ -171,7 +170,7 @@ describe('get_answer_on_type_change', () => {
                 {
                     why: 'answer is empty',
                     from: [],
-                    to: '',
+                    to: false,
                     warns: false,
                 },
             ]
@@ -196,7 +195,7 @@ describe('get_answer_on_type_change', () => {
                 {
                     why: 'one has text',
                     from: [{text: 'a', value: false}, {text: ' ', value: false}],
-                    from: [{text: 'a', value: false}],
+                    to: [{text: 'a', value: false}],
                     warns: false,
                 },
                 {
@@ -211,8 +210,7 @@ describe('get_answer_on_type_change', () => {
                     to: [],
                     warns: false,
                 },
-                {from: x, to: x}
-            ]
+            ],
         },
         {
             from_type: 'mc_single',
@@ -223,24 +221,24 @@ describe('get_answer_on_type_change', () => {
                     why: 'none are true',
                     from: [{text: 'a', value: false}, {text: 'b', value: false}],
                     to: [{text: 'a', value: ''}, {text: 'b', value: ''}],
-                    warns: true,
+                    warns: false,
                 },
                 {
                     why: 'multiple have text again',
                     from: [{text: 'a', value: false}, {text: 'b', value: true}],
                     to: [{text: 'a', value: ''}, {text: 'b', value: ''}],
-                    warns: true,
+                    warns: false,
                 },
                 {
                     why: 'one has text',
                     from: [{text: 'a', value: false}, {text: ' ', value: false}],
-                    to: [{text: 'a', value: ''}],
-                    warns: true,
+                    to: [{text: 'a', value: ''}, {text: ' ', value: ''}],
+                    warns: false,
                 },
                 {
                     why: 'both texts empty',
                     from: [{text: ' ', value: false}, {text: ' ', value: true}],
-                    to: [],
+                    to: [{text: ' ', value: ''}, {text: ' ', value: ''}],
                     warns: false,
                 },
                 {
@@ -301,8 +299,8 @@ describe('get_answer_on_type_change', () => {
                 {
                     why: 'a and b are both true',
                     from: [{text: 'a', value: true}, {text: 'b', value: true}],
-                    to: [{text: 'a', value: false}, {text: 'b', value: false}],
-                    warns: true,
+                    to: [{text: 'a', value: true}, {text: 'b', value: false}],
+                    warns: false,
                 },
                 {
                     why: 'only b is true',
@@ -313,19 +311,19 @@ describe('get_answer_on_type_change', () => {
                 {
                     why: 'one has text, the other is false',
                     from: [{text: 'a', value: false}, {text: ' ', value: false}],
-                    to: [{text: 'a', value: false}],
+                    to: [{text: 'a', value: false}, {text: ' ', value: false}],
                     warns: false,
                 },
                 {
                     why: 'one has text, the other is true',
                     from: [{text: 'a', value: false}, {text: ' ', value: true}],
-                    to: [{text: 'a', value: false}],
+                    to: [{text: 'a', value: false}, {text: ' ', value: true}],
                     warns: false,
                 },
                 {
                     why: 'both texts empty',
                     from: [{text: ' ', value: false}, {text: ' ', value: true}],
-                    to: [],
+                    to: [{text: ' ', value: false}, {text: ' ', value: true}],
                     warns: false,
                 },
                 {
@@ -386,30 +384,30 @@ describe('get_answer_on_type_change', () => {
                     why: 'a and b are both true',
                     from: [{text: 'a', value: true}, {text: 'b', value: true}],
                     to: [{text: 'a', value: ''}, {text: 'b', value: ''}],
-                    warns: true,
+                    warns: false,
                 },
                 {
                     why: 'only b is true',
                     from: [{text: 'a', value: false}, {text: 'b', value: true}],
                     to: [{text: 'a', value: ''}, {text: 'b', value: ''}],
-                    warns: true,
+                    warns: false,
                 },
                 {
                     why: 'one has text, the other is false',
                     from: [{text: 'a', value: false}, {text: ' ', value: false}],
-                    to: [{text: 'a', value: ''}],
-                    warns: true,
+                    to: [{text: 'a', value: ''}, {text: ' ', value: ''}],
+                    warns: false,
                 },
                 {
                     why: 'one has text, the other is true',
                     from: [{text: 'a', value: false}, {text: ' ', value: true}],
-                    to: [{text: 'a', value: ''}],
-                    warns: true,
+                    to: [{text: 'a', value: ''}, {text: ' ', value: ''}],
+                    warns: false,
                 },
                 {
                     why: 'both texts empty',
                     from: [{text: ' ', value: false}, {text: ' ', value: true}],
-                    to: [],
+                    to: [{text: ' ', value: ''}, {text: ' ', value: ''}],
                     warns: false,
                 },
                 {
@@ -434,32 +432,81 @@ describe('get_answer_on_type_change', () => {
                 },
                 {
                     why: 'one answer lacks value',
-                    from: [{text: 'a', value: 1}, {text: 'b', value: ''}],
-                    to: 'a',
+                    from: [{text: 'a', value: 1}, {text: 'b', value: undefined}],
+                    to: 'a, b',
                     warns: true,
                 },
                 {
                     why: 'one lacks text, the other lacks value',
-                    from: [{text: 'a', value: ''}, {text: ' ', value: 4}],
-                    to: '',
+                    from: [{text: 'a', value: undefined}, {text: ' ', value: 4}],
+                    to: 'a',
                     warns: true,
                 },
                 {
                     why: 'both lack value',
-                    from: [{text: 'a', value: ''}, {text: 'b', value: ''}],
-                    to: '',
+                    from: [{text: 'a', value: undefined}, {text: 'b', value: undefined}],
+                    to: 'a, b',
                     warns: true,
                 },
                 {
                     why: 'both lack text',
                     from: [{text: ' ', value: 1}, {text: ' ', value: 1}],
                     to: '',
-                    warns: true,
+                    warns: false,
                 },
                 {
                     why: 'both lack text and value',
-                    from: [{text: ' ', value: ''}, {text: ' ', value: ''}],
+                    from: [{text: ' ', value: undefined}, {text: ' ', value: undefined}],
                     to: '',
+                    warns: false,
+                },
+                {
+                    why: 'answer is empty',
+                    from: [],
+                    to: '',
+                    warns: false,
+                },
+            ]
+        },
+        {
+            from_type: 'ordered',
+            to_type: 'mc_single',
+            warns: true,
+            instances: [
+                {
+                    why: 'two complete answers',
+                    from: [{text: 'a', value: 2}, {text: 'b', value: 1}],
+                    to: [{text: 'a', value: false}, {text: 'b', value: false}],
+                    warns: true,
+                },
+                {
+                    why: 'one complete answer',
+                    from: [{text: 'a', value: 1}, {text: 'b', value: undefined}],
+                    to: [{text: 'a', value: false}, {text: 'b', value: false}],
+                    warns: true,
+                },
+                {
+                    why: 'one lacks text, the other lacks value',
+                    from: [{text: 'a', value: undefined}, {text: ' ', value: 4}],
+                    to: [{text: 'a', value: false}, {text: ' ', value: false}],
+                    warns: false,
+                },
+                {
+                    why: 'both lack value',
+                    from: [{text: 'a', value: undefined}, {text: 'b', value: undefined}],
+                    to: [{text: 'a', value: false}, {text: 'b', value: false}],
+                    warns: false,
+                },
+                {
+                    why: 'both lack text',
+                    from: [{text: ' ', value: 1}, {text: ' ', value: 1}],
+                    to: [{text: ' ', value: false}, {text: ' ', value: false}],
+                    warns: false,
+                },
+                {
+                    why: 'both lack text and value',
+                    from: [{text: ' ', value: undefined}, {text: ' ', value: undefined}],
+                    to: [{text: ' ', value: false}, {text: ' ', value: false}],
                     warns: false,
                 },
                 {
@@ -472,18 +519,51 @@ describe('get_answer_on_type_change', () => {
         },
         {
             from_type: 'ordered',
-            to_type: 'mc_single',
-            warns: true,
-            instances: [
-                {from: x, to: x}
-            ]
-        },
-        {
-            from_type: 'ordered',
             to_type: 'mc_multiple',
             warns: true,
             instances: [
-                {from: x, to: x}
+                {
+                    why: 'two complete answers',
+                    from: [{text: 'a', value: 2}, {text: 'b', value: 1}],
+                    to: [{text: 'a', value: false}, {text: 'b', value: false}],
+                    warns: true,
+                },
+                {
+                    why: 'one complete answer',
+                    from: [{text: 'a', value: 1}, {text: 'b', value: undefined}],
+                    to: [{text: 'a', value: false}, {text: 'b', value: false}],
+                    warns: true,
+                },
+                {
+                    why: 'one lacks text, the other lacks value',
+                    from: [{text: 'a', value: undefined}, {text: ' ', value: 4}],
+                    to: [{text: 'a', value: false}, {text: ' ', value: false}],
+                    warns: false,
+                },
+                {
+                    why: 'both lack value',
+                    from: [{text: 'a', value: undefined}, {text: 'b', value: undefined}],
+                    to: [{text: 'a', value: false}, {text: 'b', value: false}],
+                    warns: false,
+                },
+                {
+                    why: 'both lack text',
+                    from: [{text: ' ', value: 1}, {text: ' ', value: 1}],
+                    to: [{text: ' ', value: false}, {text: ' ', value: false}],
+                    warns: false,
+                },
+                {
+                    why: 'both lack text and value',
+                    from: [{text: ' ', value: undefined}, {text: ' ', value: undefined}],
+                    to: [{text: ' ', value: false}, {text: ' ', value: false}],
+                    warns: false,
+                },
+                {
+                    why: 'answer is empty',
+                    from: [],
+                    to: [],
+                    warns: false,
+                },
             ]
         },
         {
@@ -491,8 +571,73 @@ describe('get_answer_on_type_change', () => {
             to_type: 'true_false',
             warns: true,
             instances: [
-                {from: x, to: x}
+                {
+                    why: 'two complete answers',
+                    from: [{text: 'a', value: 2}, {text: 'b', value: 1}],
+                    to: false,
+                    warns: true,
+                },
+                {
+                    why: 'one answer lacks value',
+                    from: [{text: 'a', value: 1}, {text: 'b', value: undefined}],
+                    to: false,
+                    warns: true,
+                },
+                {
+                    why: 'one lacks text, the other lacks value',
+                    from: [{text: 'a', value: undefined}, {text: ' ', value: 4}],
+                    to: false,
+                    warns: true,
+                },
+                {
+                    why: 'both lack value',
+                    from: [{text: 'a', value: undefined}, {text: 'b', value: undefined}],
+                    to: false,
+                    warns: true,
+                },
+                {
+                    why: 'both lack text',
+                    from: [{text: ' ', value: 1}, {text: ' ', value: 1}],
+                    to: false,
+                    warns: false,
+                },
+                {
+                    why: 'both lack text and value',
+                    from: [{text: ' ', value: undefined}, {text: ' ', value: undefined}],
+                    to: false,
+                    warns: false,
+                },
+                {
+                    why: 'answer is empty',
+                    from: [],
+                    to: false,
+                    warns: false,
+                },
             ]
         },
     ]
+
+    conversions.forEach(({from_type, to_type, instances}) => {
+        describe(`${to_type} from ${from_type}`, () => {
+            instances.forEach(({why, from, to, warns}, i) => {
+                it(`${why || i}`, () => {
+                    try {
+                        expect(get_answer_on_type_change({
+                            from_type,
+                            to_type,
+                            answer: from,
+                        })).toEqual(to);
+                        expect(false).toEqual(Boolean(warns));
+
+                    } catch (e) {
+                        if (!(e instanceof AnswerConversionError)) {
+                            throw e;
+                        }
+                        expect(e.converted_answer).toEqual(to);
+                        expect(true).toEqual(warns);
+                    }
+                });
+            });
+        });
+    });
 });

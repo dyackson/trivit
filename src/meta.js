@@ -129,7 +129,7 @@ export function get_answer_on_type_change({
                 case 'true_false':
                     return [];
                 case 'free_form':
-                    return arrayed_from_free_form(answer);
+                    return arrayed_from_free_form(answer, to_type);
                 case 'mc_single':
                 case 'mc_multiple':
                     return ordered_from_mc_answer(answer);
@@ -141,7 +141,7 @@ export function get_answer_on_type_change({
                 case 'true_false':
                     return [];
                 case 'free_form':
-                    return arrayed_from_free_form(answer);
+                    return arrayed_from_free_form(answer, to_type);
                 case 'mc_multiple':
                     return mc_single_from_mc_multiple_answer(answer);
                 case 'ordered':
@@ -157,13 +157,17 @@ export function get_answer_on_type_change({
                 case 'ordered':
                     return mc_from_ordered(answer);
                 case 'mc_single':
-                    return answer;
+                    return mc_multiple_from_mc_single(answer);
                 case 'free_form':
-                    return arrayed_from_free_form(answer);
+                    return arrayed_from_free_form(answer, to_type);
                 default:
                     return throw_bad_case_error({from_type, to_type});
             }
     }
+}
+
+function mc_multiple_from_mc_single(answer) {
+    return answer.filter(a => a.text.trim());
 }
 
 function throw_bad_case_error({from_type, to_type}) {
@@ -171,30 +175,38 @@ function throw_bad_case_error({from_type, to_type}) {
 }
 
 function mc_from_ordered(answer) {
-    const answer_with_false_values = answer.filter(has_text)
-        .map(a => {
-            return {...a, value: false}
-        });
-    if (answer_with_false_values.length) {
+    const at_least_one_complete_ans = answer
+        .some(a => a.value !== undefined && a.text.trim());
+
+    const answer_with_false_values = answer.map(a => ({...a, value: false}));
+    if (at_least_one_complete_ans) {
         throw new AnswerConversionError(answer_with_false_values);
     } else {
-        return [];
+        return answer_with_false_values;
     }
 }
 
 function mc_single_from_mc_multiple_answer(answer) {
+    let encountered_true = false;
     return answer.map(a => {
         if (a.value) {
-            return {...a, value: false};
+            if (encountered_true) {
+                return {...a, value: false};
+            } else {
+                encountered_true = true
+                return a;
+            }
         } else {
             return a;
         }
     });
 }
 
-function arrayed_from_free_form(answer) {
-    if (answer.trim()) {
-        throw new AnswerConversionError([]);
+function arrayed_from_free_form(answer, to_type) {
+    const text = answer.trim();
+    if (text) {
+        const value = to_type === 'ordered' ? '' : true;
+        return [{text, value}];
     } else {
         return [];
     }
@@ -204,7 +216,7 @@ function free_from_from_mc_answer(answer) {
     if (!are_empty(answer)) {
         const true_answer_as_string = answer
             .filter(a => a.value)
-            .map(a => a.text)
+            .map(a => a.text.trim())
             .join(', ');
 
         throw new AnswerConversionError(true_answer_as_string);
@@ -216,7 +228,7 @@ function free_from_from_mc_answer(answer) {
 function free_from_from_ordered_answer(answer) {
     if (!are_empty(answer)) {
         const answer_with_text = answer
-            .filter(a => a.text);
+            .filter(a => a.text.trim());
 
         const sorted_answer_string = sortBy(answer_with_text, 'value')
             .map(a => a.text)
@@ -229,17 +241,7 @@ function free_from_from_ordered_answer(answer) {
 }
 
 function ordered_from_mc_answer(answer) {
-    if (!are_empty(answer)) {
-        const lengthy_answers_without_values = answer
-            .filter(a => a.text)
-            .map(a => {
-                return {text: a.text};
-            });
-
-        throw new AnswerConversionError(lengthy_answers_without_values);
-    } else {
-        return [];
-    }
+    return answer.map(({text}) => ({text, value: ''}));
 }
 
 function are_empty(answer) {

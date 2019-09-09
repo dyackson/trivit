@@ -2,7 +2,7 @@
     export let placeholder = '1066'
     export let text = ''
     // value = is this a correct choice
-    export let value = '';
+    export let value = undefined;
     export let delete_choice = null;
     export let toggle_choice = null;
 
