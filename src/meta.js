@@ -94,19 +94,23 @@ export function get_answer_on_type_change({
     switch (to_type) {
         case 'free_form':
             switch (from_type) {
+                case '':
+                    return '';
                 case 'true_false':
                     return '';
                 case 'mc_single':
                 case 'mc_multiple':
                     return free_from_from_mc_answer(answer);
                 case 'ordered':
-                    return free_from_from_ordered_answer(answer);
+                    return free_form_from_ordered_answer(answer);
                 default:
                     return throw_bad_case_error({from_type, to_type});
 
             }
         case 'true_false':
             switch (from_type) {
+                case '':
+                    return false;
                 case 'free_form':
                     if (answer.trim()) {
                         throw new AnswerConversionError(false);
@@ -126,6 +130,8 @@ export function get_answer_on_type_change({
             }
         case 'ordered':
             switch (from_type) {
+                case '':
+                    return [TYPE_CONFIGS[to_type].get_empty_choice()];
                 case 'true_false':
                     return [];
                 case 'free_form':
@@ -138,6 +144,8 @@ export function get_answer_on_type_change({
             }
         case 'mc_single':
             switch (from_type) {
+                case '':
+                    return [TYPE_CONFIGS[to_type].get_empty_choice()];
                 case 'true_false':
                     return [];
                 case 'free_form':
@@ -152,6 +160,8 @@ export function get_answer_on_type_change({
             }
         case 'mc_multiple':
             switch (from_type) {
+                case '':
+                    return [TYPE_CONFIGS[to_type].get_empty_choice()];
                 case 'true_false':
                     return [];
                 case 'ordered':
@@ -225,7 +235,7 @@ function free_from_from_mc_answer(answer) {
     }
 }
 
-function free_from_from_ordered_answer(answer) {
+function free_form_from_ordered_answer(answer) {
     if (!are_empty(answer)) {
         const answer_with_text = answer
             .filter(a => a.text.trim());

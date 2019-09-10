@@ -10,19 +10,23 @@
     import OrderedChoice from '@/components/OrderedChoice';
     import Text from '@/components/Text';
     import Textarea from '@/components/Textarea';
-    import {TYPE_CONFIGS, VALID_TYPES, TYPES_BY_DISPLAY} from '@/meta';
+    import {
+        TYPE_CONFIGS,
+        VALID_TYPES,
+        TYPES_BY_DISPLAY,
+        get_answer_on_type_change,
+    } from '@/meta';
+    import AnswerConversionError from '@/AnswerConversionError';
 
     let selected_display_type = TYPES_BY_DISPLAY[0];
     let prompt = '';
-    let answer = true;
-    let choices = [];
-    let correct_answer = undefined;
-    let answer_being_edited = undefined;
+    let answer = '';
+    let converted_answer = null;
     let type = '';
     let selected_type_config = {};
-    let show_data_loss_on_type_change_warning = false;
-    let from_type = '';
     let to_type = '';
+
+    $: show_data_loss_on_type_change_warning = converted_answer !== null;
 
     $: {
         // react to selected_display_type change
@@ -32,56 +36,59 @@
     }
 
     function on_type_changed() {
-        from_type = type;
         to_type = TYPES_BY_DISPLAY[selected_display_type];
 
-        if (!from_type) {
-            continue_type_change();
-        } else if (from_type !== to_type) {
-            show_data_loss_on_type_change_warning
-                = TYPE_CONFIGS[to_type].loses_data_when_changing(from_type,
-                    choices);
-            if (!show_data_loss_on_type_change_warning) {
-                continue_type_change();
-            } else {
-                // the warning modal shows
-            }
-        } else {
-            // the same type was reselected
-            from_type = '';
+        try {
+            console.log('up here')
+            console.dir({type,to_type})
+
+            answer = get_answer_on_type_change({
+                from_type: type,
+                to_type,
+                answer,
+            });
+
+            type = to_type;
             to_type = '';
+            selected_type_config = TYPE_CONFIGS[type] || {};
+            console.log('down here')
+            console.dir({type,to_type})
+        } catch (e) {
+            console.log('caught one')
+            if (e instanceof AnswerConversionError) {
+                converted_answer = e.converted_answer;
+            } else {
+                throw e;
+            }
         }
     }
 
     function continue_type_change() {
-        show_data_loss_on_type_change_warning = false;
         type = to_type;
-        selected_type_config = TYPE_CONFIGS[type] || {};
-        choices = selected_type_config.on_changed_to_type(choices, from_type);
-        answer = '';
         to_type = '';
-        from_type = '';
+        selected_type_config = TYPE_CONFIGS[type] || {};
+        answer = converted_answer;
+        converted_answer = null;
     }
 
     function abort_type_change() {
-        show_data_loss_on_type_change_warning = false;
-        selected_display_type = selected_type_config.display;
-        from_type = '';
         to_type = '';
+        selected_display_type = selected_type_config.display;
+        converted_answer = null;
     }
 
-    function add_empty_choice() {
+    function add_empty_ans() {
         const empty_choice = selected_type_config.get_empty_choice();
         empty_choice.key = choice_key++;
-        choices = [...choices, empty_choice];
+        answer = [...answer, empty_choice];
     }
 
-    function delete_choice(key) {
-        choices = choices.filter((c) => c.key !== key);
+    function delete_ans(key) {
+        answer = answer.filter((c) => c.key !== key);
     }
 
-    function toggle_choice(key) {
-        choices = selected_type_config.on_choice_toggled(choices, key);
+    function toggle_ans(key) {
+        answer = selected_type_config.on_choice_toggled(answer, key);
     }
 
 
@@ -99,9 +106,10 @@
             <p class="modal-card-title">Discard Answers?</p>
         </header>
         <section class="modal-card-body is-size-4">
-            You have answers for this question already. If you change the type
-            from "{TYPE_CONFIGS[from_type].display}" to
-            "{TYPE_CONFIGS[to_type].display}" you'll lose the answers.
+            You have answer data for this question already. If you change the
+            type from "{TYPE_CONFIGS[type].display}" to
+            "{TYPE_CONFIGS[to_type].display}" you'll lose the answers.  The
+            answers data will become {JSON.stringify(converted_answer)}.
         </section>
         <footer class="modal-card-foot">
             <button
@@ -139,15 +147,16 @@
     <Text bind:value={answer} label=Answer />
 
 {:else if selected_type_config.choice_component }
-    {#each choices as choice (choice.key)}
+    {#each answer as ans (ans.key)}
     <svelte:component this={selected_type_config.choice_component}
-            bind:text={choice.text}
-            value={choice.value}
-            delete_choice={() => delete_choice(choice.key)}
-            toggle_choice={() => toggle_choice(choice.key)}
+            bind:text={ans.text}
+            value={ans.value}
+            delete_ans={() => delete_ans(ans.key)}
+            toggle_ans={() => toggle_ans(ans.key)}
             />
     {/each}
-    <button class=button on:click={add_empty_choice}>Add Another Choice</button>
+    <button class=button on:click={add_empty_ans}>Add Another Choice</button>
 {/if}
 
-{@debug selected_display_type, type, to_type, from_type, choices}
+{@debug selected_display_type, type, to_type, selected_type_config,
+converted_answer}
