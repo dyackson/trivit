@@ -1,5 +1,3 @@
-import Ans from '@/components/Ans';
-import OrderedAns from '@/components/OrderedAns';
 import AnswerConversionError from '@/AnswerConversionError';
 import {sortBy} from 'lodash';
 
@@ -12,9 +10,8 @@ export const TYPE_CONFIGS = {
     },
     mc_single: {
         display: 'Multiple Choice -- Single Answer',
-        ans_component: Ans,
-        get_empty_ans() {
-            return {text: '', value: false}
+        get_empty_ans(key_holder) {
+            return {text: '', value: false, key: key_holder.key++}
         },
         on_ans_toggled(answer, key) {
             const toggled = answer.find((ans) => ans.key === key);
@@ -51,9 +48,8 @@ export const TYPE_CONFIGS = {
     },
     mc_multiple: {
         display: 'Multiple Choice -- Multiple Answers',
-        ans_component: Ans,
-        get_empty_ans() {
-            return {text: '', value: false}
+        get_empty_ans(key_holder) {
+            return {text: '', value: false, key: key_holder.key++}
         },
         on_ans_toggled(answer, key) {
             return answer.map((ans) => {
@@ -67,9 +63,8 @@ export const TYPE_CONFIGS = {
     },
     ordered: {
         display: 'Ordered',
-        ans_component: OrderedAns,
-        get_empty_ans() {
-            return {text: '', value: ''}
+        get_empty_ans(key_holder) {
+            return {text: '', value: '', key: key_holder.key++}
         },
     },
 };
@@ -86,6 +81,7 @@ export function get_answer_on_type_change({
     to_type,
     from_type,
     answer,
+    key_holder,
 }) {
     if (to_type === from_type) {
         return answer;
@@ -131,11 +127,10 @@ export function get_answer_on_type_change({
         case 'ordered':
             switch (from_type) {
                 case '':
-                    return [TYPE_CONFIGS[to_type].get_empty_ans()];
                 case 'true_false':
-                    return [];
+                    return [TYPE_CONFIGS[to_type].get_empty_ans(key_holder)];
                 case 'free_form':
-                    return arrayed_from_free_form(answer, to_type);
+                    return arrayed_from_free_form(answer, to_type, key_holder);
                 case 'mc_single':
                 case 'mc_multiple':
                     return ordered_from_mc_answer(answer);
@@ -145,11 +140,10 @@ export function get_answer_on_type_change({
         case 'mc_single':
             switch (from_type) {
                 case '':
-                    return [TYPE_CONFIGS[to_type].get_empty_ans()];
                 case 'true_false':
-                    return [];
+                    return [TYPE_CONFIGS[to_type].get_empty_ans(key_holder)];
                 case 'free_form':
-                    return arrayed_from_free_form(answer, to_type);
+                    return arrayed_from_free_form(answer, to_type, key_holder);
                 case 'mc_multiple':
                     return mc_single_from_mc_multiple_answer(answer);
                 case 'ordered':
@@ -161,15 +155,14 @@ export function get_answer_on_type_change({
         case 'mc_multiple':
             switch (from_type) {
                 case '':
-                    return [TYPE_CONFIGS[to_type].get_empty_ans()];
                 case 'true_false':
-                    return [];
+                    return [TYPE_CONFIGS[to_type].get_empty_ans(key_holder)];
                 case 'ordered':
                     return mc_from_ordered(answer);
                 case 'mc_single':
                     return mc_multiple_from_mc_single(answer);
                 case 'free_form':
-                    return arrayed_from_free_form(answer, to_type);
+                    return arrayed_from_free_form(answer, to_type, key_holder);
                 default:
                     return throw_bad_case_error({from_type, to_type});
             }
@@ -212,13 +205,13 @@ function mc_single_from_mc_multiple_answer(answer) {
     });
 }
 
-function arrayed_from_free_form(answer, to_type) {
+function arrayed_from_free_form(answer, to_type, key_holder) {
     const text = answer.trim();
     if (text) {
         const value = to_type === 'ordered' ? '' : true;
-        return [{text, value}];
+        return [{text, value, key: key_holder.key++}];
     } else {
-        return [];
+        return [TYPE_CONFIGS[to_type].get_empty_ans(key_holder)];
     }
 }
 
@@ -251,7 +244,7 @@ function free_form_from_ordered_answer(answer) {
 }
 
 function ordered_from_mc_answer(answer) {
-    return answer.map(({text}) => ({text, value: ''}));
+    return answer.map((ans) => ({...ans, value: ''}));
 }
 
 function are_empty(answer) {

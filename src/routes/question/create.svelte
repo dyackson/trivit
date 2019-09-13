@@ -1,5 +1,7 @@
 <script context=module>
-    let ans_key = 0;
+    // This is an object so it can be updated by the external functions that
+    // create new answer (that get displayed in an each block).
+    const key_holder = {key: 0};
 </script>
 
 <script>
@@ -8,6 +10,9 @@
     import Bool from '@/components/Bool';
     import Text from '@/components/Text';
     import Textarea from '@/components/Textarea';
+    import Ans from '@/components/Ans';
+    import OrderedAns from '@/components/OrderedAns';
+
     import {
         TYPE_CONFIGS,
         VALID_TYPES,
@@ -42,6 +47,7 @@
                 from_type: type,
                 to_type,
                 answer,
+                key_holder,
             });
 
             type = to_type;
@@ -76,8 +82,7 @@
     }
 
     function add_empty_ans() {
-        const empty_ans = selected_type_config.get_empty_ans();
-        empty_ans.key = ans_key++;
+        const empty_ans = selected_type_config.get_empty_ans(key_holder);
         answer = [...answer, empty_ans];
     }
 
@@ -144,14 +149,24 @@
 {:else if type === 'free_form'}
     <Text bind:value={answer} label=Answer />
 
-{:else if selected_type_config.ans_component }
+{:else if type === 'mc_single' || type === 'mc_multiple' }
     {#each answer as ans (ans.key)}
-    <svelte:component this={selected_type_config.ans_component}
-            bind:text={ans.text}
-            value={ans.value}
-            delete_ans={() => delete_ans(ans.key)}
-            toggle_ans={() => toggle_ans(ans.key)}
-            />
+    <Ans
+        bind:text={ans.text}
+        bind:value={ans.value}
+        delete_ans={() => delete_ans(ans.key)}
+        toggle_ans={() => toggle_ans(ans.key)}
+        />
+    {/each}
+    <button class=button on:click={add_empty_ans}>Add Another Choice</button>
+
+{:else if type === 'ordered'}
+    {#each answer as ans (ans.key)}
+    <OrderedAns
+        bind:text={ans.text}
+        bind:value={ans.value}
+        delete_ans={() => delete_ans(ans.key)}
+        />
     {/each}
     <button class=button on:click={add_empty_ans}>Add Another Choice</button>
 {/if}
