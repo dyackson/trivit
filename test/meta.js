@@ -13,8 +13,8 @@ describe('get_answer_on_type_change', () => {
         VALID_TYPES.forEach(to_type => {
             VALID_TYPES.forEach(from_type => {
                 let answer = '';
-                if (TYPE_CONFIGS[from_type].get_empty_choice) {
-                    answer = [TYPE_CONFIGS[from_type].get_empty_choice()];
+                if (TYPE_CONFIGS[from_type].get_empty_ans) {
+                    answer = [TYPE_CONFIGS[from_type].get_empty_ans()];
                 }
                 try {
                     const converted_answer = get_answer_on_type_change({

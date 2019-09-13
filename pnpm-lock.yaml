@@ -11,16 +11,16 @@ dependencies:
 devDependencies:
   css-loader: 3.2.0_webpack@4.32.2
   eslint: 6.1.0
-  eslint-plugin-svelte3: 2.7.3_eslint@6.1.0+svelte@3.4.2
+  eslint-plugin-svelte3: 2.7.3_eslint@6.1.0+svelte@3.12.1
   expect: 24.8.0
   minimatch: 3.0.4
   mocha: 6.2.0
   mochapack: 1.1.3_mocha@6.2.0+webpack@4.32.2
   npm-run-all: 4.1.5
-  sapper: 0.27.1_svelte@3.4.2
+  sapper: 0.27.8_svelte@3.12.1
   style-loader: 1.0.0_webpack@4.32.2
-  svelte: 3.4.2
-  svelte-loader: 2.13.4_svelte@3.4.2
+  svelte: 3.12.1
+  svelte-loader: 2.13.4_svelte@3.12.1
   webpack: 4.32.2_webpack@4.32.2
   webpack-node-externals: 1.7.2
 lockfileVersion: 5.1
@@ -1324,10 +1324,10 @@ packages:
       node: '>=0.8.0'
     resolution:
       integrity: sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
-  /eslint-plugin-svelte3/2.7.3_eslint@6.1.0+svelte@3.4.2:
+  /eslint-plugin-svelte3/2.7.3_eslint@6.1.0+svelte@3.12.1:
     dependencies:
       eslint: 6.1.0
-      svelte: 3.4.2
+      svelte: 3.12.1
     dev: true
     peerDependencies:
       eslint: '>=6.0.0'
@@ -1921,7 +1921,7 @@ packages:
       he: 1.2.0
       param-case: 2.1.1
       relateurl: 0.2.7
-      uglify-js: 3.5.15
+      uglify-js: 3.6.0
     dev: true
     engines:
       node: '>=6'
@@ -3760,20 +3760,20 @@ packages:
     dev: true
     resolution:
       integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
-  /sapper/0.27.1_svelte@3.4.2:
+  /sapper/0.27.8_svelte@3.12.1:
     dependencies:
       html-minifier: 4.0.0
       http-link-header: 1.0.2
-      shimport: 1.0.0
-      sourcemap-codec: 1.4.4
+      shimport: 1.0.1
+      sourcemap-codec: 1.4.6
       string-hash: 1.1.3
-      svelte: 3.4.2
+      svelte: 3.12.1
     dev: true
     hasBin: true
     peerDependencies:
-      svelte: ^3.2.2
+      svelte: ^3.5.0
     resolution:
-      integrity: sha512-RH0K1uQ3zJ1IXvowxr2SuboGXV69q22KaPMhhoM5VNDv9fsUlVHtluZE8WTcGxckiO2L1xFfgM7v/aINkSZpcw==
+      integrity: sha512-78K+56yu9nGOEU0B0XjBvNchRuPEv4aHbAKK4D874S4aoapMAkHCT0bHtPK12S3P7JPxvvT8GzHaq/8NetMmbg==
   /saslprep/1.0.3:
     dependencies:
       sparse-bitfield: 3.0.3
@@ -3881,10 +3881,10 @@ packages:
     dev: true
     resolution:
       integrity: sha1-9HgZSczkAmlxJ0MOo7PFR29IF2c=
-  /shimport/1.0.0:
+  /shimport/1.0.1:
     dev: true
     resolution:
-      integrity: sha512-XKd+39voZT1rFR1ct+pr8sFSYAW6IvM3LeF87FrgcGHc/uSZ4GfOZVA42LE5LXFOpTWgmDC5sS8DNDtiV4Vd4Q==
+      integrity: sha512-Imf4gH+8WQmT1GvxS/x79qpmfnE6m50hyN1ucatX+7oMCgmaF8obZWCPIzSUe6+P+YmXM46lkP2pxiV2/lt9Og==
   /sift/7.0.1:
     dev: false
     resolution:
@@ -4005,10 +4005,10 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
-  /sourcemap-codec/1.4.4:
+  /sourcemap-codec/1.4.6:
     dev: true
     resolution:
-      integrity: sha512-CYAPYdBu34781kLHkaW3m6b/uUSyMOC2R61gcYMWooeuaGtjof86ZA/8T+qVPPt7np1085CR9hmMGrySwEc8Xg==
+      integrity: sha512-1ZooVLYFxC448piVLBbtOxFcXwnymH9oUF8nRd3CuYDVvkRBxRl6pB4Mtas5a4drtL+E8LDgFkQNcgIw6tc8Hg==
   /sparse-bitfield/3.0.3:
     dependencies:
       memory-pager: 1.5.0
@@ -4242,20 +4242,22 @@ packages:
     dev: true
     resolution:
       integrity: sha1-fRh9tcbNu9ZNdaMvkbiZi94yc8M=
-  /svelte-loader/2.13.4_svelte@3.4.2:
+  /svelte-loader/2.13.4_svelte@3.12.1:
     dependencies:
       loader-utils: 1.2.3
-      svelte: 3.4.2
+      svelte: 3.12.1
       svelte-dev-helper: 1.1.9
     dev: true
     peerDependencies:
       svelte: '>1.44.0'
     resolution:
       integrity: sha512-seAB2Tn/OkJA8TvTY1fVlWdDCwyribzEagT6qPkTK8RGpG6NugPnjyKJv2jN72Sya4yGIo/fc874c6Je5L7vHA==
-  /svelte/3.4.2:
+  /svelte/3.12.1:
     dev: true
+    engines:
+      node: '>= 8'
     resolution:
-      integrity: sha512-sh7UCIBAgRrNxDx3afw+sKipY2ilpNNsBHXQXtwU481ZWGidAOowcZw1JrfB86hpLJvGqxkzBJqCQoGGtA35qA==
+      integrity: sha512-t29WJNjHIqfrdMcVXqIyRfgLEaNz7MihKXTpb8qHlbzvf0WyOOIhIlwIGvl6ahJ9+9CLJwz0sjhFNAmPgo8BHg==
   /table/5.4.5:
     dependencies:
       ajv: 6.10.2
@@ -4411,7 +4413,7 @@ packages:
     dev: true
     resolution:
       integrity: sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
-  /uglify-js/3.5.15:
+  /uglify-js/3.6.0:
     dependencies:
       commander: 2.20.0
       source-map: 0.6.1
@@ -4420,7 +4422,7 @@ packages:
       node: '>=0.8.0'
     hasBin: true
     resolution:
-      integrity: sha512-fe7aYFotptIddkwcm6YuA0HmknBZ52ZzOsUxZEdhhkSsz7RfjHDX2QDxwKTiv4JQ5t5NhfmpgAK+J7LiDhKSqg==
+      integrity: sha512-W+jrUHJr3DXKhrsS7NUVxn3zqMOFn0hL/Ei6v0anCIMoKC93TjcflTagwIHLW7SfMFfiQuktQyFVCFHGUE0+yg==
   /union-value/1.0.0:
     dependencies:
       arr-union: 3.1.0
@@ -4763,10 +4765,10 @@ specifiers:
   mongoose: ^5.6.3
   npm-run-all: ^4.1.5
   polka: ^0.5.0
-  sapper: ^0.27.0
+  sapper: ^0.27.8
   sirv: ^0.4.0
   style-loader: ^1.0.0
-  svelte: ^3.0.0
+  svelte: 3.12.1
   svelte-loader: ^2.9.0
   valid-url: ^1.0.9
   webpack: ^4.7.0

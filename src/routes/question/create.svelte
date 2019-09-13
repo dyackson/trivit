@@ -1,13 +1,11 @@
 <script context=module>
-    let choice_key = 0;
+    let ans_key = 0;
 </script>
 
 <script>
     import {save_question, get_questions} from '@/db/questions';
     import Dropdown from '@/components/Dropdown';
     import Bool from '@/components/Bool';
-    import Choice from '@/components/Choice';
-    import OrderedChoice from '@/components/OrderedChoice';
     import Text from '@/components/Text';
     import Textarea from '@/components/Textarea';
     import {
@@ -18,15 +16,14 @@
     } from '@/meta';
     import AnswerConversionError from '@/AnswerConversionError';
 
-    let selected_display_type = TYPES_BY_DISPLAY[0];
+    let selected_display_type = TYPE_CONFIGS.free_form.display;
     let prompt = '';
     let answer = '';
-    let converted_answer = null;
+    let converted_answer;
     let type = '';
     let selected_type_config = {};
     let to_type = '';
-
-    $: show_data_loss_on_type_change_warning = converted_answer !== null;
+    let show_data_loss_warning = false;
 
     $: {
         // react to selected_display_type change
@@ -40,7 +37,6 @@
 
         try {
             console.log('up here')
-            console.dir({type,to_type})
 
             answer = get_answer_on_type_change({
                 from_type: type,
@@ -52,11 +48,11 @@
             to_type = '';
             selected_type_config = TYPE_CONFIGS[type] || {};
             console.log('down here')
-            console.dir({type,to_type})
         } catch (e) {
             console.log('caught one')
             if (e instanceof AnswerConversionError) {
                 converted_answer = e.converted_answer;
+                show_data_loss_warning = true;
             } else {
                 throw e;
             }
@@ -69,18 +65,20 @@
         selected_type_config = TYPE_CONFIGS[type] || {};
         answer = converted_answer;
         converted_answer = null;
+        show_data_loss_warning = false;
     }
 
     function abort_type_change() {
         to_type = '';
         selected_display_type = selected_type_config.display;
         converted_answer = null;
+        show_data_loss_warning = false;
     }
 
     function add_empty_ans() {
-        const empty_choice = selected_type_config.get_empty_choice();
-        empty_choice.key = choice_key++;
-        answer = [...answer, empty_choice];
+        const empty_ans = selected_type_config.get_empty_ans();
+        empty_ans.key = ans_key++;
+        answer = [...answer, empty_ans];
     }
 
     function delete_ans(key) {
@@ -88,7 +86,7 @@
     }
 
     function toggle_ans(key) {
-        answer = selected_type_config.on_choice_toggled(answer, key);
+        answer = selected_type_config.on_ans_toggled(answer, key);
     }
 
 
@@ -98,35 +96,35 @@
 </svelte:head>
 
 
-{#if show_data_loss_on_type_change_warning}
-<div class="modal" class:is-active={show_data_loss_on_type_change_warning}>
-    <div class="modal-background"></div>
-    <div class="modal-card">
-        <header class="modal-card-head">
-            <p class="modal-card-title">Discard Answers?</p>
-        </header>
-        <section class="modal-card-body is-size-4">
-            You have answer data for this question already. If you change the
-            type from "{TYPE_CONFIGS[type].display}" to
-            "{TYPE_CONFIGS[to_type].display}" you'll lose the answers.  The
-            answers data will become {JSON.stringify(converted_answer)}.
-        </section>
-        <footer class="modal-card-foot">
-            <button
-                class="button is-success is-medium"
-                on:click={continue_type_change}
-                >
-                Change Type
-            </button>
-            <button
-                class="button is-success is-medium"
-                on:click={abort_type_change}
-                >
-                Do Nothing
-            </button>
-        </footer>
+{#if show_data_loss_warning}
+    <div class="modal" class:is-active={show_data_loss_warning}>
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Discard Answers?</p>
+            </header>
+            <section class="modal-card-body is-size-4">
+                You have answer data for this question already. If you change
+                the type from "{TYPE_CONFIGS[type].display}" to
+                "{TYPE_CONFIGS[to_type].display}" you'll lose the answers.  The
+                answers data will become {JSON.stringify(converted_answer)}.
+            </section>
+            <footer class="modal-card-foot">
+                <button
+                    class="button is-success is-medium"
+                    on:click={continue_type_change}
+                    >
+                    Change Type
+                </button>
+                <button
+                    class="button is-success is-medium"
+                    on:click={abort_type_change}
+                    >
+                    Do Nothing
+                </button>
+            </footer>
+        </div>
     </div>
-</div>
 {/if}
 
 <Dropdown
@@ -146,9 +144,9 @@
 {:else if type === 'free_form'}
     <Text bind:value={answer} label=Answer />
 
-{:else if selected_type_config.choice_component }
+{:else if selected_type_config.ans_component }
     {#each answer as ans (ans.key)}
-    <svelte:component this={selected_type_config.choice_component}
+    <svelte:component this={selected_type_config.ans_component}
             bind:text={ans.text}
             value={ans.value}
             delete_ans={() => delete_ans(ans.key)}
@@ -159,4 +157,4 @@
 {/if}
 
 {@debug selected_display_type, type, to_type, selected_type_config,
-converted_answer}
+converted_answer, show_data_loss_warning}

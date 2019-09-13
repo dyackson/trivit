@@ -1,5 +1,5 @@
-import Choice from '@/components/Choice';
-import OrderedChoice from '@/components/OrderedChoice';
+import Ans from '@/components/Ans';
+import OrderedAns from '@/components/OrderedAns';
 import AnswerConversionError from '@/AnswerConversionError';
 import {sortBy} from 'lodash';
 
@@ -12,12 +12,12 @@ export const TYPE_CONFIGS = {
     },
     mc_single: {
         display: 'Multiple Choice -- Single Answer',
-        choice_component: Choice,
-        get_empty_choice() {
+        ans_component: Ans,
+        get_empty_ans() {
             return {text: '', value: false}
         },
-        on_choice_toggled(choices, key) {
-            const toggled = choices.find((choice) => choice.key === key);
+        on_ans_toggled(answer, key) {
+            const toggled = answer.find((ans) => ans.key === key);
 
             if (toggled.value) {
                 return make_toggled_false();
@@ -26,24 +26,24 @@ export const TYPE_CONFIGS = {
             }
 
             function make_toggled_false() {
-                return choices.map((choice) => {
-                    if (choice.key === key) {
-                        return {...choice, value: false};
+                return answer.map((ans) => {
+                    if (ans.key === key) {
+                        return {...ans, value: false};
                     } else {
-                        return choice;
+                        return ans;
                     }
                 });
             }
 
             function make_toggled_the_only_true() {
-                return choices.map((choice) => {
-                    if (choice.key === key) {
-                        return {...choice, value: true};
-                    } else if (choice.value) {
-                        return {...choice, value: false};
+                return answer.map((ans) => {
+                    if (ans.key === key) {
+                        return {...ans, value: true};
+                    } else if (ans.value) {
+                        return {...ans, value: false};
                     } else {
                         // it's already false
-                        return choice;
+                        return ans;
                     }
                 });
             }
@@ -51,24 +51,24 @@ export const TYPE_CONFIGS = {
     },
     mc_multiple: {
         display: 'Multiple Choice -- Multiple Answers',
-        choice_component: Choice,
-        get_empty_choice() {
+        ans_component: Ans,
+        get_empty_ans() {
             return {text: '', value: false}
         },
-        on_choice_toggled(choices, key) {
-            return choices.map((choice) => {
-                if (choice.key === key) {
-                    return {...choice, value: !choice.value};
+        on_ans_toggled(answer, key) {
+            return answer.map((ans) => {
+                if (ans.key === key) {
+                    return {...ans, value: !ans.value};
                 } else {
-                    return choice;
+                    return ans;
                 }
             });
         },
     },
     ordered: {
         display: 'Ordered',
-        choice_component: OrderedChoice,
-        get_empty_choice() {
+        ans_component: OrderedAns,
+        get_empty_ans() {
             return {text: '', value: ''}
         },
     },
@@ -131,7 +131,7 @@ export function get_answer_on_type_change({
         case 'ordered':
             switch (from_type) {
                 case '':
-                    return [TYPE_CONFIGS[to_type].get_empty_choice()];
+                    return [TYPE_CONFIGS[to_type].get_empty_ans()];
                 case 'true_false':
                     return [];
                 case 'free_form':
@@ -145,7 +145,7 @@ export function get_answer_on_type_change({
         case 'mc_single':
             switch (from_type) {
                 case '':
-                    return [TYPE_CONFIGS[to_type].get_empty_choice()];
+                    return [TYPE_CONFIGS[to_type].get_empty_ans()];
                 case 'true_false':
                     return [];
                 case 'free_form':
@@ -161,7 +161,7 @@ export function get_answer_on_type_change({
         case 'mc_multiple':
             switch (from_type) {
                 case '':
-                    return [TYPE_CONFIGS[to_type].get_empty_choice()];
+                    return [TYPE_CONFIGS[to_type].get_empty_ans()];
                 case 'true_false':
                     return [];
                 case 'ordered':
