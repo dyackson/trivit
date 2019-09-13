@@ -160,17 +160,13 @@ export function get_answer_on_type_change({
                 case 'ordered':
                     return mc_from_ordered(answer);
                 case 'mc_single':
-                    return mc_multiple_from_mc_single(answer);
+                    return answer;
                 case 'free_form':
                     return arrayed_from_free_form(answer, to_type, key_holder);
                 default:
                     return throw_bad_case_error({from_type, to_type});
             }
     }
-}
-
-function mc_multiple_from_mc_single(answer) {
-    return answer.filter(a => a.text.trim());
 }
 
 function throw_bad_case_error({from_type, to_type}) {

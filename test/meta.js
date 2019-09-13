@@ -8,19 +8,32 @@ import {
 } from '@/meta';
 import AnswerConversionError from '@/AnswerConversionError';
 
+function new_key_holder() {
+    return {key: 0};
+}
+// we'll need these for the convsion tests
+const empty_ans_by_type = {
+    mc_single: TYPE_CONFIGS.mc_single.get_empty_ans(new_key_holder()),
+    mc_multiple: TYPE_CONFIGS.mc_multiple.get_empty_ans(new_key_holder()),
+    ordered: TYPE_CONFIGS.ordered.get_empty_ans(new_key_holder()),
+};
+
 describe('get_answer_on_type_change', () => {
     it('covers all possible conversions', () => {
         VALID_TYPES.forEach(to_type => {
             VALID_TYPES.forEach(from_type => {
                 let answer = '';
                 if (TYPE_CONFIGS[from_type].get_empty_ans) {
-                    answer = [TYPE_CONFIGS[from_type].get_empty_ans()];
+                    console.log('fuck');
+                    answer = [TYPE_CONFIGS[from_type]
+                        .get_empty_ans(new_key_holder())];
                 }
                 try {
                     const converted_answer = get_answer_on_type_change({
                         from_type,
                         to_type,
                         answer,
+                        key_holder: new_key_holder(),
                     });
                     expect(converted_answer).toBeDefined();
                 } catch (e) {
@@ -47,21 +60,21 @@ describe('get_answer_on_type_change', () => {
             from_type: 'true_false',
             to_type: 'mc_single',
             instances: [
-                {from: true, to: []}
+                {from: true, to: [empty_ans_by_type.mc_single]}
             ]
         },
         {
             from_type: 'true_false',
             to_type: 'mc_multiple',
             instances: [
-                {from: true, to: []}
+                {from: true, to: [empty_ans_by_type.mc_multiple]}
             ]
         },
         {
             from_type: 'true_false',
             to_type: 'ordered',
             instances: [
-                {from: true, to: []}
+                {from: true, to: [empty_ans_by_type.ordered]}
             ]
         },
         // from free_form
@@ -78,27 +91,30 @@ describe('get_answer_on_type_change', () => {
             from_type: 'free_form',
             to_type: 'mc_single',
             instances: [
-                {from: 'some words', to: [{text: 'some words', value: true}]},
-                {from: '', to: []},
-                {from: '   ', to: []},
+                {from: 'some words',
+                    to: [{text: 'some words', value: true, key: 0}]},
+                {from: '', to: [empty_ans_by_type.mc_single]},
+                {from: '   ', to: [empty_ans_by_type.mc_single]},
             ]
         },
         {
             from_type: 'free_form',
             to_type: 'mc_multiple',
             instances: [
-                {from: 'some words', to: [{text: 'some words', value: true}]},
-                {from: '', to: [], warns: false},
-                {from: '   ', to: [], warns: false},
+                {from: 'some words',
+                    to: [{text: 'some words', value: true, key: 0}]},
+                {from: '', to: [empty_ans_by_type.mc_multiple]},
+                {from: '   ', to: [empty_ans_by_type.mc_multiple]},
             ]
         },
         {
             from_type: 'free_form',
             to_type: 'ordered',
             instances: [
-                {from: 'some words', to: [{text: 'some words', value: ''}]},
-                {from: '', to: []},
-                {from: '   ', to: []},
+                {from: 'some words',
+                    to: [{text: 'some words', value: '', key: 0}]},
+                {from: '', to: [empty_ans_by_type.ordered]},
+                {from: '   ', to: [empty_ans_by_type.ordered]},
             ]
         },
         // from mc_single
@@ -181,34 +197,39 @@ describe('get_answer_on_type_change', () => {
             warns: true,
             instances: [
                 {
-                    why: 'none are true',
-                    from: [{text: 'a', value: false}, {text: 'b', value: false}],
-                    to: [{text: 'a', value: false}, {text: 'b', value: false}],
-                    warns: false,
+                    why: 'none are true, absence of text doesnt matter',
+                    from: [
+                        {text: 'a', value: false, key: 0},
+                        {text: 'b', value: false, key: 1},
+                        {text: '', value: false, key: 2},
+                        {text: '  ', value: false, key: 3},
+                    ],
+                    to: [
+                        {text: 'a', value: false, key: 0},
+                        {text: 'b', value: false, key:1},
+                        {text: '', value: false, key: 2},
+                        {text: '  ', value: false, key: 3},
+                    ],
                 },
                 {
-                    why: 'multiple have text again',
-                    from: [{text: 'a', value: false}, {text: 'b', value: true}],
-                    to: [{text: 'a', value: false}, {text: 'b', value: true}],
-                    warns: false,
-                },
-                {
-                    why: 'one has text',
-                    from: [{text: 'a', value: false}, {text: ' ', value: false}],
-                    to: [{text: 'a', value: false}],
-                    warns: false,
-                },
-                {
-                    why: 'both texts empty',
-                    from: [{text: ' ', value: false}, {text: ' ', value: true}],
-                    to: [],
-                    warns: false,
+                    why: 'one is true, absence of text doesnt matter',
+                    from: [
+                        {text: 'a', value: false, key: 0},
+                        {text: 'b', value: false, key: 1},
+                        {text: '', value: true, key: 2},
+                        {text: '  ', value: false, key: 3},
+                    ],
+                    to: [
+                        {text: 'a', value: false, key: 0},
+                        {text: 'b', value: false, key:1},
+                        {text: '', value: true, key: 2},
+                        {text: '  ', value: false, key: 3},
+                    ],
                 },
                 {
                     why: 'answer is empty',
                     from: [],
                     to: [],
-                    warns: false,
                 },
             ],
         },
@@ -626,6 +647,7 @@ describe('get_answer_on_type_change', () => {
                             from_type,
                             to_type,
                             answer: from,
+                            key_holder: new_key_holder(),
                         })).toEqual(to);
                         expect(false).toEqual(Boolean(warns));
 
