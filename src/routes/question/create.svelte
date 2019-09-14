@@ -25,6 +25,7 @@
     let prompt = '';
     let answer = '';
     let converted_answer;
+    let then_msg = '';
     let type = '';
     let selected_type_config = {};
     let to_type = '';
@@ -58,6 +59,7 @@
             console.log('caught one')
             if (e instanceof AnswerConversionError) {
                 converted_answer = e.converted_answer;
+                then_msg = e.then_msg;
                 show_data_loss_warning = true;
             } else {
                 throw e;
@@ -71,6 +73,7 @@
         selected_type_config = TYPE_CONFIGS[type] || {};
         answer = converted_answer;
         converted_answer = null;
+        then_msg = '';
         show_data_loss_warning = false;
     }
 
@@ -78,6 +81,7 @@
         to_type = '';
         selected_display_type = selected_type_config.display;
         converted_answer = null;
+        then_msg = '';
         show_data_loss_warning = false;
     }
 
@@ -106,13 +110,18 @@
         <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">Discard Answers?</p>
+                <p class="modal-card-title">Heads Up!</p>
             </header>
             <section class="modal-card-body is-size-4">
-                You have answer data for this question already. If you change
-                the type from "{TYPE_CONFIGS[type].display}" to
-                "{TYPE_CONFIGS[to_type].display}" you'll lose the answers.  The
-                answers data will become {JSON.stringify(converted_answer)}.
+                If you change the type from
+                <span class=has-text-weight-bold>
+                    {TYPE_CONFIGS[type].display}
+                </span>
+                to
+                <span class=has-text-weight-bold>
+                    {TYPE_CONFIGS[to_type].display}
+                </span>
+                , {@html then_msg}
             </section>
             <footer class="modal-card-foot">
                 <button
@@ -172,4 +181,4 @@
 {/if}
 
 {@debug selected_display_type, type, to_type, selected_type_config,
-converted_answer, show_data_loss_warning}
+converted_answer, then_msg, show_data_loss_warning, answer}

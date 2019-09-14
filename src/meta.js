@@ -1,5 +1,6 @@
 import AnswerConversionError from '@/AnswerConversionError';
 import {sortBy} from 'lodash';
+import {standout_html} from '@/string_functions';
 
 export const TYPE_CONFIGS = {
     free_form: {
@@ -109,20 +110,29 @@ export function get_answer_on_type_change({
                     return false;
                 case 'free_form':
                     if (answer.trim()) {
-                        throw new AnswerConversionError(false);
+                        const then_msg = `
+                            You'll lose your answer.
+                        `;
+                        throw new AnswerConversionError(false, then_msg);
                     } else {
                         return false;
                     }
                 case 'mc_single':
                 case 'mc_multiple':
                     if (!are_empty(answer)) {
-                        throw new AnswerConversionError(false);
+                        const then_msg = `
+                            You'll lose your answers.
+                        `;
+                        throw new AnswerConversionError(false, then_msg);
                     } else {
                         return false;
                     }
                 case 'ordered':
                     if (!are_empty_ordered_answer(answer)) {
-                        throw new AnswerConversionError(false);
+                        const then_msg = `
+                            You'll lose your answers.
+                        `;
+                        throw new AnswerConversionError(false, then_msg);
                     } else {
                         return false;
                     }
@@ -179,14 +189,16 @@ function throw_bad_case_error({from_type, to_type}) {
 }
 
 function mc_from_ordered(answer) {
-    const at_least_one_complete_ans = answer
-        .some(a => a.value !== undefined && a.text.trim());
+    const theres_an_answer_with_value = answer.some(has_value);
+    answer = answer.map(ans => ({...ans, value: false}));
 
-    const answer_with_false_values = answer.map(a => ({...a, value: false}));
-    if (at_least_one_complete_ans) {
-        throw new AnswerConversionError(answer_with_false_values);
+    if (theres_an_answer_with_value) {
+        const then_msg = `
+            You'll lose the ordering values.
+        `;
+        throw new AnswerConversionError(answer, then_msg);
     } else {
-        return answer_with_false_values;
+        return answer;
     }
 }
 
@@ -222,8 +234,13 @@ function free_from_from_mc_answer(answer) {
             .filter(a => a.value)
             .map(a => a.text.trim())
             .join(', ');
-
-        throw new AnswerConversionError(true_answer_as_string);
+        const then_msg = true_answer_as_string
+            ? `
+                The new answer will be ${standout_html(true_answer_as_string)},
+                but you can adjust it after the type change.
+                `
+            : `You'll lose your answers.`;
+        throw new AnswerConversionError(true_answer_as_string, then_msg);
     } else {
         return '';
     }
@@ -234,13 +251,29 @@ function free_form_from_ordered_answer(answer) {
         const answer_with_text = answer
             .filter(a => a.text.trim());
 
-        const sorted_answer_string = sortBy(answer_with_text, 'value')
-            .map(a => (a.value !== undefined)
+        // this step is necessary because sortBy puts the empty string first
+        // (bad), but undefined last (good)
+        const with_empty_value_as_undefined = answer_with_text
+            .map(a => {
+                if (!has_value(a)) {
+                    return {...a, value: undefined};
+                } else {
+                    return a;
+                }
+            });
+
+        const sorted_answer_string =
+            sortBy(with_empty_value_as_undefined, 'value')
+            .map(a => has_value(a)
                 ? `${a.text} (${a.value})`
                 : a.text)
             .join(', ');
 
-        throw new AnswerConversionError(sorted_answer_string);
+        const then_msg = `
+            the new answer will be ${standout_html(sorted_answer_string)}, but you can adjust
+            it after changing types.
+        `;
+        throw new AnswerConversionError(sorted_answer_string, then_msg);
     } else {
         return '';
     }
@@ -262,13 +295,16 @@ function are_empty_ordered_answer(answer) {
         return true;
     }
     const theres_a_nonempty_anwer =
-        answer.some(has_text) || answer.some(has_defined_value);
+        answer.some(has_text) || answer.some(has_value);
 
     return !theres_a_nonempty_anwer;
 }
 
-function has_defined_value(ans) {
-    return ans.value !== undefined;
+function has_value(ans) {
+    const value = ans.value;
+    return value !== undefined
+        && value !== null
+        && !(typeof value === 'string' && value.trim() === '');
 }
 
 function has_text(ans) {

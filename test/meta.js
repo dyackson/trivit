@@ -425,9 +425,10 @@ describe('get_answer_on_type_change', () => {
                         {text: 'a', value: 2},
                         {text: 'd', value: undefined},
                         {text: 'b', value: 1},
+                        {text: 'e', value: ''},
                         {text: 'c', value: 3},
                     ],
-                    to: 'b (1), a (2), c (3), d',
+                    to: 'b (1), a (2), c (3), d, e',
                     warns: true,
                 },
                 {
@@ -443,28 +444,38 @@ describe('get_answer_on_type_change', () => {
             from_type: 'ordered',
             instances: [
                 {
-                    why: 'some answer has text and value',
+                    why: 'some answer has value',
                     from: [
-                        {text: 'a', value: 2, key: 0},
-                        {text: '', value: 4, key: 1},
+                        {text: 'a', value: 0, key: 0},
                         {text: 'b', value: undefined, key: 2},
                     ],
                     to: [
                         {text: 'a', value: false, key: 0},
-                        {text: '', value: false, key: 1},
                         {text: 'b', value: false, key: 2},
                     ],
                     warns: true,
                 },
                 {
-                    why: 'no answer has text or value',
+                    why: 'some answer value (even if no text)',
+                    from: [
+                        {text: '', value: 0, key: 0},
+                        {text: ' ', value: undefined, key: 2},
+                    ],
+                    to: [
+                        {text: '', value: false, key: 0},
+                        {text: ' ', value: false, key: 2},
+                    ],
+                    warns: true,
+                },
+                {
+                    why: 'no answer has value',
                     from: [
                         {text: ' ', value: undefined, key: 0},
-                        {text: '', value: undefined, key: 1},
+                        {text: 'a', value: ' ', key: 1},
                     ],
                     to: [
                         {text: ' ', value: false, key: 0},
-                        {text: '', value: false, key: 1},
+                        {text: 'a', value: false, key: 1},
                     ],
                     warns: false,
                 },
@@ -482,28 +493,38 @@ describe('get_answer_on_type_change', () => {
             from_type: 'ordered',
             instances: [
                 {
-                    why: 'some answer has text and value',
+                    why: 'some answer has value',
                     from: [
-                        {text: 'a', value: 2, key: 0},
-                        {text: '', value: 4, key: 1},
+                        {text: 'a', value: 0, key: 0},
                         {text: 'b', value: undefined, key: 2},
                     ],
                     to: [
                         {text: 'a', value: false, key: 0},
-                        {text: '', value: false, key: 1},
                         {text: 'b', value: false, key: 2},
                     ],
                     warns: true,
                 },
                 {
-                    why: 'no answer has text or value',
+                    why: 'some answer value (even if no text)',
+                    from: [
+                        {text: '', value: 0, key: 0},
+                        {text: ' ', value: undefined, key: 2},
+                    ],
+                    to: [
+                        {text: '', value: false, key: 0},
+                        {text: ' ', value: false, key: 2},
+                    ],
+                    warns: true,
+                },
+                {
+                    why: 'no answer has value',
                     from: [
                         {text: ' ', value: undefined, key: 0},
-                        {text: '', value: undefined, key: 1},
+                        {text: 'a', value: ' ', key: 1},
                     ],
                     to: [
                         {text: ' ', value: false, key: 0},
-                        {text: '', value: false, key: 1},
+                        {text: 'a', value: false, key: 1},
                     ],
                     warns: false,
                 },
