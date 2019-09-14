@@ -115,8 +115,13 @@ export function get_answer_on_type_change({
                     }
                 case 'mc_single':
                 case 'mc_multiple':
-                case 'ordered':
                     if (!are_empty(answer)) {
+                        throw new AnswerConversionError(false);
+                    } else {
+                        return false;
+                    }
+                case 'ordered':
+                    if (!are_empty_ordered_answer(answer)) {
                         throw new AnswerConversionError(false);
                     } else {
                         return false;
@@ -225,12 +230,14 @@ function free_from_from_mc_answer(answer) {
 }
 
 function free_form_from_ordered_answer(answer) {
-    if (!are_empty(answer)) {
+    if (!are_empty_ordered_answer(answer)) {
         const answer_with_text = answer
             .filter(a => a.text.trim());
 
         const sorted_answer_string = sortBy(answer_with_text, 'value')
-            .map(a => a.text)
+            .map(a => (a.value !== undefined)
+                ? `${a.text} (${a.value})`
+                : a.text)
             .join(', ');
 
         throw new AnswerConversionError(sorted_answer_string);
@@ -248,6 +255,20 @@ function are_empty(answer) {
         return true;
     }
     return !answer.some(has_text)
+}
+
+function are_empty_ordered_answer(answer) {
+    if (!answer || answer.length === 0) {
+        return true;
+    }
+    const theres_a_nonempty_anwer =
+        answer.some(has_text) || answer.some(has_defined_value);
+
+    return !theres_a_nonempty_anwer;
+}
+
+function has_defined_value(ans) {
+    return ans.value !== undefined;
 }
 
 function has_text(ans) {
