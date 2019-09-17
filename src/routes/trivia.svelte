@@ -1,23 +1,9 @@
 <script>
-    import Question from '../components/Question';
-
-    import questions from './_questions';
-
-    let i = 0;
-    $:question = questions[i];
-
-    function show_next_question() {
-        i +=1
-    }
+    import questions from '@/routes/_questions';
+    import FreeForm from '@/components/FreeForm';
+    const free_form_q = questions.find(q => q.type === 'free_form');
 </script>
-<svelte:head>
-	<title>Trivia</title>
-</svelte:head>
 
-<h1>Svelte Trivia</h1>
+<FreeForm {...free_form_q} />
 
-{#if question}
-<Question {...question} done={show_next_question}/>
-{:else }
-<p>You answered all the questions, you smart bastard!</p>
-{/if}
+

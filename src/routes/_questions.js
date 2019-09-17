@@ -1,22 +1,36 @@
+import {collapse_whitespace} from '@/string_functions';
 export default [
     {
-        prompt: 'Which is closest to the sun?',
-        answers: [
-            { id: 'a', display: 'Earth'},
-            { id: 'b', display: 'The astroid belt'},
-            { id: 'c', display: 'Alpha Centari'},
-            { id: 'd', display: 'Venus'},
-        ],
-        correct_answer: 'd',
+        type: 'free_form',
+        prompt: collapse_whitespace(`
+            What 1991 movie directed by Gus Van Sant has a title derived from
+            the title of a B-52's song?
+            `),
+        answer: 'My Own Private Idaho',
     },
     {
-        prompt: 'Where did they used to make all the baseballs for the majors?',
-        answers: [
-            { id: 'a', display: 'Vietnam'},
-            { id: 'b', display: 'Honduras'},
-            { id: 'c', display: 'Haiti'},
-            { id: 'd', display: 'Japan'},
+        type: 'mc_single',
+        prompt: 'Which is closest to the sun?',
+        answer: [
+            {value: false, text: 'Earth'},
+            {value: false, text: 'The astroid belt'},
+            {value: false, text: 'Alpha Centari'},
+            {value: true, text: 'Venus'},
         ],
-        correct_answer: 'c',
+    },
+    {
+        type: 'mc_multiple',
+        prompt: 'Which of the following won an oscar for best picture?',
+        answers: [
+            {text: 'Dances with Wolves', value: true},
+            {text: 'Amadeus', value: true },
+            {text: 'Raiders of the Lost Ark', value: false},
+            {text: 'E.T. the Extra-Terrestrial', value: false},
+            {text: 'The Shining', value: false},
+            {text: 'Raging Bull', value: false},
+            {text: 'Platoon', value: true},
+            {text: 'Rain Man', value: true},
+            {text: 'Full Metal Jacket', value: false},
+        ],
     },
 ];

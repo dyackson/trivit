@@ -5,7 +5,8 @@
 </script>
 
 <script>
-    import {save_question, get_questions} from '@/db/questions';
+    import get_valid_copy_of_question from '@/get_valid_copy_of_question';
+    // import {save_question, get_questions} from '@/db/questions';
     import Dropdown from '@/components/Dropdown';
     import Bool from '@/components/Bool';
     import Text from '@/components/Text';
@@ -98,6 +99,15 @@
         answer = selected_type_config.on_ans_toggled(answer, key);
     }
 
+    function save_question() {
+        const valid_copy = get_valid_copy_of_question({
+            type,
+            prompt,
+            answer,
+        });
+        console.dir({valid_copy});
+    }
+
 
 </script>
 <svelte:head>
@@ -179,6 +189,8 @@
     {/each}
     <button class=button on:click={add_empty_ans}>Add Another Choice</button>
 {/if}
+
+<button class=button on:click={save_question}>Save Question</button>
 
 {@debug selected_display_type, type, to_type, selected_type_config,
 converted_answer, then_msg, show_data_loss_warning, answer}
