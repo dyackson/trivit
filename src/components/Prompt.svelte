@@ -1,8 +1,8 @@
 <script>
     export let text;
 </script>
-<content>
+<p class='content is-large'>
     {text}
-</content>
+</p>
 
 

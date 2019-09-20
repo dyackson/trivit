@@ -1,9 +1,19 @@
 <script>
     import questions from '@/routes/_questions';
     import FreeForm from '@/components/FreeForm';
-    const free_form_q = questions.find(q => q.type === 'free_form');
+    import TrueFalse from '@/components/TrueFalse';
+    const free_form_qs = questions.filter(q => q.type === 'free_form');
+    const true_false_qs = questions.filter(q => q.type === 'true_false');
 </script>
 
-<FreeForm {...free_form_q} />
+{#each questions as q}
+    {#if q.type === 'free_form'}
+        <FreeForm {...q} />
+        <hr>
+    {:else if q.type === 'true_false'}
+        <TrueFalse {...q} />
+        <hr>
+    {/if}
+{/each}
 
 

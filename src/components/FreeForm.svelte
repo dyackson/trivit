@@ -10,16 +10,21 @@
 
 <Prompt text={prompt} />
 
+<div class='content is-large'>
 {#if show_answer}
-    <div class=content>
+    <label is-medium>Answer:</label>
+    <p>
         {answer}
-    </div>
+    </p>
+    <button class='button' on:click={() => show_answer = false} >
+        Hide Answer
+    </button>
 {:else}
     <button class='button' on:click={() => show_answer = true} >
         Show Answer
     </button>
 {/if}
-
+</div>
 
 
 

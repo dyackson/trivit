@@ -1,10 +1,12 @@
 <script>
     export let value = true;
-    export let label = true;
+    export let label = '';
 </script>
 
 <div class="field">
-    <label class="label">{label}</label>
+    {#if label}
+        <label class="label">{label}</label>
+    {/if}
     <div class="control">
         <label class="radio">
             <input type="radio" name="answer" value={true} bind:group={value}>

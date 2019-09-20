@@ -1,6 +1,20 @@
 import {collapse_whitespace} from '@/string_functions';
 export default [
     {
+        type: 'true_false',
+        prompt: collapse_whitespace(`
+            Rocky won an Oscar for best picture.
+        `),
+        answer: true,
+    },
+    {
+        type: 'true_false',
+        prompt: collapse_whitespace(`
+            Avatar won an Oscar for best picture.
+        `),
+        answer: false,
+    },
+    {
         type: 'free_form',
         prompt: collapse_whitespace(`
             What 1991 movie directed by Gus Van Sant has a title derived from
