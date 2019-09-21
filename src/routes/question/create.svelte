@@ -95,8 +95,8 @@
         answer = answer.filter((c) => c.key !== key);
     }
 
-    function toggle_ans(key) {
-        answer = selected_type_config.on_ans_toggled(answer, key);
+    function toggle(key) {
+        answer = selected_type_config.on_toggle(answer, key);
     }
 
     function save_question() {
@@ -174,7 +174,7 @@
         bind:text={ans.text}
         bind:value={ans.value}
         delete_ans={() => delete_ans(ans.key)}
-        toggle_ans={() => toggle_ans(ans.key)}
+        toggle={() => toggle(ans.key)}
         />
     {/each}
     <button class=button on:click={add_empty_ans}>Add Another Choice</button>

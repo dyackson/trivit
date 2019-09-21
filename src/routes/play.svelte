@@ -2,6 +2,7 @@
     import questions from '@/routes/_questions';
     import FreeForm from '@/components/FreeForm';
     import TrueFalse from '@/components/TrueFalse';
+    import MC from '@/components/MC';
     const free_form_qs = questions.filter(q => q.type === 'free_form');
     const true_false_qs = questions.filter(q => q.type === 'true_false');
 </script>
@@ -12,6 +13,9 @@
         <hr>
     {:else if q.type === 'true_false'}
         <TrueFalse {...q} />
+        <hr>
+    {:else if q.type === 'mc_single'}
+        <MC {...q} />
         <hr>
     {/if}
 {/each}

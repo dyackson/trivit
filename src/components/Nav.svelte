@@ -20,9 +20,9 @@
 
     const routes = [
         {
-            display: 'Trivia',
-            segment: 'trivia',
-            href: 'trivia',
+            display: 'Play',
+            segment: 'play',
+            href: 'play',
         },
         {
             display: 'Login',

@@ -14,7 +14,7 @@ export const TYPE_CONFIGS = {
         get_empty_ans(key_holder) {
             return {text: '', value: false, key: key_holder.key++}
         },
-        on_ans_toggled(answer, key) {
+        on_toggle(answer, key) {
             const toggled = answer.find((ans) => ans.key === key);
 
             if (toggled.value) {
@@ -52,7 +52,7 @@ export const TYPE_CONFIGS = {
         get_empty_ans(key_holder) {
             return {text: '', value: false, key: key_holder.key++}
         },
-        on_ans_toggled(answer, key) {
+        on_toggle(answer, key) {
             return answer.map((ans) => {
                 if (ans.key === key) {
                     return {...ans, value: !ans.value};

@@ -26,10 +26,10 @@ export default [
         type: 'mc_single',
         prompt: 'Which is closest to the sun?',
         answer: [
-            {value: false, text: 'Earth'},
-            {value: false, text: 'The astroid belt'},
-            {value: false, text: 'Alpha Centari'},
-            {value: true, text: 'Venus'},
+            {value: false, text: 'Earth', key: 0},
+            {value: false, text: 'The astroid belt', key: 7},
+            {value: false, text: 'Alpha Centari', key: 1},
+            {value: true, text: 'Venus', key: 3},
         ],
     },
     {
