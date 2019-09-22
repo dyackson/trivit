@@ -1,12 +1,12 @@
 <script context=module>
     import {TYPE_CONFIGS} from '@/meta';
-    const config = TYPE_CONFIGS.mc_single;
+    const config = TYPE_CONFIGS.mc_multiple;
 </script>
 
 <script>
     import Prompt from '@/components/Prompt';
     import Bool from '@/components/Bool';
-    import Ans from '@/components/Ans';
+    import MCMChoice from '@/components/MCMChoice';
     export let prompt;
     export let answer;
     export let show_answer = false;
@@ -18,6 +18,7 @@
     let response = '';
 
     function on_toggle(key) {
+        console.log('iran');
         guess = config.on_toggle(guess, key);
     }
 
@@ -56,15 +57,14 @@
     </button>
 {:else}
     {#each guess as g (g.key)}
-    <Ans
-        bind:text={g.text}
-        bind:value={g.value}
-        toggle={() => on_toggle(g.key)}
-        play_mode=true
-        />
+        <MCMChoice
+            text={g.text}
+            on_click={() => on_toggle(g.key)}
+            value={g.value} />
     {/each}
-    <button class='button' on:click={submit} >
-        Submit
-    </button>
+        <button class='button is-fullwidth' on:click={submit} >
+            Submit
+        </button>
 {/if}
 </div>
+{@debug guess}

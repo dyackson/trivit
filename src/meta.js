@@ -53,6 +53,7 @@ export const TYPE_CONFIGS = {
             return {text: '', value: false, key: key_holder.key++}
         },
         on_toggle(answer, key) {
+            console.log('ran');
             return answer.map((ans) => {
                 if (ans.key === key) {
                     return {...ans, value: !ans.value};

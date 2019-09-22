@@ -28,24 +28,12 @@
 </script>
 
 {#if play_mode}
-<div class="field has-addons" on:click={toggle}>
-    <div class=control>
-        <div class="button {icon_color}">
-            <span class="icon is-small">
-                <i class='material-icons'>{icon}</i>
-            </span>
-        </div>
+    <div class="button on:click={toggle} {icon_color}">
+        <span class="icon is-small">
+            <i class='material-icons'>{icon}</i>
+        </span>
+        <span>{text}</span>
     </div>
-    <div class="control">
-        <div
-            class='input'
-            type=text
-            {placeholder}
-            readonly={play_mode}>
-            {text}
-        </div>
-    </div>
-</div>
 {:else}
 <div class="field has-addons">
     <div class=control on:click={toggle}>
