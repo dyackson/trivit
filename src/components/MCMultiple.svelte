@@ -11,29 +11,30 @@
     export let answer;
     export let show_answer = false;
 
-    const correct_ans = answer.find(a => a.value);
-
-    let guess = answer.map(a => ({...a, value: false}));
+    let guess = answer.map(a => ({...a, correct: a.value, value: false}));
 
     let response = '';
 
+
     function on_toggle(key) {
-        console.log('iran');
         guess = config.on_toggle(guess, key);
     }
 
     function submit() {
-        const selected_g = guess.find(g => g.value);
-        if (!selected_g) {
-            alert(`Pick an answer`);
+        const correct_count = guess
+            .filter(g => g.value === g.correct)
+            .length;
+
+        if (correct_count === guess.length) {
+            response = 'Correct';
         } else {
-            if (selected_g.key === correct_ans.key) {
-                response = 'Correct';
-            } else {
-                response = 'Wrong';
+            response = 'Wrong';
+            if (correct_count) {
+                response = `${response}. But you were
+                    ${correct_count}/${guess.length} right.`;
             }
-            show_answer = true;
         }
+        show_answer = true;
     }
 
     function reset() {
@@ -44,27 +45,55 @@
 </script>
 
 
+<style>
+    .smaller {
+        font-size: 0.6em;
+    }
+</style>
+
 <Prompt text={prompt} />
 
 <div class='content is-large'>
-{#if show_answer}
-    <!-- TODO: show a checkmark or X icon -->
-    <p>
-        {response}, it's {correct_ans.text}.
-    </p>
-    <button class='button' on:click={reset} >
-        Reset
-    </button>
-{:else}
-    {#each guess as g (g.key)}
-        <MCMChoice
-            text={g.text}
-            on_click={() => on_toggle(g.key)}
-            value={g.value} />
-    {/each}
+    {#if show_answer}
+    <table class="table is-narrow smaller">
+        <thead>
+            <tr>
+                <th>Choice</th>
+                <th>Your guess</th>
+                <th>Actual</th>
+                <th>Were you rigth</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#each guess as g (g.key)}
+                <tr>
+                    <td>{g.text}</td>
+                    <td>{g.value}</td>
+                    <td>{g.correct}</td>
+                    <td>{g.correct === g.value ? 'yes' : 'no'}</td>
+                </tr>
+            {/each}
+        </tbody>
+    </table>
+        <p>
+            {response}
+        </p>
+        <button class='button is-fullwidth' on:click={reset} >
+            Reset
+        </button>
+    {:else}
+        {#each guess as g (g.key)}
+            <MCMChoice
+                text={g.text}
+                reveal_correctness={show_answer}
+                on_click={() => on_toggle(g.key)}
+                correct={g.correct}
+                value={g.value} />
+        {/each}
+        <br>
         <button class='button is-fullwidth' on:click={submit} >
             Submit
         </button>
-{/if}
+    {/if}
 </div>
 {@debug guess}
