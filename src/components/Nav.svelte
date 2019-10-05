@@ -12,13 +12,13 @@
         store.import_stitch();
     });
 
-    const home = {
-        display: 'TriviT',
-        segment: 'home',
-        href: '.',
-    };
 
     const routes = [
+        {
+            display: 'Text GET/POST',
+            segment: 'home',
+            href: '.',
+        },
         {
             display: 'Play',
             segment: 'play',
@@ -45,32 +45,57 @@
 
 </script>
 
-<nav class="navbar" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-        <a class="navbar-item is-size-1" href={home.href} >
-            {home.display}
-        </a>
+<style>
+    nav {
+        display: flex;
+    }
 
-        <span
-            role="button"
-            class="navbar-burger"
-            class:is-active={burger_open}
-            on:click={() => burger_open = !burger_open}
-            aria-label="menu"
-            aria-expanded="false"
-            data-target="nav_items">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-        </span>
+    .navbar-burger {
+        position: relative;
+        top: 2em;
+        left: 2em;
+    }
+
+    .navbar-burger span {
+        background-color: seashell;
+        display: block;
+        width: 5em;
+        height: 1em;
+    }
+    .navbar-burger span:nth-of-type(2) {
+        margin: .5em 0;
+        border-radius: .5em;
+    }
+
+    .navbar-burger span:nth-of-type(1) {
+        border-top-right-radius: 1em;
+        border-top-left-radius: 1em;
+    }
+
+    .navbar-burger span:nth-of-type(3) {
+        border-bottom-right-radius: .5em;
+        border-bottom-left-radius: .5em;
+    }
+
+</style>
+
+<nav>
+    <div
+        class="navbar-burger"
+        class:open={burger_open}
+        on:click={() => burger_open = !burger_open}
+        >
+        <span></span>
+        <span></span>
+        <span></span>
     </div>
 
-    <div
+    <!--div
         id="nav_items"
         class="navbar-menu is-size-4"
         class:is-active={burger_open}>
         <div class="navbar-start">
-            {#each routes as {segment, href, display}}
+            {#each routes as {href, display}}
                 <a
                     class="navbar-item"
                     on:click={() => burger_open = false}
@@ -79,5 +104,5 @@
                 </a>
             {/each}
         </div>
-    </div>
+    </div-->
 </nav>
