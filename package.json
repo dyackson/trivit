@@ -3,19 +3,19 @@
   "description": "trivia stuff",
   "version": "0.0.1",
   "scripts": {
-    "dev": "sapper dev",
+    "help": "sapper dev --help",
+    "dev": "sapper dev ",
     "build": "sapper build",
     "export": "sapper export",
     "start": "node __sapper__/build",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
     "test_cypress": "run-p --race dev cy:run",
-    "test": "mochapack --webpack-config test.webpack.config.js \"./test/**/*.js\" ",
+    "test": "mochapack --webpack-config test.webpack.config.js \"./test/**/*.js\"",
     "lint": "eslint --ext .svelte,.js --ignore-path .gitignore ."
   },
   "dependencies": {
     "@mdi/font": "^4.2.95",
-    "bulma": "^0.7.5",
     "compression": "^1.7.1",
     "lodash": "^4.17.15",
     "mongodb-stitch-browser-sdk": "^4.4.0",

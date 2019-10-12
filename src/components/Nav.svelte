@@ -1,7 +1,3 @@
-<!--
-    TODO:
-        Make the burger larger
--->
 <script>
     import {onMount} from 'svelte';
     import * as store from '@/store';
@@ -41,68 +37,98 @@
         },
     ];
 
-    let burger_open = false;
-
+    let open = false;
 </script>
 
 <style>
     nav {
-        display: flex;
+        font-size: calc(2vw + .5em);
     }
 
-    .navbar-burger {
+    #menu-button {
         position: relative;
-        top: 2em;
-        left: 2em;
+        top: 1em;
+        left: 1em;
+        cursor: pointer;
+        z-index: 2;
     }
 
-    .navbar-burger span {
-        background-color: seashell;
-        display: block;
-        width: 5em;
-        height: 1em;
-    }
-    .navbar-burger span:nth-of-type(2) {
-        margin: .5em 0;
-        border-radius: .5em;
+    #menu-button.open {
+        color: black;
+        transition: color 1s cubic-bezier(0.77,0.2,0.05,1.0);
     }
 
-    .navbar-burger span:nth-of-type(1) {
-        border-top-right-radius: 1em;
-        border-top-left-radius: 1em;
+    #open-text {
+        opacity: 1;
+        transition: opacity 1s cubic-bezier(0.86, 0, 0.07, 1);
     }
 
-    .navbar-burger span:nth-of-type(3) {
-        border-bottom-right-radius: .5em;
-        border-bottom-left-radius: .5em;
+    /* this text is invisible */
+    #open-text.open {
+        opacity: 0;
+        transition: opacity 1s cubic-bezier(0.86, 0, 0.07, 1);
     }
 
+    #close-text {
+        opacity: 0;
+        transition: opacity 1s cubic-bezier(0.86, 0, 0.07, 1);
+    }
+    /* this text IS visible */
+    #close-text.open {
+        opacity: 1;
+        transition: opacity 1s cubic-bezier(0.86, 0, 0.07, 1);
+    }
+
+
+
+    #menu {
+        background: seashell;
+        color: black;
+        position: absolute;
+        padding: 1em;
+        padding-top: 3em;
+        top: 0;
+        margin: 0;
+
+        border-color: white;
+        border-width: 2px;
+        list-style-type: none;
+        /* to stop flickering of text in safari */
+        -webkit-font-smoothing: antialiased;
+        transform: translate(-110%, 0);
+        transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0);
+        z-index: 1;
+    }
+
+    #menu.open {
+        transform: none;
+    }
+
+    .overlapped {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    li {
+        list-style: none;
+    }
 </style>
 
 <nav>
     <div
-        class="navbar-burger"
-        class:open={burger_open}
-        on:click={() => burger_open = !burger_open}
+        id=menu-button
+        class:open
+        on:click={() => open = !open}
         >
-        <span></span>
-        <span></span>
-        <span></span>
+        <div id=open-text class:open>CLOSE MENU</div>
     </div>
 
-    <!--div
-        id="nav_items"
-        class="navbar-menu is-size-4"
-        class:is-active={burger_open}>
-        <div class="navbar-start">
-            {#each routes as {href, display}}
-                <a
-                    class="navbar-item"
-                    on:click={() => burger_open = false}
-                    {href}>
-                    {display}
-                </a>
+    <ul id=menu class:open>
+        {#each routes as {href, display}}
+        <a {href}><li>
+                {display}
+            </li></a>
             {/each}
-        </div>
-    </div-->
+    </ul>
 </nav>
