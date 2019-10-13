@@ -41,6 +41,11 @@
 </script>
 
 <style>
+    :root {
+        /* transition timing function */
+        --ttf: cubic-bezier(0.77, 0.2, 0.05, 1.0);
+    }
+
     nav {
         font-size: calc(2vw + .5em);
     }
@@ -51,35 +56,15 @@
         left: 1em;
         cursor: pointer;
         z-index: 2;
+        transform: translate(-4em, 0);
+        transition: transform 0.5s var(--ttf);
     }
 
     #menu-button.open {
         color: black;
-        transition: color 1s cubic-bezier(0.77,0.2,0.05,1.0);
+        transform: none;
+        transition: color 0.5s var(--ttf);
     }
-
-    #open-text {
-        opacity: 1;
-        transition: opacity 1s cubic-bezier(0.86, 0, 0.07, 1);
-    }
-
-    /* this text is invisible */
-    #open-text.open {
-        opacity: 0;
-        transition: opacity 1s cubic-bezier(0.86, 0, 0.07, 1);
-    }
-
-    #close-text {
-        opacity: 0;
-        transition: opacity 1s cubic-bezier(0.86, 0, 0.07, 1);
-    }
-    /* this text IS visible */
-    #close-text.open {
-        opacity: 1;
-        transition: opacity 1s cubic-bezier(0.86, 0, 0.07, 1);
-    }
-
-
 
     #menu {
         background: seashell;
@@ -96,7 +81,7 @@
         /* to stop flickering of text in safari */
         -webkit-font-smoothing: antialiased;
         transform: translate(-110%, 0);
-        transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0);
+        transition: transform 0.5s var(--ttf);
         z-index: 1;
     }
 
@@ -104,11 +89,6 @@
         transform: none;
     }
 
-    .overlapped {
-        position: absolute;
-        top: 0;
-        left: 0;
-    }
 
     li {
         list-style: none;
@@ -121,7 +101,7 @@
         class:open
         on:click={() => open = !open}
         >
-        <div id=open-text class:open>CLOSE MENU</div>
+        CLOSE MENU
     </div>
 
     <ul id=menu class:open>
