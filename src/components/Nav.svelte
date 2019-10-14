@@ -56,6 +56,7 @@
         left: 1em;
         cursor: pointer;
         z-index: 2;
+        width: fit-content;
         transform: translate(-4em, 0);
         transition: transform 0.5s var(--ttf);
     }
@@ -63,7 +64,7 @@
     #menu-button.open {
         color: black;
         transform: none;
-        transition: color 0.5s var(--ttf);
+        transition: color, transform 0.5s var(--ttf);
     }
 
     #menu {
@@ -92,6 +93,9 @@
 
     li {
         list-style: none;
+        font-size: 1.5em;
+        margin-bottom: .5em;
+        text-decoration: none;
     }
 </style>
 
@@ -106,7 +110,7 @@
 
     <ul id=menu class:open>
         {#each routes as {href, display}}
-        <a {href}><li>
+        <a {href}><li on:click={() => open = false}>
                 {display}
             </li></a>
             {/each}
