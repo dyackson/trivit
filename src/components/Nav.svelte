@@ -44,10 +44,13 @@
     :root {
         /* transition timing function */
         --ttf: cubic-bezier(0.77, 0.2, 0.05, 1.0);
+        --light: #f8d56b;
+        --dark: #071a23;
     }
 
     nav {
         font-size: calc(2vw + .5em);
+        height: 2em;
     }
 
     #menu-button {
@@ -62,14 +65,14 @@
     }
 
     #menu-button.open {
-        color: black;
+        color: var(--dark);
         transform: none;
         transition: color, transform 0.5s var(--ttf);
     }
 
     #menu {
-        background: seashell;
-        color: black;
+        background: var(--light);
+        color: var(--dark);
         position: absolute;
         padding: 1em;
         padding-top: 3em;
@@ -84,18 +87,30 @@
         transform: translate(-110%, 0);
         transition: transform 0.5s var(--ttf);
         z-index: 1;
+        border-bottom-right-radius: 5em;
     }
 
     #menu.open {
         transform: none;
     }
 
+    a {
+        text-decoration: none;
+        color: var(--dark);
+    }
+
+    a:hover {
+        color: tomato;
+    }
 
     li {
         list-style: none;
         font-size: 1.5em;
         margin-bottom: .5em;
-        text-decoration: none;
+    }
+
+    a:last-of-type > li {
+        margin-bottom: 0;
     }
 </style>
 
