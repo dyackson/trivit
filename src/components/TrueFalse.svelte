@@ -30,21 +30,23 @@
     }
 </script>
 
+<style>
+</style>
 
 <Prompt text={prompt} />
 
-<div class='content is-large'>
+<div>
 {#if show_answer}
     <!-- TODO: show a checkmark or X icon -->
     <p>
         {response}, it's {answer}.
     </p>
-    <button class='button' on:click={reset} >
+    <button on:click={reset} >
         Reset
     </button>
 {:else}
     <Bool bind:value={guess}/>
-    <button class='button' on:click={submit} >
+    <button on:click={submit} >
         Submit
     </button>
 {/if}

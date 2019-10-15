@@ -3,16 +3,25 @@
     export let label = '';
 </script>
 
-<div class="field">
+<style>
+    .holder {
+        padding: .5em;
+    }
+
+    .input {
+        margin: 0 .5em 0 .5em;
+    }
+</style>
+<div class=holder>
     {#if label}
-        <label class="label">{label}</label>
+        <label>{label}</label>
     {/if}
-    <div class="control">
-        <label class="radio">
+    <div>
+        <label class=input>
             <input type="radio" name="answer" value={true} bind:group={value}>
             True
         </label>
-        <label class="radio">
+        <label class=input>
             <input type="radio" name="answer" value={false} bind:group={value}>
             False
         </label>

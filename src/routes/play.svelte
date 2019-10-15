@@ -7,6 +7,13 @@
     const true_false_qs = questions.filter(q => q.type === 'true_false');
 </script>
 
+<style>
+    div {
+        padding: 4vw;
+    }
+</style>
+
+<div>
 {#each questions as q}
     {#if q.type === 'free_form'}
         <FreeForm {...q} />
@@ -19,5 +26,6 @@
         <hr>
     {/if}
 {/each}
+</div>
 
 

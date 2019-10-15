@@ -1,7 +1,10 @@
 <script>
     export let text;
 </script>
-<p class='content is-large'>
+
+<style>
+</style>
+<p>
     {text}
 </p>
 

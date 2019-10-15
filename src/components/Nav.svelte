@@ -41,12 +41,6 @@
 </script>
 
 <style>
-    :root {
-        /* transition timing function */
-        --ttf: cubic-bezier(0.77, 0.2, 0.05, 1.0);
-        --light: #f8d56b;
-        --dark: #071a23;
-    }
 
     nav {
         font-size: calc(2vw + .5em);

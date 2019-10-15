@@ -5,9 +5,24 @@
 </script>
 
 <style>
+    :root {
+        /* transition timing function */
+        --ttf: cubic-bezier(0.77, 0.2, 0.05, 1.0);
+        --light: #f8d56b;
+        --dark: #071a23;
+    }
+
+    :global(button) {
+        border: 0.1em solid var(--light);
+        background: transparent;
+        color: var(--light);
+        padding: .3em;
+        margin: .3em;
+    }
+
 	:global(body) {
-        color: seashell;
-		background-color: black;
+        color: var(--light);
+        background-color: var(--dark);
         font-family: "Avenir Next", "Avenir", sans-serif;
 		padding: 0;
 		margin: 0;
