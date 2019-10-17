@@ -17,7 +17,7 @@
         background: transparent;
         color: var(--light);
         padding: .3em;
-        margin: .3em;
+        margin: 1em 1.5em;
     }
 
 	:global(body) {
@@ -28,6 +28,10 @@
 		margin: 0;
 		box-sizing: border-box;
 	}
+
+    global:(.clickable) {
+        cursor: pointer;
+    }
 </style>
 
 <Nav {segment}/>

@@ -3,6 +3,7 @@
     import FreeForm from '@/components/FreeForm';
     import TrueFalse from '@/components/TrueFalse';
     import MCMultiple from '@/components/MCMultiple';
+    import MCSingle from '@/components/MCSingle';
     const free_form_qs = questions.filter(q => q.type === 'free_form');
     const true_false_qs = questions.filter(q => q.type === 'true_false');
 </script>
@@ -14,9 +15,12 @@
 </style>
 
 <div>
-{#each questions as q}
+{#each questions as q (q.prompt)}
     {#if q.type === 'free_form'}
         <FreeForm {...q} />
+        <hr>
+    {:else if q.type === 'mc_single'}
+        <MCSingle {...q} />
         <hr>
     {:else if q.type === 'true_false'}
         <TrueFalse {...q} />

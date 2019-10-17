@@ -46,16 +46,13 @@
 
 
 <style>
-    .smaller {
-        font-size: 0.6em;
-    }
 </style>
 
 <Prompt text={prompt} />
 
 <div class='content is-large'>
     {#if show_answer}
-    <table class="table is-narrow smaller">
+    <table class="smaller">
         <thead>
             <tr>
                 <th>Choice</th>
