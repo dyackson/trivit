@@ -10,7 +10,7 @@
     export let answer;
     export let show_answer = false;
 
-    let correct_ans = answer.filter((ans) => ans.value);
+    let correct_ans = answer.find((ans) => ans.value);
 
     let selected_ans_key = ''
 
@@ -38,14 +38,25 @@
 
 
 <style>
+    .label {
+        display: block;
+        padding: .5em 0;
+        width: fit-content;
+    }
 </style>
 
 <Prompt text={prompt} />
 
 <div>
     {#each answer as ans (ans.key)}
-        <label for={ans.key} class=clickable>
-            <input id={ans.key} type=checkbox bind:value={ans.key}/>
+        <label for={ans.key}
+            class="clickable label"
+            class:selected={ans.key ===  selected_ans_key}>
+            <input
+                id={ans.key}
+                type=radio
+                value={ans.key}
+                bind:group={selected_ans_key}/>
             {ans.text}
         </label>
     {/each}

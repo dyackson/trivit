@@ -29,8 +29,13 @@
 		box-sizing: border-box;
 	}
 
-    global:(.clickable) {
+    :global(.clickable) {
         cursor: pointer;
+    }
+
+    :global(.selected) {
+        background-color: tomato;
+        color: var(--dark);
     }
 </style>
 

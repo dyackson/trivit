@@ -16,10 +16,6 @@
         cursor: pointer;
     }
 
-    .selected {
-        background-color: tomato;
-        color: var(--dark);
-    }
 </style>
 {#if label}
     <label>{label}</label>
