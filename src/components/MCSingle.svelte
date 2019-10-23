@@ -31,6 +31,7 @@
     }
 
     function reset() {
+        console.log('called reset');
         response = '';
         show_answer = false;
     }
@@ -38,9 +39,8 @@
 
 
 <style>
-    .label {
+    .block {
         display: block;
-        padding: .5em 0;
         width: fit-content;
     }
 </style>
@@ -50,7 +50,7 @@
 <div>
     {#each answer as ans (ans.key)}
         <label for={ans.key}
-            class="clickable label"
+            class="clickable radio-input-label block"
             class:selected={ans.key ===  selected_ans_key}>
             <input
                 id={ans.key}
@@ -60,8 +60,17 @@
             {ans.text}
         </label>
     {/each}
-    <br>
-    <button class='button is-fullwidth' on:click={submit} >
-        Submit
-    </button>
+    {#if selected_ans_key}
+        {#if !show_answer}
+            <button class='clickable'
+                on:click={submit} >
+                SUBMIT
+            </button>
+        {:else}
+            <button class='clickable'
+                on:click={reset} >
+                RESET
+            </button>
+        {/if}
+    {/if}
 </div>

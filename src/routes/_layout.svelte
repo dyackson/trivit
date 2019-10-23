@@ -37,6 +37,12 @@
         background-color: tomato;
         color: var(--dark);
     }
+
+    :global(.radio-input-label) {
+        margin: 0 .5em 0 .5em;
+        padding: .4em .5em .4em 0;
+        border-radius: .5em;
+    }
 </style>
 
 <Nav {segment}/>
