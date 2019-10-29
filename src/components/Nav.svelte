@@ -35,6 +35,11 @@
             segment: 'question/create_old',
             href: 'question/create',
         },
+        {
+            display: 'DROP A DRAGON',
+            segment: 'dragon',
+            href: 'dragon',
+        },
     ];
 
     let open = false;
