@@ -15,6 +15,13 @@
         const data = event.dataTransfer.getData('text/plain');
         event.target.textContent = data;
     }
+
+    function setPotentialDragIndex(index) {
+        potentialDropIndex = index;
+    }
+    // dragenter required on mobile, per
+    // github.com/timruffles/mobile-drag-drop#polyfill-requires-dragenter-listener
+    function obligatoryHandler() {}
 </script>
 
 <style>
@@ -39,6 +46,7 @@
 <div id='dragon' draggable=true on:dragstart={onDragStart}>Dragon</div>
 <br>
 <div id='target'
+    on:dragenter|preventDefault={obligatoryHandler}
     on:dragover|preventDefault={onDragOver}
     on:drop|preventDefault={onDrop}
     >
@@ -51,8 +59,8 @@
     <div
         class=drop-site
         class:dragged-over={index === potentialDropIndex}
-        on:dragenter|preventDefault={() => potentialDropIndex = index}
-        on:dragexit|preventDefault={() => potentialDropIndex = null}
+        on:dragenter|preventDefault={() => setPotentialDragIndex(index)}
+        on:dragleave|preventDefault={() => setPotentialDragIndex(null)}
         ></div>
     {/if}
 {/each}
