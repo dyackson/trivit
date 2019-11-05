@@ -41,26 +41,28 @@
 
 <style>
     .wrapper {
+        margin: 0 .5em;
+    }
+
+    .wrapper.first {
+        margin-top: 1em;
     }
 
     .item {
         width: fit-content;
         border: 2px solid white;
-        margin: .5em;
-    }
-
-    #target {
-        padding: 4em;
     }
 
     .space-between-item {
         border: 2px solid white;
         width: 3em;
-        position: relative;
-        top: 2em;
+        height: .5em;
+        transition: height 0.5s var(--ttf);
     }
     .dragged-over {
         width: 6em;
+        height: 2em;
+        transition: height 0.5s var(--ttf);
     }
 </style>
 
@@ -77,7 +79,7 @@
 -->
 
 {#each items as item, index (item)}
-    <div class=wrapper>
+<div class=wrapper class:first={index === 0}>
         <div class=item draggable=true>item</div>
         {#if index !== items.length - 1}
         <div
