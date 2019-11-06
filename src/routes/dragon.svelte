@@ -1,10 +1,18 @@
 <script>
     const items = ['fi', 'fai', 'fo', 'fum'];
     let potentialDropIndex = null;
-    function onDragStart(event) {
-        console.log('onDragStart');
-        event.dataTransfer.setData("text/plain", event.target.innerText);
+    let draggedItemIndex = null;
+
+    function onDragStart(index) {
+        console.log('onDragStart', index);
+        draggedItemIndex = index;
+        // event.dataTransfer.setData("text/plain", event.target.innerText);
         event.dataTransfer.dropEffect = 'move';
+    }
+
+    function onDragEnd() {
+        draggedItemIndex = null;
+        potentialDropIndex = null;
     }
 
     function onDragOver(event) {
@@ -78,17 +86,25 @@
 </div>
 -->
 
-{#each items as item, index (item)}
+{#each [...items, 'fake']  as item, index (item)}
 <div class=wrapper class:first={index === 0}>
-        <div class=item draggable=true>item</div>
-        {#if index !== items.length - 1}
-        <div
-            class=space-between-item
-            class:dragged-over={index === potentialDropIndex}
-            on:dragenter|preventDefault={() => onDragEnterSite(index)}
-            on:dragover|preventDefault={() => true || onDragOverSite(index)}
-            on:dragleave|preventDefault={() => onDragLeaveSite(index)}
-            ></div>
-        {/if}
+    <div
+        class=space-between-item
+        class:dragged-over={index === potentialDropIndex}
+        on:dragenter|preventDefault={() => onDragEnterSite(index)}
+        on:dragover|preventDefault={() => true || onDragOverSite(index)}
+        on:dragleave|preventDefault={() => onDragLeaveSite(index)}
+        >
     </div>
+    {#if item !== 'fake'}
+    <div
+        class=item
+        draggable=true
+        on:dragstart={() => onDragStart(index)}
+        on:dragend|preventDefault={onDragEnd}
+        >
+        item
+    </div>
+    {/if}
+</div>
 {/each}
