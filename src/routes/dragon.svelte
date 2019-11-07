@@ -1,18 +1,31 @@
 <script>
     const items = ['fi', 'fai', 'fo', 'fum'];
-    let potentialDropIndex = null;
-    let draggedItemIndex = null;
+    let potential_drop_index = null;
+    let dragged_item_index = null;
 
-    function onDragStart(index) {
-        console.log('onDragStart', index);
-        draggedItemIndex = index;
+    $: expanded_index = (() => {
+        if (potential_drop_index === null) {
+            return;
+        }
+        const potential_drop_is_adjacent
+            = potential_drop_index === dragged_item_index
+            || potential_drop_index === dragged_item_index + 1;
+
+        if (!potential_drop_is_adjacent) {
+            return potential_drop_index;
+        }
+    })();
+
+    function on_drag_start(index) {
+        console.log('on_drag_start', index);
+        dragged_item_index = index;
         // event.dataTransfer.setData("text/plain", event.target.innerText);
         event.dataTransfer.dropEffect = 'move';
     }
 
-    function onDragEnd() {
-        draggedItemIndex = null;
-        potentialDropIndex = null;
+    function on_drag_end() {
+        dragged_item_index = null;
+        potential_drop_index = null;
     }
 
     function onDragOver(event) {
@@ -25,7 +38,7 @@
     }
 
     function setPotentialDragIndex(index) {
-        potentialDropIndex = index;
+        potential_drop_index = index;
     }
     // dragenter required on mobile, per
     // github.com/timruffles/mobile-drag-drop#polyfill-requires-dragenter-listener
@@ -33,17 +46,17 @@
 
     function onDragOverSite(index) {
         console.log('dragged over', index);
-        potentialDropIndex = index;
+        potential_drop_index = index;
     }
 
-    function onDragEnterSite(index) {
+    function on_drag_enter_site(index) {
         console.log('drag entered', index);
-        potentialDropIndex = index;
+        potential_drop_index = index;
     }
 
-    function onDragLeaveSite(index) {
+    function on_drag_leave_site(index) {
         console.log('drag left', index);
-        potentialDropIndex = null;
+        potential_drop_index = null;
     }
 </script>
 
@@ -67,7 +80,7 @@
         height: .5em;
         transition: height 0.5s var(--ttf);
     }
-    .dragged-over {
+    .expanded {
         width: 6em;
         height: 2em;
         transition: height 0.5s var(--ttf);
@@ -75,7 +88,7 @@
 </style>
 
 <!--
-<div id='dragon' draggable=true on:dragstart={onDragStart}>Dragon</div>
+<div id='dragon' draggable=true on:dragstart={on_drag_start}>Dragon</div>
 <br>
 <div id='target'
     on:dragenter|preventDefault={obligatoryHandler}
@@ -86,22 +99,21 @@
 </div>
 -->
 
-{#each [...items, 'fake']  as item, index (item)}
+{#each [...items, Symbol.for('fake')]  as item, index (item)}
 <div class=wrapper class:first={index === 0}>
     <div
         class=space-between-item
-        class:dragged-over={index === potentialDropIndex}
-        on:dragenter|preventDefault={() => onDragEnterSite(index)}
-        on:dragover|preventDefault={() => true || onDragOverSite(index)}
-        on:dragleave|preventDefault={() => onDragLeaveSite(index)}
+        class:expanded={index === expanded_index}
+        on:dragenter|preventDefault={() => on_drag_enter_site(index)}
+        on:dragleave|preventDefault={() => on_drag_leave_site(index)}
         >
     </div>
-    {#if item !== 'fake'}
+    {#if item !== Symbol.for('fake')}
     <div
         class=item
         draggable=true
-        on:dragstart={() => onDragStart(index)}
-        on:dragend|preventDefault={onDragEnd}
+        on:dragstart={() => on_drag_start(index)}
+        on:dragend|preventDefault={on_drag_end}
         >
         item
     </div>
