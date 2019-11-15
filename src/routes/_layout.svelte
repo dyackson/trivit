@@ -4,7 +4,7 @@
     import {onMount} from 'svelte';
     // optional import of scroll behaviour
     import {scrollBehaviourDragImageTranslateOverride}
-    from "mobile-drag-drop/scroll-behaviour";
+        from "mobile-drag-drop/scroll-behaviour";
     // options are optional ;)
 
     onMount(() => {

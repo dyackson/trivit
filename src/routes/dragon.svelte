@@ -1,7 +1,9 @@
 <script>
+    import {tick} from 'svelte';
     let items = ['0', '1', '2', '3', '4', '5'];
     let potential_drop_index = null;
     let dragged_item_index = null;
+    let drag_image;
 
     const FAKE = {};
 
@@ -18,17 +20,34 @@
         }
     })();
 
-    function on_drag_start(index) {
-        console.log('on_drag_start', index);
+    const item_div_refs = [];
+
+    let dragged_div = null;
+    if (dragged_item_index !== null) {
+        dragged_div = item_div_refs[dragged_item_index];
+    } else {
+        dragged_div = null;
+    }
+
+    function on_drag_start(event, index) {
+        console.log('on_drag_start', event, index);
         dragged_item_index = index;
         console.log('dragged_item_index', dragged_item_index);
-        // event.dataTransfer.setData("text/plain", event.target.innerText);
-        event.dataTransfer.dropEffect = 'move';
+
+        const dragged_item = item_div_refs[dragged_item_index];
+        dragged_item.innerText = 'farts';
+        console.log('dragged_item', dragged_item);
+        event.dataTransfer.setDragImage(dragged_item, 0, 0);
+        setTimeout(() => {
+            items = [
+                ...items.slice(0, dragged_item_index),
+                ...items.slice(dragged_item_index + 1),
+            ];
+        });
     }
 
     function on_drag_end() {
         console.log('on_drag_end');
-        console.dir({potential_drop_index, dragged_item_index});
         if (potential_drop_index !== null) {
             const dragged_item = items[dragged_item_index];
             if (dragged_item_index < potential_drop_index) {
@@ -75,6 +94,8 @@
         console.log('drag left', index);
         // potential_drop_index = null;
     }
+
+    function on_drag_enter_self() {}
 </script>
 
 <style>
@@ -82,8 +103,11 @@
         margin: 0 .5em;
     }
 
-    .wrapper.first {
-        /* margin-top: 2em; */
+    .dragged {
+        /*
+        margin: 0;
+        height: 0;
+            */
     }
 
     .item {
@@ -92,20 +116,24 @@
         padding: 0 1em;
     }
 
-    .dragged {
-        opacity: 0;
-    }
-
     .space-between-item {
-        border: 2px solid white;
+     /*   border: 2px solid white; */
         width: 3em;
         height: .5em;
         transition: height 0.5s var(--ttf);
     }
-    .expanded {
+    .space-between-item.expanded {
         width: 6em;
         height: 2em;
         transition: height 0.5s var(--ttf);
+    }
+
+    #drag_image {
+        color: white;
+    }
+
+    .space-between-item.contracting {
+        transition: none;
     }
 </style>
 
@@ -122,7 +150,7 @@
 -->
 
 {#each [...items, FAKE]  as item, index (item)}
-<div class=wrapper class:first={index === 0}>
+<div class=wrapper class:dragged={index === dragged_item_index}>
     <div
         class=space-between-item
         class:expanded={index === expanded_index}
@@ -133,13 +161,15 @@
     {#if item !== FAKE}
     <div
         class=item
-        class:dragged={index === dragged_item_index}
         draggable=true
-        on:dragstart={() => on_drag_start(index)}
+        on:dragstart={(event) => on_drag_start(event, index)}
         on:dragend|preventDefault={on_drag_end}
+        on:dragenter|preventDefault={() => on_drag_enter_self(index)}
+        bind:this={item_div_refs[index]}
         >
         {item}
     </div>
     {/if}
 </div>
 {/each}
+<div id=drag_image bind:this={drag_image}>farts</div>
