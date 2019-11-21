@@ -1,22 +1,28 @@
 <script>
     import {tick, onMount} from 'svelte';
     let items = ['0', '1', '2', '3', '4', '5'];
+
     let potential_drop_index = null;
     let dragged_item_index = null;
     let dragged_item = null;
-    let dragged_element = null;
-    let drag_image;
 
     const FAKE_ITEM = {};
 
+    onMount(() => {
+    });
+
     function on_drag_start(event, index) {
+        event.dataTransfer.setData('text/plain', 'some_dummy_data');
         console.log('on_drag_start', event, index);
         dragged_item_index = index;
         dragged_item = items[dragged_item_index];
         console.log('dragged_item_index', dragged_item_index);
 
 
-        dragged_element = event.target;
+        const dragged_element = event.target;
+        // adding the listener to the element via html doesn't work because the
+        // element is not in the dom when we end the drag. Adding it here works.
+        dragged_element.addEventListener('dragend', on_drag_end);
         console.log('dragged_item', dragged_element);
         event.dataTransfer.setDragImage(dragged_element,
             dragged_element.offsetWidth/2,
@@ -26,37 +32,41 @@
         setTimeout(() => {
             // Do this in setTimeout to ensure that the image of the dragged
             // element gets copied before the element gets erased.
-            potential_drop_index = dragged_item_index;
 
+            potential_drop_index = dragged_item_index;
             items = [
                 ...items.slice(0, dragged_item_index),
                 ...items.slice(dragged_item_index + 1),
             ];
         });
-
     }
 
     function on_drag_end() {
-        console.log('on_drag_end', potential_drop_index);
-
+        console.log('on_drag_end, potential_drop_index', potential_drop_index);
+        let drop_index;
+        if (potential_drop_index !== null) {
+            drop_index = potential_drop_index;
+        } else {
+            // It is not over a target--put it back where it came from.
+            potential_drop_index = dragged_item_index;
+        }
+        put_dragged_element_at(drop_index);
     }
 
-    function on_drag_over(event) {
-        // the taget must have ondragover to be targetble
-    }
-
-    function on_drop(event) {
-        console.log('on_drop');
-
+    function put_dragged_element_at(index) {
         items = [
-            ...items.slice(0, potential_drop_index),
+            ...items.slice(0, index),
             dragged_item,
-            ...items.slice(potential_drop_index),
+            ...items.slice(index),
         ];
 
         dragged_item_index = null;
         dragged_item = null,
         potential_drop_index = null;
+    }
+
+    function on_drag_over(event) {
+        // the taget must have ondragover to be targetble
     }
 
     // dragenter required on mobile, per
@@ -121,7 +131,6 @@
         class=space-between-item
         class:expanded={index === potential_drop_index}
         on:dragenter|preventDefault={(event) => on_drag_enter_site(event, index)}
-        on:drop={() => on_drop(index)}
         on:dragleave|preventDefault={() => on_drag_leave_site(index)}
         on:dragover|preventDefault={do_nothing}
         >
@@ -131,7 +140,6 @@
         class=item
         draggable=true
         on:dragstart={(event) => on_drag_start(event, index)}
-        on:dragend={on_drag_end}
         >
         {item}
     </div>
