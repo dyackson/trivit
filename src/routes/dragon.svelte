@@ -8,7 +8,12 @@
 
     const FAKE_ITEM = {};
 
+    const pointer = {};
     onMount(() => {
+        document.addEventListener('mousemove', (e) => {
+            pointer.x = e.screenX;
+            pointer.y = e.screenY;
+        });
     });
 
     function on_drag_start(event, index) {
@@ -38,7 +43,20 @@
                 ...items.slice(0, dragged_item_index),
                 ...items.slice(dragged_item_index + 1),
             ];
+
+
+            tick().then(() => {
+                // see if the mouse left initial drop target before the drop
+                // target rendered (meaning on_drag_enter_site did not fire)
+                // const id_under_target =
+                setTimeout(get_id_under_mouse);
+            });
         });
+    }
+
+    function get_id_under_mouse() {
+        const element = document.elementFromPoint(pointer.x, pointer.y);
+        console.log('element under mouse', element);
     }
 
     function on_drag_end() {
@@ -48,7 +66,7 @@
             drop_index = potential_drop_index;
         } else {
             // It is not over a target--put it back where it came from.
-            potential_drop_index = dragged_item_index;
+            drop_index = dragged_item_index;
         }
         put_dragged_element_at(drop_index);
     }
@@ -128,6 +146,7 @@
 {#each [...items, FAKE_ITEM]  as item, index (item)}
 <div class=wrapper class:dragged={index === dragged_item_index}>
     <div
+        id={`drop_target_${index}`}
         class=space-between-item
         class:expanded={index === potential_drop_index}
         on:dragenter|preventDefault={(event) => on_drag_enter_site(event, index)}
