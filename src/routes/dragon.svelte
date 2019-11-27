@@ -5,6 +5,7 @@
     let potential_drop_index = null;
     let dragged_item_index = null;
     let dragged_item = null;
+    let initially_opened_index = null;
 
     const FAKE_ITEM = {};
 
@@ -22,14 +23,21 @@
             dragged_element.offsetHeight/2);
 
 
-        setTimeout(() => {
+        setTimeout(async () => {
             // Do this in setTimeout to ensure that the image of the dragged
             // element gets copied before the element gets erased.
             potential_drop_index = dragged_item_index;
+            initially_opened_index = dragged_item_index;
             items = [
                 ...items.slice(0, dragged_item_index),
                 ...items.slice(dragged_item_index + 1),
             ];
+
+            // remove the expanded class after a lil bit
+            setTimeout(() => {
+                initially_opened_index = null;
+            });
+
         });
     }
 
@@ -96,12 +104,16 @@
      /*   border: 2px solid white; */
         width: 3em;
         height: .5em;
-        /* transition: height 0.5s var(--ttf); */
+        transition: height 0.5s var(--ttf);
     }
-    .space-between-item.expanded {
+    .space-between-item.expanding.no-transition {
+        transition: none;
+    }
+
+    .space-between-item.expanding {
         width: 6em;
         height: 2em;
-        /* transition: height 0.5s var(--ttf); */
+        transition: height 0.5s var(--ttf);
     }
 
     .space-between-item.contracting {
@@ -114,7 +126,8 @@
     <div
         id={`drop_target_${index}`}
         class=space-between-item
-        class:expanded={index === potential_drop_index}
+        class:expanding={index === potential_drop_index}
+        class:no-transition={index === initially_opened_index}
         on:dragleave|preventDefault={() => on_drag_leave_site(index)}
         on:dragover|preventDefault={() => on_drag_over(index)}
         >
