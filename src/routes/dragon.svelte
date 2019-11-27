@@ -8,27 +8,15 @@
 
     const FAKE_ITEM = {};
 
-    const pointer = {};
-    onMount(() => {
-        document.addEventListener('mousemove', (e) => {
-            pointer.x = e.screenX;
-            pointer.y = e.screenY;
-        });
-    });
-
     function on_drag_start(event, index) {
-        event.dataTransfer.setData('text/plain', 'some_dummy_data');
-        console.log('on_drag_start', event, index);
         dragged_item_index = index;
         dragged_item = items[dragged_item_index];
-        console.log('dragged_item_index', dragged_item_index);
-
+        //console.log('dragged_item_index', dragged_item_index);
 
         const dragged_element = event.target;
         // adding the listener to the element via html doesn't work because the
         // element is not in the dom when we end the drag. Adding it here works.
         dragged_element.addEventListener('dragend', on_drag_end);
-        console.log('dragged_item', dragged_element);
         event.dataTransfer.setDragImage(dragged_element,
             dragged_element.offsetWidth/2,
             dragged_element.offsetHeight/2);
@@ -37,30 +25,16 @@
         setTimeout(() => {
             // Do this in setTimeout to ensure that the image of the dragged
             // element gets copied before the element gets erased.
-
             potential_drop_index = dragged_item_index;
             items = [
                 ...items.slice(0, dragged_item_index),
                 ...items.slice(dragged_item_index + 1),
             ];
-
-
-            tick().then(() => {
-                // see if the mouse left initial drop target before the drop
-                // target rendered (meaning on_drag_enter_site did not fire)
-                // const id_under_target =
-                setTimeout(get_id_under_mouse);
-            });
         });
     }
 
-    function get_id_under_mouse() {
-        const element = document.elementFromPoint(pointer.x, pointer.y);
-        console.log('element under mouse', element);
-    }
-
     function on_drag_end() {
-        console.log('on_drag_end, potential_drop_index', potential_drop_index);
+        // console.log('on_drag_end, potential_drop_index', potential_drop_index);
         let drop_index;
         if (potential_drop_index !== null) {
             drop_index = potential_drop_index;
@@ -83,8 +57,9 @@
         potential_drop_index = null;
     }
 
-    function on_drag_over(event) {
-        // the taget must have ondragover to be targetble
+    function on_drag_over(index) {
+        // console.log('on_drag_over', index);
+        potential_drop_index = index;
     }
 
     // dragenter required on mobile, per
@@ -92,16 +67,11 @@
     // dragover required to
     function do_nothing() {}
 
-    function on_drag_enter_site(event, index) {
-        const target = event.target;
-        console.log('drag entered', index, target);
-        potential_drop_index = index;
-    }
-
     function on_drag_leave_site(index) {
-        console.log('drag left', index);
+        // console.log('drag left', index);
         potential_drop_index = null;
     }
+
 </script>
 
 <style>
@@ -134,10 +104,6 @@
         /* transition: height 0.5s var(--ttf); */
     }
 
-    #drag_image {
-        color: white;
-    }
-
     .space-between-item.contracting {
         transition: none;
     }
@@ -149,9 +115,8 @@
         id={`drop_target_${index}`}
         class=space-between-item
         class:expanded={index === potential_drop_index}
-        on:dragenter|preventDefault={(event) => on_drag_enter_site(event, index)}
         on:dragleave|preventDefault={() => on_drag_leave_site(index)}
-        on:dragover|preventDefault={do_nothing}
+        on:dragover|preventDefault={() => on_drag_over(index)}
         >
     </div>
     {#if item !== FAKE_ITEM}
