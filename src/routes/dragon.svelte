@@ -1,5 +1,5 @@
 <script>
-    // import {tick, onMount} from 'svelte';
+    import {tick, onMount} from 'svelte';
     let items = ['0', '1', '2', '3', '4', '5'];
 
     let potential_drop_index = null;
@@ -9,10 +9,9 @@
 
     const FAKE_ITEM = {};
 
-    function on_drag_start(event, index) {
+    async function on_drag_start(event, index) {
         dragged_item_index = index;
         dragged_item = items[dragged_item_index];
-        //console.log('dragged_item_index', dragged_item_index);
 
         const dragged_element = event.target;
         // adding the listener to the element via html doesn't work because the
@@ -23,37 +22,29 @@
             dragged_element.offsetHeight/2);
 
 
-        setTimeout(async () => {
-            // Do this in setTimeout to ensure that the image of the dragged
-            // element gets copied before the element gets erased.
-            potential_drop_index = dragged_item_index;
-            non_smooth_resizing_index = dragged_item_index;
-            console.log('non_smooth_resizing_index', non_smooth_resizing_index);
-            items = [
-                ...items.slice(0, dragged_item_index),
-                ...items.slice(dragged_item_index + 1),
-            ];
+        await timeout();
 
-            // remove the expanded class after a lil bit
-            setTimeout(() => {
-                non_smooth_resizing_index = null;
-                console.log('non_smooth_resizing_index',
-                    non_smooth_resizing_index);
-            });
+        // Do this in setTimeout to ensure that the image of the dragged
+        // element gets copied before the element gets erased.
+        potential_drop_index = dragged_item_index;
+        non_smooth_resizing_index = dragged_item_index;
+        console.log('non_smooth_resizing_index', non_smooth_resizing_index);
+        items = [
+            ...items.slice(0, dragged_item_index),
+            ...items.slice(dragged_item_index + 1),
+        ];
 
-        });
+        await timeout();
+        // remove the expanded class after a lil bit
+        non_smooth_resizing_index = null;
+        console.log('non_smooth_resizing_index', non_smooth_resizing_index);
+
     }
 
-    function on_drag_end() {
-        // console.log('on_drag_end, potential_drop_index', potential_drop_index);
-        let drop_index;
-        if (potential_drop_index !== null) {
-            drop_index = potential_drop_index;
-        } else {
-            // It is not over a target--put it back where it came from.
-            drop_index = dragged_item_index;
-        }
-        put_dragged_element_at(drop_index);
+    async function on_drag_end() {
+        non_smooth_resizing_index = potential_drop_index + 1;
+        await timeout();
+        put_dragged_element_at(potential_drop_index);
     }
 
     function put_dragged_element_at(index) {
@@ -79,28 +70,20 @@
     function do_nothing() {}
 
     function on_drag_leave_site(index) {
-        // console.log('drag left', index);
         potential_drop_index = dragged_item_index;
     }
 
-    function is_smooth_resizing(index) {
-        console.log('index', index, 'is_smooth_resizing', index !==
-            initially_opened_index);
-        return index !== initially_opened_index;
+    async function timeout() {
+        return new Promise((resolve) => {
+            setTimeout(resolve);
+        });
     }
 
 </script>
 
-<style>
+<style title='foo'>
     .wrapper {
         margin: 0 .5em;
-    }
-
-    .dragged {
-        /*
-        margin: 0;
-        height: 0;
-            */
     }
 
     .item {
@@ -115,7 +98,7 @@
     }
 
     .space-between-item.expanded {
-        width: 6em;
+        width: 3em;
         height: 2em;
     }
 
