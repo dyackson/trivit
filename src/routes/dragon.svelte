@@ -80,7 +80,7 @@
 
     function on_drag_leave_site(index) {
         // console.log('drag left', index);
-        potential_drop_index = null;
+        potential_drop_index = dragged_item_index;
     }
 
     function is_smooth_resizing(index) {
