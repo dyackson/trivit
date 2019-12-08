@@ -1,11 +1,11 @@
 <script>
-    import {tick, onMount} from 'svelte';
+    // import {tick, onMount} from 'svelte';
     let items = ['0', '1', '2', '3', '4', '5'];
 
     let potential_drop_index = null;
     let dragged_item_index = null;
     let dragged_item = null;
-    let initially_opened_index = null;
+    let non_smooth_resizing_index = null;
 
     const FAKE_ITEM = {};
 
@@ -27,7 +27,8 @@
             // Do this in setTimeout to ensure that the image of the dragged
             // element gets copied before the element gets erased.
             potential_drop_index = dragged_item_index;
-            initially_opened_index = dragged_item_index;
+            non_smooth_resizing_index = dragged_item_index;
+            console.log('non_smooth_resizing_index', non_smooth_resizing_index);
             items = [
                 ...items.slice(0, dragged_item_index),
                 ...items.slice(dragged_item_index + 1),
@@ -35,7 +36,9 @@
 
             // remove the expanded class after a lil bit
             setTimeout(() => {
-                initially_opened_index = null;
+                non_smooth_resizing_index = null;
+                console.log('non_smooth_resizing_index',
+                    non_smooth_resizing_index);
             });
 
         });
@@ -80,6 +83,12 @@
         potential_drop_index = null;
     }
 
+    function is_smooth_resizing(index) {
+        console.log('index', index, 'is_smooth_resizing', index !==
+            initially_opened_index);
+        return index !== initially_opened_index;
+    }
+
 </script>
 
 <style>
@@ -101,33 +110,28 @@
     }
 
     .space-between-item {
-     /*   border: 2px solid white; */
         width: 3em;
         height: .5em;
-        transition: height 0.5s var(--ttf);
-    }
-    .space-between-item.expanding.no-transition {
-        transition: none;
     }
 
-    .space-between-item.expanding {
+    .space-between-item.expanded {
         width: 6em;
         height: 2em;
+    }
+
+    .space-between-item.smooth {
         transition: height 0.5s var(--ttf);
     }
 
-    .space-between-item.contracting {
-        transition: none;
-    }
 </style>
 
 {#each [...items, FAKE_ITEM]  as item, index (item)}
-<div class=wrapper class:dragged={index === dragged_item_index}>
+<div class=wrapper>
     <div
         id={`drop_target_${index}`}
         class=space-between-item
-        class:expanding={index === potential_drop_index}
-        class:no-transition={index === initially_opened_index}
+        class:expanded={index === potential_drop_index}
+        class:smooth={index !== non_smooth_resizing_index}
         on:dragleave|preventDefault={() => on_drag_leave_site(index)}
         on:dragover|preventDefault={() => on_drag_over(index)}
         >
