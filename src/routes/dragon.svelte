@@ -5,9 +5,25 @@
     let potential_drop_index = null;
     let dragged_item_index = null;
     let dragged_item = null;
+    let dragged_element_height;
     let non_smooth_resizing_index = null;
 
     const FAKE_ITEM = {};
+
+    const spaces_between_items = [];
+
+    $: spaces_between_items
+        // remove the null one at the end
+        .filter(space => space)
+        .forEach((space, i) => {
+            if (i === potential_drop_index) {
+                space.style.height = dragged_element_height;
+            } else {
+                space.setAttribute('style', null);
+            }
+        });
+
+
 
     async function on_drag_start(event, index) {
         dragged_item_index = index;
@@ -21,6 +37,9 @@
             dragged_element.offsetWidth/2,
             dragged_element.offsetHeight/2);
 
+        // TODO: add the margins to the height;
+        dragged_element_height = window.getComputedStyle(dragged_element)
+            .getPropertyValue('height');
 
         await timeout();
 
@@ -81,7 +100,7 @@
 
 </script>
 
-<style title='foo'>
+<style>
     .wrapper {
         margin: 0 .5em;
     }
@@ -94,12 +113,11 @@
 
     .space-between-item {
         width: 3em;
-        height: .5em;
     }
 
-    .space-between-item.expanded {
+    .space-between-item.contracted {
         width: 3em;
-        height: 2em;
+        height: .5em;
     }
 
     .space-between-item.smooth {
@@ -110,10 +128,10 @@
 
 {#each [...items, FAKE_ITEM]  as item, index (item)}
 <div class=wrapper>
-    <div
+    <div bind:this={spaces_between_items[index]}
         id={`drop_target_${index}`}
         class=space-between-item
-        class:expanded={index === potential_drop_index}
+        class:contracted={index !== potential_drop_index}
         class:smooth={index !== non_smooth_resizing_index}
         on:dragleave|preventDefault={() => on_drag_leave_site(index)}
         on:dragover|preventDefault={() => on_drag_over(index)}
