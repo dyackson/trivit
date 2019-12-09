@@ -5,7 +5,7 @@
     let potential_drop_index = null;
     let dragged_item_index = null;
     let dragged_item = null;
-    let dragged_element_height;
+    let expanded_target_height;
     let non_smooth_resizing_index = null;
 
     const FAKE_ITEM = {};
@@ -17,7 +17,7 @@
         .filter(space => space)
         .forEach((space, i) => {
             if (i === potential_drop_index) {
-                space.style.height = dragged_element_height;
+                space.style.height = expanded_target_height;
             } else {
                 space.setAttribute('style', null);
             }
@@ -38,9 +38,21 @@
             dragged_element.offsetHeight/2);
 
         // TODO: add the margins to the height;
-        dragged_element_height = window.getComputedStyle(dragged_element)
+        const dragged_element_height = window.getComputedStyle(dragged_element)
             .getPropertyValue('height');
 
+        const space_between_items_height = window
+            .getComputedStyle(spaces_between_items[0])
+            .getPropertyValue('height');
+
+        expanded_target_height = (Number.parseFloat(dragged_element_height) +
+            2*Number.parseFloat(space_between_items_height)) + 'px';
+
+        
+
+        console.log('dragged_element_height', dragged_element_height);
+        console.log('space_between_items_height', space_between_items_height);
+        console.log('expanded_target_height', expanded_target_height);
         await timeout();
 
         // Do this in setTimeout to ensure that the image of the dragged
