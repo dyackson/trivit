@@ -44,6 +44,10 @@
 		box-sizing: border-box;
 	}
 
+    :global(*, *:before, *:after) {
+        box-sizing: inherit;
+    }
+
     :global(.clickable) {
         cursor: pointer;
     }
