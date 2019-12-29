@@ -45,8 +45,6 @@
         expanded_target_height = (Number.parseFloat(dragged_element_height) +
             2*Number.parseFloat(space_between_items_height)) + 'px';
 
-        
-
         console.log('dragged_element_height', dragged_element_height);
         console.log('space_between_items_height', space_between_items_height);
         console.log('expanded_target_height', expanded_target_height);

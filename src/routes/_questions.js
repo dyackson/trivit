@@ -47,4 +47,13 @@ export default [
             {key: 5, text: 'Full Metal Jacket', value: false},
         ],
     },
+    {
+        type: "ordered",
+        prompt: "Put these in order",
+        answer: [
+            {text: "a", value: 1},
+            {text: "c", value: 3},
+            {text: "b", value: 2},
+        ],
+    },
 ];

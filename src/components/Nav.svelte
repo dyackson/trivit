@@ -40,6 +40,11 @@
             segment: 'dragon',
             href: 'dragon',
         },
+        {
+            display: 'DD component test',
+            segment: 'dragon_with_component',
+            href: 'dragon_with_component',
+        },
     ];
 
     let open = false;

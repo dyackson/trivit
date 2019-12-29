@@ -28,6 +28,9 @@
     {:else if q.type === 'mc_multiple'}
         <MCMultiple {...q} />
         <hr>
+    {:else if q.type === 'ordered'}
+        <MCMultiple {...q} />
+        <hr>
     {/if}
 {/each}
 </div>
