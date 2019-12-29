@@ -1,14 +1,8 @@
 <script>
-    import DragDropList from '@/components/DragDropList2';
-    import DragDropItemWrapper from '@/components/DragDropItemWrapper';
+    import DragDropList from '@/components/DragDropList';
     export let items = ['a', 'b', 'c', 'd', 'e', 'f'];
     let order = [];
 </script>
 
-<DragDropList bind:order>
-    {#each items as item}
-        <DragDropItemWrapper>
-         {item}
-        </DragDropItemWrapper>
-    {/each}
-</DragDropList>
+<DragDropList bind:items />
+{@debug items}
