@@ -1,6 +1,7 @@
 <script>
     export let items = ['0', '1', '2', '3', '4', '5'];
 
+
     let potential_drop_index = null;
     let dragged_item_index = null;
     let dragged_item = null;
@@ -10,6 +11,37 @@
     const FAKE_ITEM = {};
 
     const spaces_between_items = [];
+
+
+    export function get_item_height(item) {
+        const element = document.getElementById(item);
+        return window.getComputedStyle(element)
+            .getPropertyValue('height');
+    }
+
+    export function move_item_to_expanded_index(item) {
+        dragged_item = item;
+        dragged_item_index = items.indexOf(item);
+        console.log(dragged_item_index);
+        items = [
+            ...items.slice(0, dragged_item_index),
+            ...items.slice(dragged_item_index + 1),
+        ];
+        if (dragged_item_index > -1) {
+            put_dragged_element_at(expand_index);
+        }
+    }
+
+    export function expand_index(index, item_height) {
+        potential_drop_index = index;
+
+        const space_between_items_height = window
+            .getComputedStyle(spaces_between_items[0])
+            .getPropertyValue('height');
+
+        expanded_target_height = (Number.parseFloat(item_height) +
+            2*Number.parseFloat(space_between_items_height)) + 'px';
+    }
 
     $: spaces_between_items
         // remove the null one at the end
@@ -34,7 +66,6 @@
             dragged_element.offsetWidth/2,
             dragged_element.offsetHeight/2);
 
-        // TODO: add the margins to the height;
         const dragged_element_height = window.getComputedStyle(dragged_element)
             .getPropertyValue('height');
 
@@ -80,9 +111,12 @@
             ...items.slice(index),
         ];
 
+        console.log('updated items');
+
         dragged_item_index = null;
         dragged_item = null,
         potential_drop_index = null;
+        console.log('set vars to null');
     }
 
     function on_drag_over(index) {
@@ -146,6 +180,7 @@
     </div>
     {#if item !== FAKE_ITEM}
     <div
+        id={item}
         class=item-holder
         draggable=true
         on:dragstart={(event) => on_drag_start(event, index)}

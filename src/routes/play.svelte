@@ -4,6 +4,7 @@
     import TrueFalse from '@/components/TrueFalse';
     import MCMultiple from '@/components/MCMultiple';
     import MCSingle from '@/components/MCSingle';
+    import Ordered from '@/components/Ordered';
     const free_form_qs = questions.filter(q => q.type === 'free_form');
     const true_false_qs = questions.filter(q => q.type === 'true_false');
 </script>
@@ -29,7 +30,7 @@
         <MCMultiple {...q} />
         <hr>
     {:else if q.type === 'ordered'}
-        <MCMultiple {...q} />
+        <Ordered {...q} />
         <hr>
     {/if}
 {/each}
