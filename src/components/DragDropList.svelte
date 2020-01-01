@@ -1,4 +1,5 @@
 <script>
+    import {tick} from 'svelte';
     export let items = ['0', '1', '2', '3', '4', '5'];
 
 
@@ -19,14 +20,16 @@
             .getPropertyValue('height');
     }
 
-    export function move_item_to_expanded_index(item) {
+    export async function move_item_to_expanded_index(item) {
         dragged_item = item;
         dragged_item_index = items.indexOf(item);
-        console.log(dragged_item_index);
+        non_smooth_resizing_index = potential_drop_index + 1;
         items = [
             ...items.slice(0, dragged_item_index),
             ...items.slice(dragged_item_index + 1),
         ];
+        await timeout();
+        await tick();
         if (dragged_item_index > -1) {
             put_dragged_element_at(expand_index);
         }
@@ -76,16 +79,12 @@
         expanded_target_height = (Number.parseFloat(dragged_element_height) +
             2*Number.parseFloat(space_between_items_height)) + 'px';
 
-        console.log('dragged_element_height', dragged_element_height);
-        console.log('space_between_items_height', space_between_items_height);
-        console.log('expanded_target_height', expanded_target_height);
         await timeout();
 
         // Do this in setTimeout to ensure that the image of the dragged
         // element gets copied before the element gets erased.
         potential_drop_index = dragged_item_index;
         non_smooth_resizing_index = dragged_item_index;
-        console.log('non_smooth_resizing_index', non_smooth_resizing_index);
         items = [
             ...items.slice(0, dragged_item_index),
             ...items.slice(dragged_item_index + 1),
@@ -94,7 +93,6 @@
         await timeout();
         // remove the expanded class after a lil bit
         non_smooth_resizing_index = null;
-        console.log('non_smooth_resizing_index', non_smooth_resizing_index);
 
     }
 
@@ -111,16 +109,13 @@
             ...items.slice(index),
         ];
 
-        console.log('updated items');
 
         dragged_item_index = null;
         dragged_item = null,
         potential_drop_index = null;
-        console.log('set vars to null');
     }
 
     function on_drag_over(index) {
-        // console.log('on_drag_over', index);
         potential_drop_index = index;
     }
 
