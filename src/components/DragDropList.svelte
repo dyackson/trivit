@@ -1,5 +1,4 @@
 <script>
-    import {tick} from 'svelte';
     export let items = ['0', '1', '2', '3', '4', '5'];
 
 
@@ -12,7 +11,6 @@
     const FAKE_ITEM = {};
 
     const spaces_between_items = [];
-
 
     export function get_item_height(item) {
         const element = document.getElementById(item);
@@ -29,10 +27,11 @@
             ...items.slice(dragged_item_index + 1),
         ];
         await timeout();
-        await tick();
         if (dragged_item_index > -1) {
-            put_dragged_element_at(expand_index);
+            put_dragged_element_at(potential_drop_index);
         }
+        await timeout(.1);
+        non_smooth_resizing_index = null;
     }
 
     export function expand_index(index, item_height) {
@@ -44,6 +43,14 @@
 
         expanded_target_height = (Number.parseFloat(item_height) +
             2*Number.parseFloat(space_between_items_height)) + 'px';
+    }
+
+    export async function put_item_at_index(item, index) {
+        const height = get_item_height(item);
+        expand_index(index, height);
+        await timeout(1);
+        await move_item_to_expanded_index(item);
+        await timeout(.1);
     }
 
     $: spaces_between_items
@@ -128,9 +135,9 @@
         potential_drop_index = dragged_item_index;
     }
 
-    async function timeout() {
+    async function timeout(seconds = 0) {
         return new Promise((resolve) => {
-            setTimeout(resolve);
+            setTimeout(resolve, seconds * 1000);
         });
     }
 
