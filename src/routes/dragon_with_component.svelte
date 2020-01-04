@@ -22,7 +22,7 @@
     }
 
     async function put_list_in_correct_order() {
-        for (let i = 0; i < answer.length - 1; i++) {
+        for (let i = 0; i < answer.length; i++) {
             console.log('loop', i);
             await dd_list.put_item_at_index(answer[i].text, i);
         }
@@ -41,4 +41,7 @@
     move 'a' to index 4 </button>
 <button on:click={put_list_in_correct_order}>
     put list in correct order
+</button>
+<button on:click={() => dd_list.flash_item('e')}>
+    flash e
 </button>

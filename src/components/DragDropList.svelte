@@ -7,6 +7,7 @@
     let dragged_item = null;
     let expanded_target_height;
     let non_smooth_resizing_index = null;
+    let flash_item_index = null;
 
     const FAKE_ITEM = {};
 
@@ -34,7 +35,7 @@
         non_smooth_resizing_index = null;
     }
 
-    export function expand_index(index, item_height) {
+    export async function expand_index(index, item_height) {
         potential_drop_index = index;
 
         const space_between_items_height = window
@@ -43,14 +44,31 @@
 
         expanded_target_height = (Number.parseFloat(item_height) +
             2*Number.parseFloat(space_between_items_height)) + 'px';
+
+        await timeout(.6);
+    }
+
+    export async function flash_item(item) {
+        flash_item_index = items.indexOf(item);
+        await timeout(.6);
+        flash_item_index = null;
     }
 
     export async function put_item_at_index(item, index) {
-        const height = get_item_height(item);
-        expand_index(index, height);
-        await timeout(1);
-        await move_item_to_expanded_index(item);
-        await timeout(.1);
+        const current_index = items.indexOf(item);
+        if (index !== current_index) {
+            const height = get_item_height(item);
+
+            const flash_p = flash_item(item);
+            const expand_p = expand_index(index, height);
+            await Promise.all([flash_p, expand_p]);
+
+            await move_item_to_expanded_index(item);
+            await flash_item(item);
+            await timeout(.1);
+        } else {
+            await flash_item(item);
+        }
     }
 
     $: spaces_between_items
@@ -167,6 +185,22 @@
         transition: height 0.5s var(--ttf);
     }
 
+    @keyframes flash {
+        from {
+            color: var(--dark);
+            background-color: var(--light);
+        }
+        to {
+            color: var(--light);
+            background-color: var(--dark);
+        }
+    }
+    .item-holder.flash {
+        animation-name: flash;
+        animation-duration: 0.5s;
+        animation-iteration-count: 1;
+    }
+
 </style>
 
 {#each [...items, FAKE_ITEM]  as item, index (item)}
@@ -184,6 +218,7 @@
     <div
         id={item}
         class=item-holder
+        class:flash={index === flash_item_index}
         draggable=true
         on:dragstart={(event) => on_drag_start(event, index)}
         >
