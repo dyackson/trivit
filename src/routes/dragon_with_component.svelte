@@ -9,7 +9,7 @@
         {value: 5, text: 'e'},
         {value: 6, text: 'f'},
     ];
-    let items = shuffle(answer.map(a => a.text));
+    let items = shuffle(answer);
     let dd_list;
 
     function get_item_height() {
@@ -42,6 +42,6 @@
 <button on:click={put_list_in_correct_order}>
     put list in correct order
 </button>
-<button on:click={() => dd_list.flash_item('e')}>
+<button on:click={() => dd_list.flash_item_by_text('e')}>
     flash e
 </button>

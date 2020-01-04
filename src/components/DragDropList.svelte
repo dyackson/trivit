@@ -1,6 +1,5 @@
 <script>
-    export let items = ['0', '1', '2', '3', '4', '5'];
-
+    export let items;
 
     let potential_drop_index = null;
     let dragged_item_index = null;
@@ -14,14 +13,14 @@
     const spaces_between_items = [];
 
     export function get_item_height(item) {
-        const element = document.getElementById(item);
+        const element = document.getElementById(item.text);
         return window.getComputedStyle(element)
             .getPropertyValue('height');
     }
 
     export async function move_item_to_expanded_index(item) {
         dragged_item = item;
-        dragged_item_index = items.indexOf(item);
+        dragged_item_index = get_index_with_text(item.text);
         non_smooth_resizing_index = potential_drop_index + 1;
         items = [
             ...items.slice(0, dragged_item_index),
@@ -48,26 +47,29 @@
         await timeout(.6);
     }
 
-    export async function flash_item(item) {
-        flash_item_index = items.indexOf(item);
+    export async function flash_item_by_text(item_text) {
+        flash_item_index = get_index_with_text(item_text);
         await timeout(.6);
         flash_item_index = null;
     }
 
-    export async function put_item_at_index(item, index) {
-        const current_index = items.indexOf(item);
+    export async function put_item_at_index(item_text, index) {
+        const current_index = get_index_with_text(item_text);
+        console.log('current_index', current_index);
+        const item = get_item_with_text(item_text);
+        console.log('item', item);
         if (index !== current_index) {
             const height = get_item_height(item);
 
-            const flash_p = flash_item(item);
+            const flash_p = flash_item_by_text(item_text);
             const expand_p = expand_index(index, height);
             await Promise.all([flash_p, expand_p]);
 
             await move_item_to_expanded_index(item);
-            await flash_item(item);
+            await flash_item_by_text(item_text);
             await timeout(.1);
         } else {
-            await flash_item(item);
+            await flash_item_by_text(item_text);
         }
     }
 
@@ -159,6 +161,15 @@
         });
     }
 
+    function get_index_with_text(text) {
+        const item = get_item_with_text(text);
+        return items.indexOf(item);
+    }
+
+    function get_item_with_text(text) {
+        return items.find(item => item.text === text);
+    }
+
 </script>
 
 <style>
@@ -199,11 +210,12 @@
         animation-name: flash;
         animation-duration: 0.5s;
         animation-iteration-count: 1;
+        animation-timing-function: var(--ttf);
     }
 
 </style>
 
-{#each [...items, FAKE_ITEM]  as item, index (item)}
+{#each [...items, FAKE_ITEM]  as item, index (item.text)}
 <div class=wrapper>
     <div bind:this={spaces_between_items[index]}
         id={`drop_target_${index}`}
@@ -216,13 +228,13 @@
     </div>
     {#if item !== FAKE_ITEM}
     <div
-        id={item}
+        id={item.text}
         class=item-holder
         class:flash={index === flash_item_index}
         draggable=true
         on:dragstart={(event) => on_drag_start(event, index)}
         >
-        {item}
+        {item.text}
     </div>
     {/if}
 </div>
