@@ -1,6 +1,8 @@
 <script>
     export let items;
 
+    let is_shown_by_text = {};
+
     let potential_drop_index = null;
     let dragged_item_index = null;
     let dragged_item = null;
@@ -49,6 +51,7 @@
 
     export async function flash_item_by_text(item_text) {
         flash_item_index = get_index_with_text(item_text);
+        is_shown_by_text[item_text] = true;
         await timeout(.6);
         flash_item_index = null;
     }
@@ -235,6 +238,9 @@
         on:dragstart={(event) => on_drag_start(event, index)}
         >
         {item.text}
+        {#if is_shown_by_text[item.text]}
+            ({item.value})
+        {/if}
     </div>
     {/if}
 </div>
