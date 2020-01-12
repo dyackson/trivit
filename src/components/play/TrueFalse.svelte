@@ -1,10 +1,5 @@
-<script context=module>
-</script>
-
 <script>
-    import Prompt from '@/components/Prompt';
     import Bool from '@/components/Bool';
-    export let prompt;
     export let answer;
     export let show_answer = false;
     let guess = '';
@@ -29,11 +24,6 @@
         show_answer = false;
     }
 </script>
-
-<style>
-</style>
-
-<Prompt text={prompt} />
 
 <div>
 {#if show_answer}

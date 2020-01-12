@@ -2,13 +2,10 @@
 </script>
 
 <script>
-    import Prompt from '@/components/Prompt';
-    export let prompt;
     export let answer;
     export let show_answer = false;
 </script>
 
-<Prompt text={prompt} />
 
 <div class='content is-large'>
 {#if show_answer}

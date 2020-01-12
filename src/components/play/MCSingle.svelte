@@ -4,9 +4,7 @@
 </script>
 
 <script>
-    import Prompt from '@/components/Prompt';
     import Bool from '@/components/Bool';
-    export let prompt;
     export let answer;
     export let show_answer = false;
 
@@ -45,7 +43,6 @@
     }
 </style>
 
-<Prompt text={prompt} />
 
 <div>
     {#each answer as ans (ans.key)}

@@ -3,9 +3,7 @@
 </script>
 
 <script>
-    import DragDropList from '@/components/DragDropList';
-    import Prompt from '@/components/Prompt';
-    export let prompt;
+    import DragDropList from '@/components/play/DragDropList';
     export let answer;
 
     let items = shuffle(answer);
@@ -31,7 +29,6 @@
     }
 </script>
 
-<Prompt text={prompt} />
 <DragDropList bind:this={dd_list} bind:items />
 
 {#if !show_answer}

@@ -4,10 +4,7 @@
 </script>
 
 <script>
-    import Prompt from '@/components/Prompt';
-    import Bool from '@/components/Bool';
-    import MCMChoice from '@/components/MCMChoice';
-    export let prompt;
+    import MCMChoice from '@/components/play/MCMChoice';
     export let answer;
     export let show_answer = false;
 
@@ -43,12 +40,6 @@
         show_answer = false;
     }
 </script>
-
-
-<style>
-</style>
-
-<Prompt text={prompt} />
 
 <div class='content is-large'>
     {#if show_answer}

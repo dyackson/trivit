@@ -11,14 +11,14 @@
 
     const routes = [
         {
-            display: 'Text GET/POST',
-            segment: 'home',
-            href: '.',
-        },
-        {
             display: 'Play',
             segment: 'play',
             href: 'play',
+        },
+        {
+            display: 'Text GET/POST',
+            segment: 'home',
+            href: '.',
         },
         {
             display: 'Login',
@@ -26,24 +26,9 @@
             href: 'login_logout',
         },
         {
-            display: 'Create Question Old',
-            segment: 'question/create_old',
-            href: 'question/create_old',
-        },
-        {
             display: 'Create Question',
-            segment: 'question/create_old',
-            href: 'question/create',
-        },
-        {
-            display: 'DROP A DRAGON',
-            segment: 'dragon',
-            href: 'dragon',
-        },
-        {
-            display: 'DD component test',
-            segment: 'dragon_with_component',
-            href: 'dragon_with_component',
+            segment: 'create_question',
+            href: 'create_question',
         },
     ];
 

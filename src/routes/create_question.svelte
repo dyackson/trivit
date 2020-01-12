@@ -7,12 +7,12 @@
 <script>
     import get_valid_copy_of_question from '@/get_valid_copy_of_question';
     // import {save_question, get_questions} from '@/db/questions';
-    import Dropdown from '@/components/Dropdown';
     import Bool from '@/components/Bool';
-    import Text from '@/components/Text';
-    import Textarea from '@/components/Textarea';
-    import Ans from '@/components/Ans';
-    import OrderedAns from '@/components/OrderedAns';
+    import Dropdown from '@/components/create_question/Dropdown';
+    import Text from '@/components/create_question/Text';
+    import Textarea from '@/components/create_question/Textarea';
+    import Ans from '@/components/create_question/Ans';
+    import OrderedAns from '@/components/create_question/OrderedAns';
 
     import {
         TYPE_CONFIGS,
