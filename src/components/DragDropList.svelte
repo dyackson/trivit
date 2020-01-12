@@ -58,9 +58,7 @@
 
     export async function put_item_at_index(item_text, index) {
         const current_index = get_index_with_text(item_text);
-        console.log('current_index', current_index);
         const item = get_item_with_text(item_text);
-        console.log('item', item);
         if (index !== current_index) {
             const height = get_item_height(item);
 
@@ -74,6 +72,10 @@
         } else {
             await flash_item_by_text(item_text);
         }
+    }
+
+    export function hide_values() {
+        is_shown_by_text = {}
     }
 
     $: spaces_between_items
@@ -182,17 +184,17 @@
 
     .item-holder {
         width: fit-content;
-        border: 2px solid white;
+        border: 2px solid var(--light);
+        border-radius: 2px;
         padding: 0 1em;
     }
 
     .space-between-item {
-        width: 3em;
+        width: 100%;
     }
 
     .space-between-item.contracted {
-        width: 3em;
-        height: .5em;
+        height: 1em;
     }
 
     .space-between-item.smooth {

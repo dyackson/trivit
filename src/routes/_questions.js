@@ -49,11 +49,14 @@ export default [
     },
     {
         type: "ordered",
-        prompt: "Put these in order",
+        prompt: "Order Bruce Willis Movies by year released (earliest first)",
         answer: [
-            {text: "aaaaaaaaaaaaaaa bbbbbbbbbbbba cccccccccccccccccc dddddddddddddddddddd", value: 1},
-            {text: "c", value: 3},
-            {text: "b", value: 2},
+            {text: "Die Hard", value: 1988},
+            {text: "Death Becomes Her", value: 1992},
+            {text: "Pulp Fiction", value: 1994},
+            {text: "12 Monkeys", value: 1995},
+            {text: "The Fifth Element", value: 1997},
+            {text: "The Sixth Sense", value: 1999},
         ],
     },
 ];

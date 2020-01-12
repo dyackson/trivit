@@ -191,6 +191,3 @@
 {/if}
 
 <button class=button on:click={save_question}>Save Question</button>
-
-{@debug selected_display_type, type, to_type, selected_type_config,
-converted_answer, then_msg, show_data_loss_warning, answer}

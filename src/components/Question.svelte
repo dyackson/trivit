@@ -29,13 +29,6 @@
     }
 
 </script>
-{@debug
-user_submitted_wrong_answer,
-user_submitted_correct_answer,
-submitted,
-selected,
-correct
-}
 
 <p>{prompt}</p>
 
