@@ -1,5 +1,3 @@
-Organize layout component directories by create -v- play.
-
 Make it (dnd) run on mobile (use a real phone).
 
 Fix the icons on question/create

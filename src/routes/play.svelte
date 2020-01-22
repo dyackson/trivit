@@ -6,6 +6,8 @@
     import MCMultiple from '@/components/play/MCMultiple';
     import MCSingle from '@/components/play/MCSingle';
     import Ordered from '@/components/play/Ordered';
+
+    let qs = questions.filter((q) => q.type === 'ordered');
 </script>
 
 <style>
@@ -15,7 +17,7 @@
 </style>
 
 <div>
-{#each questions as q (q.prompt)}
+{#each qs as q (q.prompt)}
     <Prompt text={q.prompt} />
 
     {#if q.type === 'free_form'}

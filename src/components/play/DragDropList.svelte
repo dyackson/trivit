@@ -1,4 +1,23 @@
+<script context=module>
+</script>
+
 <script>
+    import {onMount} from 'svelte';
+    import {polyfill} from 'mobile-drag-drop';
+
+    // optional import of scroll behaviour
+    import {scrollBehaviourDragImageTranslateOverride}
+        from 'mobile-drag-drop/scroll-behaviour';
+
+    // options are optional ;)
+    onMount(() => {
+        polyfill({ // use this to make use of the scroll behaviour
+            dragImageTranslateOverride: scrollBehaviourDragImageTranslateOverride,
+            dragImageCenterOnTouch: true,
+            forceApply: true,
+        });
+    });
+
     export let items;
 
     let is_shown_by_text = {};
@@ -90,6 +109,8 @@
         });
 
     async function on_drag_start(event, index) {
+        event.dataTransfer.setData('move', 'my data');
+        console.log('on_drag_start');
         dragged_item_index = index;
         dragged_item = items[dragged_item_index];
 
@@ -129,6 +150,7 @@
     }
 
     async function on_drag_end() {
+        console.log('on_drag_end');
         non_smooth_resizing_index = potential_drop_index + 1;
         await timeout();
         put_dragged_element_at(potential_drop_index);
@@ -148,6 +170,7 @@
     }
 
     function on_drag_over(index) {
+        console.log('dragged over', index);
         potential_drop_index = index;
     }
 
@@ -178,6 +201,11 @@
 </script>
 
 <style>
+    :global('html body') {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+    }
     .wrapper {
         margin: 0 .5em;
     }
@@ -229,6 +257,7 @@
         class:smooth={index !== non_smooth_resizing_index}
         on:dragleave|preventDefault={() => on_drag_leave_site(index)}
         on:dragover|preventDefault={() => on_drag_over(index)}
+        on:dragenter|preventDefault={do_nothing}
         >
     </div>
     {#if item !== FAKE_ITEM}
