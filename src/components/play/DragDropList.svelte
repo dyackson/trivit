@@ -12,9 +12,9 @@
     // options are optional ;)
     onMount(() => {
         polyfill({ // use this to make use of the scroll behaviour
-            dragImageTranslateOverride: scrollBehaviourDragImageTranslateOverride,
-            dragImageCenterOnTouch: true,
-            forceApply: true,
+            // dragImageTranslateOverride: scrollBehaviourDragImageTranslateOverride,
+            // dragImageCenterOnTouch: true,
+            // forceApply: true,
         });
     });
 
@@ -109,7 +109,6 @@
         });
 
     async function on_drag_start(event, index) {
-        event.dataTransfer.setData('move', 'my data');
         console.log('on_drag_start');
         dragged_item_index = index;
         dragged_item = items[dragged_item_index];
@@ -118,9 +117,9 @@
         // adding the listener to the element via html doesn't work because the
         // element is not in the dom when we end the drag. Adding it here works.
         dragged_element.addEventListener('dragend', on_drag_end);
-        event.dataTransfer.setDragImage(dragged_element,
-            dragged_element.offsetWidth/2,
-            dragged_element.offsetHeight/2);
+        // event.dataTransfer.setDragImage(dragged_element, 0, 0);
+            // dragged_element.offsetWidth/2,
+            // dragged_element.offsetHeight/2);
 
         const dragged_element_height = window.getComputedStyle(dragged_element)
             .getPropertyValue('height');
@@ -134,14 +133,22 @@
 
         await timeout();
 
-        // Do this in setTimeout to ensure that the image of the dragged
+        // Do this after timeout to ensure that the image of the dragged
         // element gets copied before the element gets erased.
         potential_drop_index = dragged_item_index;
         non_smooth_resizing_index = dragged_item_index;
+        /*
         items = [
             ...items.slice(0, dragged_item_index),
             ...items.slice(dragged_item_index + 1),
         ];
+        */
+        items = items.map((item, i) => {
+            if (i === dragged_item_index) {
+                item.hidden = true;
+            }
+            return item;
+        })
 
         await timeout();
         // remove the expanded class after a lil bit
@@ -157,6 +164,14 @@
     }
 
     function put_dragged_element_at(index) {
+        dragged_item.hidden = false;
+
+        // remove
+        items = [
+            ...items.slice(0, dragged_item_index),
+            ...items.slice(dragged_item_index + 1),
+        ];
+        // put in new spot
         items = [
             ...items.slice(0, index),
             dragged_item,
@@ -263,6 +278,7 @@
     {#if item !== FAKE_ITEM}
     <div
         id={item.text}
+        hidden={item.hidden}
         class=item-holder
         class:flash={index === flash_item_index}
         draggable=true
