@@ -22,13 +22,23 @@
 
     let is_shown_by_text = {};
 
-    let potential_drop_index = null;
+    let expanded_space_index = null;
     let dragged_item_index = null;
     let dragged_item = null;
     let expanded_target_height;
-    let non_smooth_resizing_index = null;
+    let smooth = false;
     let flash_item_index = null;
 
+    let potential_drop_index = null;
+    $: if (expanded_space_index !== null) {
+        if (expanded_space_index < dragged_item_index) {
+            potential_drop_index = expanded_space_index;
+        } else {
+            potential_drop_index = expanded_space_index - 1;
+        }
+    } else {
+        potential_drop_index = dragged_item_index;
+    }
     const FAKE_ITEM = {};
 
     const spaces_between_items = [];
@@ -42,21 +52,17 @@
     export async function move_item_to_expanded_index(item) {
         dragged_item = item;
         dragged_item_index = get_index_with_text(item.text);
-        non_smooth_resizing_index = potential_drop_index + 1;
-        items = [
-            ...items.slice(0, dragged_item_index),
-            ...items.slice(dragged_item_index + 1),
-        ];
+
         await timeout();
         if (dragged_item_index > -1) {
             put_dragged_element_at(potential_drop_index);
         }
         await timeout(.1);
-        non_smooth_resizing_index = null;
     }
 
     export async function expand_index(index, item_height) {
-        potential_drop_index = index;
+        smooth = true;
+        expanded_space_index = index;
 
         const space_between_items_height = window
             .getComputedStyle(spaces_between_items[0])
@@ -66,6 +72,7 @@
             2*Number.parseFloat(space_between_items_height)) + 'px';
 
         await timeout(.6);
+        smooth = false;
     }
 
     export async function flash_item_by_text(item_text) {
@@ -101,7 +108,7 @@
         // remove the null one at the end
         .filter(space => space)
         .forEach((space, i) => {
-            if (i === potential_drop_index) {
+            if (i === expanded_space_index) {
                 space.style.height = expanded_target_height;
             } else {
                 space.setAttribute('style', null);
@@ -115,11 +122,9 @@
 
         const dragged_element = event.target;
         // adding the listener to the element via html doesn't work because the
-        // element is not in the dom when we end the drag. Adding it here works.
+        // element is not in the dom (or hidden) when we end the drag. Adding it
+        // here works.
         dragged_element.addEventListener('dragend', on_drag_end);
-        // event.dataTransfer.setDragImage(dragged_element, 0, 0);
-            // dragged_element.offsetWidth/2,
-            // dragged_element.offsetHeight/2);
 
         const dragged_element_height = window.getComputedStyle(dragged_element)
             .getPropertyValue('height');
@@ -133,32 +138,19 @@
 
         await timeout();
 
-        // Do this after timeout to ensure that the image of the dragged
-        // element gets copied before the element gets erased.
-        potential_drop_index = dragged_item_index;
-        non_smooth_resizing_index = dragged_item_index;
-        /*
-        items = [
-            ...items.slice(0, dragged_item_index),
-            ...items.slice(dragged_item_index + 1),
-        ];
-        */
+        expanded_space_index = dragged_item_index + 1;
+
         items = items.map((item, i) => {
             if (i === dragged_item_index) {
                 item.hidden = true;
             }
             return item;
         })
-
-        await timeout();
-        // remove the expanded class after a lil bit
-        non_smooth_resizing_index = null;
-
     }
 
     async function on_drag_end() {
         console.log('on_drag_end');
-        non_smooth_resizing_index = potential_drop_index + 1;
+        smooth = false;
         await timeout();
         put_dragged_element_at(potential_drop_index);
     }
@@ -181,12 +173,13 @@
 
         dragged_item_index = null;
         dragged_item = null,
-        potential_drop_index = null;
+        expanded_space_index = null;
     }
 
     function on_drag_over(index) {
+        smooth = true;
         console.log('dragged over', index);
-        potential_drop_index = index;
+        expanded_space_index = index;
     }
 
     // dragenter required on mobile, per
@@ -195,7 +188,7 @@
     function do_nothing() {}
 
     function on_drag_leave_site(index) {
-        potential_drop_index = dragged_item_index;
+        expanded_space_index = dragged_item_index + 1;
     }
 
     async function timeout(seconds = 0) {
@@ -264,12 +257,14 @@
 </style>
 
 {#each [...items, FAKE_ITEM]  as item, index (item.text)}
-<div class=wrapper>
+<div class=wrapper
+    hidden={item.hidden}
+    >
     <div bind:this={spaces_between_items[index]}
         id={`drop_target_${index}`}
         class=space-between-item
-        class:contracted={index !== potential_drop_index}
-        class:smooth={index !== non_smooth_resizing_index}
+        class:contracted={index !== expanded_space_index}
+        class:smooth
         on:dragleave|preventDefault={() => on_drag_leave_site(index)}
         on:dragover|preventDefault={() => on_drag_over(index)}
         on:dragenter|preventDefault={do_nothing}
@@ -278,7 +273,6 @@
     {#if item !== FAKE_ITEM}
     <div
         id={item.text}
-        hidden={item.hidden}
         class=item-holder
         class:flash={index === flash_item_index}
         draggable=true
