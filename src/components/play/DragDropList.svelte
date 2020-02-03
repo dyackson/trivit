@@ -12,6 +12,7 @@
     let drag_drop_polyfill_active = false;
     onMount(() => {
         drag_drop_polyfill_active = polyfill();
+        make_list_holder_constant_height();
     });
 
     export let items;
@@ -207,6 +208,14 @@
         return items.find(item => item.text === text);
     }
 
+    function make_list_holder_constant_height() {
+        const list_holder = document.getElementById('list_holder')
+        const height = window.getComputedStyle(list_holder)
+            .getPropertyValue('height');
+        list_holder.style.minHeight = height;
+    }
+
+
 </script>
 
 <style>
@@ -215,13 +224,13 @@
         height: 100%;
         overflow: hidden;
     }
-    .wrapper {
+    #wrapper {
         margin: 0 .5em;
     }
 
     .item-holder {
         width: fit-content;
-        border: 2px solid var(--light);
+        border: 1px solid var(--light);
         border-radius: 2px;
         padding: .2em 1em;
     }
@@ -257,35 +266,37 @@
 
 </style>
 
-{#each [...items, FAKE_ITEM]  as item, index (item.text)}
-<div class=wrapper
-    hidden={item.hidden}
-    >
-    <div bind:this={spaces_between_items[index]}
-        id={`drop_target_${index}`}
-        class=space-between-item
-        class:contracted={index !== expanded_space_index}
-        class:smooth
-        on:dragleave|preventDefault={() => on_drag_leave_site(index)}
-        on:dragover|preventDefault={() => on_drag_over(index)}
-        on:dragenter|preventDefault={do_nothing}
+<div id=list_holder>
+    {#each [...items, FAKE_ITEM]  as item, index (item.text)}
+    <div class=wrapper
+        hidden={item.hidden}
         >
-    </div>
-    {#if item !== FAKE_ITEM}
-    <div
-        id={item.text}
-        class=item-holder
-        class:flash={index === flash_item_index}
-        draggable=true
-        on:dragstart={(event) => on_drag_start(event, index)}
-        on:auxclick|preventDefault={do_nothing}
-        on:contextmenu|preventDefault={do_nothing}
-        >
-        {item.text}
-        {#if is_shown_by_text[item.text]}
-            ({item.value})
+        <div bind:this={spaces_between_items[index]}
+            id={`drop_target_${index}`}
+            class=space-between-item
+            class:contracted={index !== expanded_space_index}
+            class:smooth
+            on:dragleave|preventDefault={() => on_drag_leave_site(index)}
+            on:dragover|preventDefault={() => on_drag_over(index)}
+            on:dragenter|preventDefault={do_nothing}
+            >
+        </div>
+        {#if item !== FAKE_ITEM}
+        <div
+            id={item.text}
+            class=item-holder
+            class:flash={index === flash_item_index}
+            draggable=true
+            on:dragstart={(event) => on_drag_start(event, index)}
+            on:auxclick|preventDefault={do_nothing}
+            on:contextmenu|preventDefault={do_nothing}
+            >
+            {item.text}
+            {#if is_shown_by_text[item.text]}
+                ({item.value})
+            {/if}
+        </div>
         {/if}
     </div>
-    {/if}
+    {/each}
 </div>
-{/each}
