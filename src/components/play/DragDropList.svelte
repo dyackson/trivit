@@ -179,7 +179,6 @@
 
     function on_drag_over(index) {
         smooth = true;
-        console.log('dragged over', index);
         expanded_space_index = index;
     }
 
@@ -189,7 +188,8 @@
     function do_nothing() {}
 
     function on_drag_leave_site(index) {
-        expanded_space_index = dragged_item_index + 1;
+        // comment in to make it more janky
+        // expanded_space_index = dragged_item_index + 1;
     }
 
     async function timeout(seconds = 0) {
@@ -223,7 +223,7 @@
         width: fit-content;
         border: 2px solid var(--light);
         border-radius: 2px;
-        padding: 0 1em;
+        padding: .2em 1em;
     }
 
     .space-between-item {
