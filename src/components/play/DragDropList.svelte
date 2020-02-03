@@ -9,19 +9,17 @@
     import {scrollBehaviourDragImageTranslateOverride}
         from 'mobile-drag-drop/scroll-behaviour';
 
-    // options are optional ;)
+    let drag_drop_polyfill_active = false;
     onMount(() => {
-        polyfill({ // use this to make use of the scroll behaviour
-            // dragImageTranslateOverride: scrollBehaviourDragImageTranslateOverride,
-            // dragImageCenterOnTouch: true,
-            // forceApply: true,
-        });
+        drag_drop_polyfill_active = polyfill();
     });
 
     export let items;
 
     let is_shown_by_text = {};
+    const spaces_between_items = [];
 
+    const FAKE_ITEM = {};
     let expanded_space_index = null;
     let dragged_item_index = null;
     let dragged_item = null;
@@ -39,17 +37,14 @@
     } else {
         potential_drop_index = dragged_item_index;
     }
-    const FAKE_ITEM = {};
 
-    const spaces_between_items = [];
-
-    export function get_item_height(item) {
+    function get_item_height(item) {
         const element = document.getElementById(item.text);
         return window.getComputedStyle(element)
             .getPropertyValue('height');
     }
 
-    export async function move_item_to_expanded_index(item) {
+    async function move_item_to_expanded_index(item) {
         dragged_item = item;
         dragged_item_index = get_index_with_text(item.text);
 
@@ -60,7 +55,7 @@
         await timeout(.1);
     }
 
-    export async function expand_index(index, item_height) {
+    async function expand_index(index, item_height) {
         smooth = true;
         expanded_space_index = index;
 
@@ -75,7 +70,7 @@
         smooth = false;
     }
 
-    export async function flash_item_by_text(item_text) {
+    async function flash_item_by_text(item_text) {
         flash_item_index = get_index_with_text(item_text);
         is_shown_by_text[item_text] = true;
         await timeout(.6);
@@ -116,14 +111,19 @@
         });
 
     async function on_drag_start(event, index) {
-        console.log('on_drag_start');
+        // Don't let the real event fire if the polyfill is active
+        if (drag_drop_polyfill_active && event.isTrusted) {
+            event.preventDefault();
+            return;
+        }
+
+        console.log('on_drag_start', event);
         dragged_item_index = index;
         dragged_item = items[dragged_item_index];
 
         const dragged_element = event.target;
         // adding the listener to the element via html doesn't work because the
-        // element is not in the dom (or hidden) when we end the drag. Adding it
-        // here works.
+        // element is hidden when we end the drag. Adding it here works.
         dragged_element.addEventListener('dragend', on_drag_end);
 
         const dragged_element_height = window.getComputedStyle(dragged_element)
@@ -148,7 +148,9 @@
         })
     }
 
-    async function on_drag_end() {
+    async function on_drag_end(event) {
+        event.preventDefault();
+        console.log(event)
         console.log('on_drag_end');
         smooth = false;
         await timeout();
@@ -158,18 +160,17 @@
     function put_dragged_element_at(index) {
         dragged_item.hidden = false;
 
-        // remove
+        // remove the hidden dragged item
         items = [
             ...items.slice(0, dragged_item_index),
             ...items.slice(dragged_item_index + 1),
         ];
-        // put in new spot
+        // and put in its new spot
         items = [
             ...items.slice(0, index),
             dragged_item,
             ...items.slice(index),
         ];
-
 
         dragged_item_index = null;
         dragged_item = null,
@@ -277,6 +278,8 @@
         class:flash={index === flash_item_index}
         draggable=true
         on:dragstart={(event) => on_drag_start(event, index)}
+        on:auxclick|preventDefault={do_nothing}
+        on:contextmenu|preventDefault={do_nothing}
         >
         {item.text}
         {#if is_shown_by_text[item.text]}
