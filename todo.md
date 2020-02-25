@@ -1,6 +1,6 @@
-Make it (dnd) run on mobile (use a real phone).
-
 Fix the icons on question/create
+
+See if we need that dnd stuff in routes/_layout.svelte
 
 Revisit MCMAnswer
  * make a place so checking them doesn't move the answers

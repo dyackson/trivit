@@ -62,8 +62,14 @@
         padding: .4em .5em .4em 0;
         border-radius: .5em;
     }
+
+    .route-wrapper {
+        padding: 4vw;
+    }
 </style>
 
 <Nav {segment}/>
 
-<slot></slot>
+<div class=route-wrapper>
+    <slot></slot>
+</div>

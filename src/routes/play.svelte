@@ -10,13 +10,6 @@
     let qs = questions.filter((q) => q.type === 'ordered');
 </script>
 
-<style>
-    div {
-        padding: 4vw;
-    }
-</style>
-
-<div>
 {#each qs as q (q.prompt)}
     <Prompt text={q.prompt} />
 
@@ -37,6 +30,3 @@
         <hr>
     {/if}
 {/each}
-</div>
-
-
