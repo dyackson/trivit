@@ -6,27 +6,42 @@
     export let delete_ans = null;
     export let toggle = null;
     $: left_icon = value ? 'thumb_up_alt' : 'thumb_down_alt';
-    $: color = value ? 'is-success' : 'is-danger';
-
-
+    $: color = value ? 'correct' : 'wrong';
 </script>
 
-<div class="field has-addons">
-    <div class=control on:click={toggle}>
-        <div class="button {color}">
-            <span class="icon is-small">
-                <i class='material-icons'>{left_icon}</i>
-            </span>
-        </div>
-    </div>
-    <div class="control">
-        <input class='input' type=text {placeholder} bind:value={text}>
-    </div>
-    <div class=control on:click={delete_ans}>
-        <div class="button">
-            <span class="icon is-small">
-                <i class='material-icons'>clear</i>
-            </span>
-        </div>
-    </div>
+<style>
+    .row {
+        display: flex;
+        align-items: center;
+        font-size: 1.2em;
+        margin: .5em 0;
+    }
+    i {
+        padding: 0 .2em;
+        font-size: 2em;
+    }
+    input {
+        font-size: inherit;
+        width: 70%;
+        background: var(--dark);
+        color: var(--light);
+        border-radius: 1.2em;
+        padding: .2em;
+        border-color: var(--light);
+        text-align: center;
+    }
+    .correct {
+        color: chartreuse;
+    }
+    .wrong {
+        color: tomato;
+    }
+
+</style>
+
+<div class=row>
+    <i class='material-icons {color}'
+        on:click={toggle}>{left_icon}</i>
+    <input class='input' type=text {placeholder} bind:value={text}>
+    <i class='material-icons' on:click={delete_ans}>clear</i>
 </div>
