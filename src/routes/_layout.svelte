@@ -26,6 +26,10 @@
         --light: #f8d56b;
         --dark: #071a23;
     }
+    :global(*) {
+        font-weight: bold;
+    }
+
 
     :global(button) {
         border: 0.1em solid var(--light);
@@ -55,6 +59,30 @@
     :global(.selected) {
         background-color: tomato;
         color: var(--dark);
+    }
+
+    :global(.text-input) {
+        font-size: 1rem;
+        width: 70%;
+        max-width: 20em;
+        background: var(--light);
+        color: var(--dark);
+        border-radius: 1.2em;
+        padding: .4em .8em;
+        border-color: var(--light);
+    }
+
+    :global(.textarea-input) {
+        font-size: 1.24rem;
+        width: 100%;
+        max-width: 40em;
+        height: 8em;
+        resize: none;
+        background: var(--light);
+        color: var(--dark);
+        border-radius: 1.2em;
+        padding: .4em .8em;
+        border-color: var(--light);
     }
 
     :global(.radio-input-label) {

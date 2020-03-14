@@ -114,6 +114,12 @@
 	<title>Create Question</title>
 </svelte:head>
 
+<style>
+    button.block {
+        display: block;
+    }
+</style>
+
 
 {#if show_data_loss_warning}
     <div class="modal" class:is-active={show_data_loss_warning}>
@@ -163,7 +169,7 @@
 
 
 {#if type === 'true_false'}
-    <Bool bind:value={answer} label=Answer />
+    <Bool bind:value={answer} />
 
 {:else if type === 'free_form'}
     <Text bind:value={answer} label=Answer />
@@ -190,4 +196,4 @@
     <button class=button on:click={add_empty_ans}>Add Another Choice</button>
 {/if}
 
-<button class=button on:click={save_question}>Save Question</button>
+<button class='button block' on:click={save_question}>Save Question</button>
