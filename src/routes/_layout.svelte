@@ -1,22 +1,7 @@
 <script>
 	import Nav from '../components/Nav.svelte';
-    import {polyfill} from 'mobile-drag-drop';
-    import {onMount} from 'svelte';
-    // optional import of scroll behaviour
-    import {scrollBehaviourDragImageTranslateOverride}
-        from "mobile-drag-drop/scroll-behaviour";
-    // options are optional ;)
 
-    onMount(() => {
-        polyfill({
-            // use this to make use of the scroll behaviour
-            dragImageTranslateOverride: scrollBehaviourDragImageTranslateOverride
-        })
-        // for ios safari 10.x
-        window.addEventListener( 'touchmove', function() {});
-    });
-
-	export let segment;
+   export let segment;
 </script>
 
 <style>

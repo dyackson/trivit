@@ -1,5 +1,5 @@
 <script>
-    export let value;
+    export let value = false;
     export let text;
     export let on_click;
     // regardless of whether the user answered correctly
@@ -11,19 +11,27 @@
     $: icon = value ? 'check' : '';
 
     let color;
-    $: {
-        if (reveal_correctness) {
-            if (correct) {
-                color = 'is-success';
-            } else {
-                color = 'is-danger'
-            }
+    $: if (reveal_correctness) {
+        if (correct) {
+            color = 'is-success';
         } else {
-            color = '';
+            color = 'is-danger'
         }
+    } else {
+        color = '';
+    }
+
+    function toggle() {
+        console.log('click');
+        value = !value;
     }
 </script>
 
+<div>
+    <input type=checkbox id={text} bind:checked={value}>
+    <label for={text}>{text}</label>
+</div>
+<!--
 <div on:click={on_click} class="button {color} is-fullwidth">
     <span class="icon is-small">
         <i class='material-icons'>{icon}</i>
@@ -33,3 +41,4 @@
         <i class='material-icons'>{icon}</i>
     </span>
 </div>
+    -->
