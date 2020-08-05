@@ -1,4 +1,5 @@
 <script>
+    import ENABLED_TYPES from '@/meta';
     import questions from '@/fake_questions';
     import Prompt from '@/components/play/Prompt';
     import FreeForm from '@/components/play/FreeForm';
@@ -7,7 +8,7 @@
     import MCSingle from '@/components/play/MCSingle';
     import Ordered from '@/components/play/Ordered';
 
-    // let qs = questions.filter((q) => q.type === 'ordered');
+    let qs = questions.filter((q) => ENABLED_TYPES.incluces(q.type));
 </script>
 
 {#each questions as q (q.prompt)}

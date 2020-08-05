@@ -25,11 +25,44 @@
         console.log('click');
         value = !value;
     }
+
+    let revealed_class;
+    $: if (reveal_correctness)
+        if (value)
+            // selected
+            if (correct) revealed_class = 'selected-right-answer'
+            else revealed_class = 'selected-wrong-answer'
+        else
+            // did not select
+            if (correct) revealed_class = 'omitted-right-answer'
+            else revealed_class = 'omitted-wrong-answer'
+    else revealed_class = '';
+
 </script>
+
+<style>
+    .omitted-wrong-answer {
+        color: transparent;
+        text-shadow: 0 0 .2em green;
+    }
+
+    .selected-wrong-answer {
+        color: transparent;
+        text-shadow: 0 0 .2em red;
+    }
+
+    .omitted-right-answer {
+        color: red;
+    }
+
+    .selected-right-answer {
+        color: green;
+    }
+</style>
 
 <div>
     <input type=checkbox id={text} bind:checked={value}>
-    <label for={text}>{text}</label>
+    <label for={text} class={revealed_class}>{text}</label>
 </div>
 <!--
 <div on:click={on_click} class="button {color} is-fullwidth">

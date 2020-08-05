@@ -39,48 +39,29 @@
         guess = guess.map(g => ({...g, value: false}));
         show_answer = false;
     }
+
+    let button_text, on_click;
+    $: if (show_answer) {
+        button_text = 'Reset'
+        on_click = reset;
+    } else {
+        button_text = 'Submit'
+        on_click = submit;
+    }
 </script>
 
 <div class='content is-large'>
-    {#if show_answer}
-    <table class="smaller">
-        <thead>
-            <tr>
-                <th>Choice</th>
-                <th>Your guess</th>
-                <th>Actual</th>
-                <th>Were you rigth</th>
-            </tr>
-        </thead>
-        <tbody>
-            {#each guess as g (g.key)}
-                <tr>
-                    <td>{g.text}</td>
-                    <td>{g.value}</td>
-                    <td>{g.correct}</td>
-                    <td>{g.correct === g.value ? 'yes' : 'no'}</td>
-                </tr>
-            {/each}
-        </tbody>
-    </table>
-        <p>
-            {response}
-        </p>
-        <button class='button is-fullwidth' on:click={reset} >
-            Reset
-        </button>
-    {:else}
-        {#each guess as g (g.key)}
-            <MCMChoice
-                text={g.text}
-                reveal_correctness={show_answer}
-                on_click={() => on_toggle(g.key)}
-                correct={g.correct}
-                value={g.value} />
-        {/each}
-        <br>
-        <button class='button is-fullwidth' on:click={submit} >
-            Submit
-        </button>
-    {/if}
+    {#each guess as g (g.key)}
+        <MCMChoice
+            text={g.text}
+            reveal_correctness={show_answer}
+            on_click={() => on_toggle(g.key)}
+            correct={g.correct}
+            value={g.value} />
+    {/each}
+
+    <br>
+    <button class='button is-fullwidth' on:click={on_click} >
+        {button_text}
+    </button>
 </div>

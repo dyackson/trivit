@@ -10,7 +10,7 @@ export const TYPE_CONFIGS = {
         display: 'True/False',
     },
     mc_single: {
-        display: 'Multiple Choice -- Single Answer',
+        display: 'Multiple Choice',
         get_empty_ans(key_holder) {
             return {text: '', value: false, key: key_holder.key++}
         },
@@ -72,10 +72,14 @@ export const TYPE_CONFIGS = {
 };
 
 export const VALID_TYPES = Object.keys(TYPE_CONFIGS);
+export const ENABLED_TYPES = ['free_form', 'mc_single', 'ordered'];
 
 const TYPES_BY_DISPLAY = {};
 Object.entries(TYPE_CONFIGS)
-    .forEach(([type, {display}]) => TYPES_BY_DISPLAY[display] = type);
+    .forEach(([type, {display}]) => {
+        if (ENABLED_TYPES.includes(type))
+            TYPES_BY_DISPLAY[display] = type;
+    });
 
 export {TYPES_BY_DISPLAY};
 
