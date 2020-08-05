@@ -6,3 +6,5 @@ pnpm-debug.log
 /__sapper__/
 *.swp
 *.swo
+# emacs bookkeeping
+*.rej

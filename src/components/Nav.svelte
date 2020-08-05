@@ -1,3 +1,7 @@
+<!--
+    TODO:
+        Make the burger larger
+-->
 <script>
     import {onMount} from 'svelte';
     import * as store from '@/store';
