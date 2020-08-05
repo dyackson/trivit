@@ -1,9 +1,6 @@
-Fix the icons on question/create
+Style the input for simple answers (create)
 
-Revisit MCMChoice
- * make a place so checking them doesn't move the answers
- * For revealing the answers, reduce opacity of wrong answers
- * Make the check marks tomato
+Style the inputs for ordered answers (create)
 
 Make one question show at a time and next/prev buttons
 
