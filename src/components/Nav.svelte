@@ -106,21 +106,45 @@
         margin-bottom: 0;
     }
 </style>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <!--a class="navbar-item" href="https://bulma.io">
+      <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
+    </a-->
 
-<nav>
-    <div
-        id=menu-button
-        class:open
-        on:click={() => open = !open}
-        >
-        CLOSE MENU
+    <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+
+  <!-- the is-active class is what opens and closes it on mobile
+       We need to close it when it's clicked
+    -->
+  <div id="navbarBasicExample" class="navbar-menu is-active">
+    <div class="navbar-start">
+        {#each routes as {href, display}}
+            <a class=navbar-item
+                {href}
+                on:click={() => open = false}
+                >
+                {display}
+            </a>
+        {/each}
     </div>
 
-    <ul id=menu class:open>
-        {#each routes as {href, display}}
-        <a {href}><li on:click={() => open = false}>
-                {display}
-            </li></a>
-            {/each}
-    </ul>
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-primary">
+            <strong>Sign up</strong>
+          </a>
+          <a class="button is-light">
+            Log in
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 </nav>
