@@ -16,6 +16,7 @@
     }
 
 
+    /*
     :global(button) {
         border: 0.1em solid var(--light);
         background: transparent;
@@ -24,14 +25,14 @@
         margin: 1em 1.5em;
     }
 
-	:global(body) {
+    :global(body) {
         color: var(--light);
         background-color: var(--dark);
         font-family: "Avenir Next", "Avenir", sans-serif;
-		padding: 0;
-		margin: 0;
-		box-sizing: border-box;
-	}
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
 
     :global(*, *:before, *:after) {
         box-sizing: inherit;
@@ -79,6 +80,7 @@
     .route-wrapper {
         padding: 4vw;
     }
+    */
 </style>
 
 <Nav {segment}/>
