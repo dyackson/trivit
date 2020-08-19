@@ -4,24 +4,17 @@
 <script>
     export let answer;
     export let show_answer = false;
+    $: button_text = show_answer ? 'Hide Answer' : 'Show Answer'
 </script>
 
 
-<div class='content is-large'>
-{#if show_answer}
-    <label is-medium>Answer:</label>
-    <p>
-        {answer}
-    </p>
-    <button class='button' on:click={() => show_answer = false} >
-        Hide Answer
+<div class='content'>
+    {#if show_answer}
+        <p>
+            {answer}
+        </p>
+    {/if}
+    <button class='button' on:click={() => show_answer = !show_answer} >
+        {button_text}
     </button>
-{:else}
-    <button class='button' on:click={() => show_answer = true} >
-        Show Answer
-    </button>
-{/if}
 </div>
-
-
-

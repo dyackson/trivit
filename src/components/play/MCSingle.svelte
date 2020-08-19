@@ -37,37 +37,33 @@
 
 
 <style>
-    .block {
-        display: block;
-        width: fit-content;
-    }
 </style>
 
 
-<div>
-    {#each answer as ans (ans.key)}
-        <label for={ans.key}
-            class="clickable radio-input-label block"
-            class:selected={ans.key ===  selected_ans_key}>
-            <input
-                id={ans.key}
-                type=radio
-                value={ans.key}
-                bind:group={selected_ans_key}/>
-            {ans.text}
-        </label>
-    {/each}
-    {#if selected_ans_key}
-        {#if !show_answer}
-            <button class='clickable'
-                on:click={submit} >
-                SUBMIT
-            </button>
-        {:else}
-            <button class='clickable'
-                on:click={reset} >
-                RESET
-            </button>
-        {/if}
+{#each answer as ans (ans.key)}
+    <div class="control is-block">
+    <label for={ans.key}
+        class="radio ml-0"
+        >
+        <input
+            id={ans.key}
+            type=radio
+            value={ans.key}
+            bind:group={selected_ans_key}/>
+        {ans.text}
+    </label>
+    </div>
+{/each}
+{#if selected_ans_key}
+    {#if !show_answer}
+        <button class='button'
+            on:click={submit} >
+            SUBMIT
+        </button>
+    {:else}
+        <button class='button'
+            on:click={reset} >
+            RESET
+        </button>
     {/if}
-</div>
+{/if}

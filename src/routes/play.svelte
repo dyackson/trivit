@@ -11,23 +11,25 @@
     let qs = questions.filter((q) => ENABLED_TYPES.includes(q.type));
 </script>
 
-{#each questions as q (q.prompt)}
+{#each qs as q (q.prompt)}
     <Prompt text={q.prompt} />
+    <div class="container is-fluid">
 
-    {#if q.type === 'free_form'}
-        <FreeForm {...q} />
-        <hr>
-    {:else if q.type === 'mc_single'}
-        <MCSingle {...q} />
-        <hr>
-    {:else if q.type === 'true_false'}
-        <TrueFalse {...q} />
-        <hr>
-    {:else if q.type === 'mc_multiple'}
-        <MCMultiple {...q} />
-        <hr>
-    {:else if q.type === 'ordered'}
-        <Ordered {...q} />
-        <hr>
-    {/if}
+        {#if q.type === 'free_form'}
+            <FreeForm {...q} />
+            <hr>
+        {:else if q.type === 'mc_single'}
+            <MCSingle {...q} />
+            <hr>
+        {:else if q.type === 'true_false'}
+            <TrueFalse {...q} />
+            <hr>
+        {:else if q.type === 'mc_multiple'}
+            <MCMultiple {...q} />
+            <hr>
+        {:else if q.type === 'ordered'}
+            <Ordered {...q} />
+            <hr>
+        {/if}
+    </div>
 {/each}

@@ -2,10 +2,6 @@
     export let text;
 </script>
 
-<style>
-</style>
-<p>
+<p class=notification>
     {text}
 </p>
-
-
