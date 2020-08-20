@@ -32,14 +32,13 @@
 <DragDropList bind:this={dd_list} bind:items />
 
 {#if !show_answer}
-    <button class='clickable'
+    <button class='button'
         on:click={put_list_in_correct_order} >
         SUBMIT
     </button>
 {:else}
-    <button class='clickable'
+    <button class='button'
         on:click={reset} >
         RESET
     </button>
 {/if}
-
