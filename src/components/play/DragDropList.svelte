@@ -284,7 +284,7 @@
         {#if item !== FAKE_ITEM}
         <div
             id={item.text}
-            class='tag is-medium item-holder'
+            class='tag is-medium item-holder is-primary'
             class:flash={index === flash_item_index}
             draggable=true
             on:dragstart={(event) => on_drag_start(event, index)}
