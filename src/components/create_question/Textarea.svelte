@@ -5,18 +5,16 @@
 </script>
 
 <style>
-    .field {
-        margin: 1em 0;
-    }
 </style>
 
 <div class="field">
-    <label>{label}</label>
-    <div class=text-holder>
+    {#if label}
+    <label class="label">{label}</label>
+    {/if}
+    <div class="control">
         <textarea
-            class=textarea-input
-            {placeholder}
+            class=textarea
             bind:value
-            ></textarea>
+            {placeholder}/>
     </div>
 </div>
