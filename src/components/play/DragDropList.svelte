@@ -73,8 +73,8 @@
 
     async function flash_item_by_text(item_text) {
         flash_item_index = get_index_with_text(item_text);
-        is_shown_by_text[item_text] = true;
         await timeout(.6);
+        is_shown_by_text[item_text] = true;
         flash_item_index = null;
     }
 
@@ -215,6 +215,16 @@
         list_holder.style.minHeight = height;
     }
 
+    function get_color_class(index, item) {
+        if (is_shown_by_text[item.text]) {
+            return 'is-success'
+        } else if (index === flash_item_index) {
+            return 'is-primary'
+        } else {
+            return 'is-info'
+        }
+    }
+
 
 </script>
 
@@ -226,13 +236,6 @@
     }
     #wrapper {
         margin: 0 .5em;
-    }
-
-    .item-holder {
-        width: fit-content;
-        border: 1px solid var(--light);
-        border-radius: 2px;
-        padding: .2em 1em;
     }
 
     .space-between-item {
@@ -249,17 +252,15 @@
 
     @keyframes flash {
         from {
-            color: var(--dark);
-            background-color: var(--light);
+            opacity: 1;
         }
         to {
-            color: var(--light);
-            background-color: var(--dark);
+            opacity: 0;
         }
     }
-    .item-holder.flash {
+    .flash {
         animation-name: flash;
-        animation-duration: 0.5s;
+        animation-duration: 1s;
         animation-iteration-count: 1;
         animation-timing-function: var(--ttf);
     }
@@ -284,8 +285,9 @@
         {#if item !== FAKE_ITEM}
         <div
             id={item.text}
-            class='tag is-medium item-holder is-primary'
-            class:flash={index === flash_item_index}
+            class='button is-medium is-rounded
+                   {get_color_class(index, item, flash_item_index)}'
+            class:flash={index === flash_item_index && !is_shown_by_text[item.text]}
             draggable=true
             on:dragstart={(event) => on_drag_start(event, index)}
             on:auxclick|preventDefault={do_nothing}
