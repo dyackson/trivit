@@ -215,16 +215,6 @@
         list_holder.style.minHeight = height;
     }
 
-    function get_color_class(index, item) {
-        if (is_shown_by_text[item.text]) {
-            return 'is-success'
-        } else if (index === flash_item_index) {
-            return 'is-primary'
-        } else {
-            return 'is-info'
-        }
-    }
-
 
 </script>
 
@@ -247,10 +237,10 @@
     }
 
     .space-between-item.smooth {
-        transition: height 0.5s var(--ttf);
+        transition: height 0.5s ease-in-out;
     }
 
-    @keyframes flash {
+    @keyframes fade-out {
         from {
             opacity: 1;
         }
@@ -258,11 +248,26 @@
             opacity: 0;
         }
     }
-    .flash {
-        animation-name: flash;
+    .fade-out {
+        animation-name: fade-out;
         animation-duration: 1s;
         animation-iteration-count: 1;
-        animation-timing-function: var(--ttf);
+        animation-timing-function: ease-in-out;
+    }
+
+    @keyframes fade-out {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    .fade-in {
+        animation-name: fade-out;
+        animation-duration: 1s;
+        animation-iteration-count: 1;
+        animation-timing-function: ease-in-out;
     }
 
 </style>
@@ -285,9 +290,10 @@
         {#if item !== FAKE_ITEM}
         <div
             id={item.text}
-            class='button is-medium is-rounded
-                   {get_color_class(index, item, flash_item_index)}'
-            class:flash={index === flash_item_index && !is_shown_by_text[item.text]}
+            class='button is-medium is-rounded'
+            class:fade-out={index === flash_item_index}
+            class:fade-in={is_shown_by_text[item.text]}
+            class:is-success={is_shown_by_text[item.text]}
             draggable=true
             on:dragstart={(event) => on_drag_start(event, index)}
             on:auxclick|preventDefault={do_nothing}
