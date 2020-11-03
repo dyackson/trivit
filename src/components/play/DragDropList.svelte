@@ -22,11 +22,14 @@
 
     const FAKE_ITEM = {};
     let expanded_space_index = null;
+    let expanded_space_after_move_index = null;
     let dragged_item_index = null;
     let dragged_item = null;
     let expanded_target_height;
     let smooth = false;
-    let flash_item_index = null;
+    let fade_out_index = null;
+    let fade_in_index = null;
+    let faded_text = null;
 
     let potential_drop_index = null;
     $: if (expanded_space_index !== null) {
@@ -45,13 +48,15 @@
             .getPropertyValue('height');
     }
 
-    async function move_item_to_expanded_index(item) {
+    async function move_item_to_expanded_index(item, from_index) {
         dragged_item = item;
         dragged_item_index = get_index_with_text(item.text);
 
         await timeout();
         if (dragged_item_index > -1) {
             put_dragged_element_at(potential_drop_index);
+            smooth = false;
+            expanded_space_index = from_index;
         }
         await timeout(.1);
     }
@@ -71,11 +76,18 @@
         smooth = false;
     }
 
-    async function flash_item_by_text(item_text) {
-        flash_item_index = get_index_with_text(item_text);
-        await timeout(.6);
-        is_shown_by_text[item_text] = true;
-        flash_item_index = null;
+    async function fade_out(item_text) {
+        fade_out_index = get_index_with_text(item_text);
+        await timeout(1);
+        fade_out_index = null;
+        faded_text = item_text;
+    }
+
+    async function fade_in(item_text) {
+        fade_in_index = get_index_with_text(item_text);
+        await timeout(1);
+        faded_text = null;
+        fade_in_index = null;
     }
 
     export async function put_item_at_index(item_text, index) {
@@ -84,15 +96,18 @@
         if (index !== current_index) {
             const height = get_item_height(item);
 
-            const flash_p = flash_item_by_text(item_text);
-            const expand_p = expand_index(index, height);
-            await Promise.all([flash_p, expand_p]);
-
-            await move_item_to_expanded_index(item);
-            await flash_item_by_text(item_text);
+            await fade_out(item_text);
+            await expand_index(index, height);
+            is_shown_by_text[item_text] = true;
+            await move_item_to_expanded_index(item, current_index);
+            await fade_in(item_text);
+            smooth = true;
+            expanded_space_index = null;
             await timeout(.1);
         } else {
-            await flash_item_by_text(item_text);
+            await fade_out(item_text);
+            is_shown_by_text[item_text] = true;
+            await fade_in(item_text);
         }
     }
 
@@ -238,6 +253,7 @@
 
     .space-between-item.smooth {
         transition: height 0.5s ease-in-out;
+        background: red;
     }
 
     @keyframes fade-out {
@@ -248,26 +264,32 @@
             opacity: 0;
         }
     }
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
     .fade-out {
         animation-name: fade-out;
         animation-duration: 1s;
         animation-iteration-count: 1;
-        animation-timing-function: ease-in-out;
+        animation-timing-function: linear;
+        animation-fill-mode: forwards;
     }
 
-    @keyframes fade-out {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
     .fade-in {
-        animation-name: fade-out;
+        animation-name: fade-in;
         animation-duration: 1s;
         animation-iteration-count: 1;
-        animation-timing-function: ease-in-out;
+        animation-timing-function: linear;
+        animation-fill-mode: forwards;
+    }
+    .faded {
+        opacity: 0;
     }
 
 </style>
@@ -280,8 +302,9 @@
         <div bind:this={spaces_between_items[index]}
             id={`drop_target_${index}`}
             class=space-between-item
-            class:contracted={index !== expanded_space_index}
-            class:smooth
+            class:contracted={index !== expanded_space_index || index !== expanded_space_after_move_index}
+            class:contracted-smooth={index === expanded_space_after_move_index}
+            class:smooth={smooth || index !== expanded_space_after_move_index}
             on:dragleave|preventDefault={() => on_drag_leave_site(index)}
             on:dragover|preventDefault={() => on_drag_over(index)}
             on:dragenter|preventDefault={do_nothing}
@@ -291,8 +314,9 @@
         <div
             id={item.text}
             class='button is-medium is-rounded'
-            class:fade-out={index === flash_item_index}
-            class:fade-in={is_shown_by_text[item.text]}
+            class:fade-out={index === fade_out_index}
+            class:faded={item.text === faded_text}
+            class:fade-in={index === fade_in_index}
             class:is-success={is_shown_by_text[item.text]}
             draggable=true
             on:dragstart={(event) => on_drag_start(event, index)}
